@@ -1,3 +1,4 @@
+CREATE TYPE authority_enum AS ENUM ('USER', 'ADMIN', 'SUPER_ADMIN');
 create table "user"
 (
     id        bigint             not null
@@ -8,7 +9,7 @@ create table "user"
     password  bytea,
     name      text,
     phone     text,
-    authority smallint default 0 not null
+    authority authority_enum default 'USER' not null
 );
 
 alter table "user"

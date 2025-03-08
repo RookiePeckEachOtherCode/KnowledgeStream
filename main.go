@@ -11,6 +11,9 @@ import (
 func main() {
 	initialize.InitDB()
 
+	redis := initialize.InitRedis()
+	utils.RedisUtils.R = redis
+	
 	utils.LogoPrint()
 	h := server.Default()
 

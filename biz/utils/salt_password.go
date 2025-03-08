@@ -7,7 +7,7 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 )
 
-func generateSalt(length int) ([]byte, error) {
+func GenerateSalt(length int) ([]byte, error) {
 	salt := make([]byte, length)
 	_, err := rand.Read(salt)
 	if err != nil {
@@ -15,7 +15,7 @@ func generateSalt(length int) ([]byte, error) {
 	}
 	return salt, nil
 }
-func hashPassword(password string, salt []byte) []byte {
+func HashPassword(password string, salt []byte) []byte {
 	iterations := 100000 // 迭代次数
 	keyLength := 64      // 生成密钥长度（字节）
 
@@ -31,7 +31,7 @@ func hashPassword(password string, salt []byte) []byte {
 		sha512.New,
 	)
 }
-func verifyPassword(storedHash []byte, storedSalt []byte, inputPassword string) bool {
-	inputHash := hashPassword(inputPassword, storedSalt)
+func VerifyPassword(storedHash []byte, storedSalt []byte, inputPassword string) bool {
+	inputHash := HashPassword(inputPassword, storedSalt)
 	return subtle.ConstantTimeCompare(storedHash, inputHash) == 1
 }

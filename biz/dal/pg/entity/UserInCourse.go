@@ -1,4 +1,4 @@
-package pg
+package entity
 
 type UserInCourse struct {
 	UserID   int64 `gorm:"primaryKey;column:uid" json:"uid"`

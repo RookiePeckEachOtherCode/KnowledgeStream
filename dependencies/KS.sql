@@ -1,5 +1,5 @@
 CREATE TYPE authority_enum AS ENUM ('USER', 'ADMIN', 'SUPER_ADMIN');
-create table "user"
+create table "users"
 (
     id        bigint             not null
         constraint user_pk
@@ -12,10 +12,10 @@ create table "user"
     authority authority_enum default 'USER' not null
 );
 
-alter table "user"
+alter table "users"
     owner to root;
 
-create table course
+create table courses
 (
     id          bigint not null
         constraint course_pk
@@ -26,10 +26,10 @@ create table course
     ascription  bigint
 );
 
-alter table course
+alter table courses
     owner to root;
 
-create table video
+create table videos
 (
     id          bigint not null
         constraint video_pk
@@ -42,20 +42,20 @@ create table video
     cover       text,
     ascription  bigint
         constraint video_course_id_fk
-            references course
+            references courses
 );
 
-alter table video
+alter table videos
     owner to root;
 
 create table user_course
 (
     uid bigint not null
         constraint user_course_user_id_fk
-            references "user",
+            references "users",
     cid bigint not null
         constraint user_course_course_id_fk
-            references course,
+            references courses,
     constraint user_course_pk
         primary key (uid, cid)
 );

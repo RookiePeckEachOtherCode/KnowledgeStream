@@ -1,4 +1,4 @@
-package pg
+package entity
 
 type Video struct {
 	ID          int64  `gorm:"primaryKey;column:id" json:"id"`

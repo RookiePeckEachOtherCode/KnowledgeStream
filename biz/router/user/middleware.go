@@ -3,6 +3,7 @@
 package user
 
 import (
+	middleware "github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/middelware"
 	"github.com/cloudwego/hertz/pkg/app"
 )
 
@@ -24,4 +25,10 @@ func _userloginMw() []app.HandlerFunc {
 func _userregisterMw() []app.HandlerFunc {
 	// your code...
 	return nil
+}
+
+func _userinfoMw() []app.HandlerFunc {
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }

@@ -1,4 +1,4 @@
-package pg
+package entity
 
 type AuthorityEnum string
 

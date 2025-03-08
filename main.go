@@ -13,7 +13,7 @@ func main() {
 
 	redis := initialize.InitRedis()
 	utils.RedisUtils.R = redis
-	
+
 	utils.LogoPrint()
 	h := server.Default()
 

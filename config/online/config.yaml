@@ -1,0 +1,19 @@
+jwt:
+  key: oiiaioooiiaio,oiiaiooiiaio,oh golang get MVP!!!!!!,java get score 3.0,shit language!
+  expiration: 2592000 # 30 days
+
+default_avatar_url: "https://c-ssl.duitang.com/uploads/blog/202102/23/20210223124902_46ee4.png"
+snowflake_node: 1
+
+database:
+  host: "localhost"
+  port: 5432
+  username: "root"
+  password: "rookie"
+  db_name: "KS"
+
+redis:
+  host: "localhost"
+  port:  6379
+  database: 0
+ 

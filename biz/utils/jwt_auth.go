@@ -3,11 +3,12 @@ package utils
 import (
 	"errors"
 	"fmt"
-	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/configs"
-	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/entity"
-	"github.com/dgrijalva/jwt-go"
 	"log"
 	"time"
+
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/entity"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/config"
+	"github.com/dgrijalva/jwt-go"
 )
 
 type Claims struct {
@@ -17,7 +18,8 @@ type Claims struct {
 }
 
 func GenerateToken(Id int64, authority entity.AuthorityEnum, expiresIn ...time.Duration) string {
-	defaultExpire := 168 * time.Hour
+	expire := config.Get().JWT.Expiration * 24
+	defaultExpire := time.Hour * time.Duration(expire)
 	if len(expiresIn) > 0 {
 		defaultExpire = expiresIn[0]
 	}
@@ -33,7 +35,7 @@ func GenerateToken(Id int64, authority entity.AuthorityEnum, expiresIn ...time.D
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedString, err := token.SignedString(configs.JwtKey)
+	signedString, err := token.SignedString([]byte(config.Get().JWT.Key))
 	if err != nil {
 		log.Printf("不是哥们,生成Token失败: %v", err)
 		return ""
@@ -48,7 +50,7 @@ func ParseToken(tokenStr string) (*int64, *entity.AuthorityEnum, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("谁把别人家token拿来了: %v", token.Header["alg"])
 		}
-		return configs.JwtKey, nil
+		return []byte(config.Get().JWT.Key), nil
 	})
 
 	if err != nil {

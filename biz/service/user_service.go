@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/configs"
+
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/entity"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/query"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/utils"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/config"
 	"gorm.io/gorm"
 )
 
@@ -17,7 +18,7 @@ func UserRegister(
 	phone string,
 	password string,
 ) error {
-	id, err := utils.GenSnowFlakeId()
+	id, err := utils.NextSnowFlakeId()
 	if err != nil {
 		return err
 	}
@@ -30,7 +31,7 @@ func UserRegister(
 	u := query.User
 	user := entity.User{
 		ID:        *id,
-		Avatar:    configs.DefaultAvatarURL,
+		Avatar:    config.Get().DefaultAvatarURL,
 		Salt:      salt,
 		Password:  hashedPassword,
 		Name:      name,
@@ -40,7 +41,7 @@ func UserRegister(
 	_, err = u.WithContext(c).Where(u.Name.Eq(name)).First()
 	if err == nil {
 		return errors.New("name existed")
-	} else if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return err
 	}
 
@@ -62,7 +63,7 @@ func UserLoginWithName(c context.Context, name string, password string) (*int64,
 		return nil, nil, errors.New("can't find user")
 	}
 	isValid := utils.VerifyPassword([]byte(user.Password), []byte(user.Salt), password)
-	if isValid == false {
+	if !isValid {
 		return nil, nil, errors.New("wrong password")
 	}
 	token := utils.GenerateToken(user.ID, user.Authority)
@@ -81,7 +82,7 @@ func UserLoginWithPhone(c context.Context, phone string, password string) (*int6
 		return nil, nil, errors.New("no phone record")
 	}
 	isValid := utils.VerifyPassword([]byte(user.Password), []byte(user.Salt), password)
-	if isValid == false {
+	if !isValid {
 		return nil, nil, errors.New("wrong password")
 	}
 	token := utils.GenerateToken(user.ID, user.Authority)

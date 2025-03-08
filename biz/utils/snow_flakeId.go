@@ -1,12 +1,12 @@
 package utils
 
 import (
-	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/configs"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/config"
 	"github.com/bwmarrin/snowflake"
 )
 
-func GenSnowFlakeId() (*int64, error) {
-	newNode, err := snowflake.NewNode(configs.SnowFlakeNode)
+func NextSnowFlakeId() (*int64, error) {
+	newNode, err := snowflake.NewNode(config.Get().SnowflakeNode)
 	if err != nil {
 		return nil, err
 	}

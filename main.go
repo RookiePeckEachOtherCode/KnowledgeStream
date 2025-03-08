@@ -3,11 +3,17 @@
 package main
 
 import (
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/initialize"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/utils"
 	"github.com/cloudwego/hertz/pkg/app/server"
 )
 
 func main() {
+	initialize.InitDB()
+
+	redis := initialize.InitRedis()
+	utils.RedisUtils.R = redis
+
 	utils.LogoPrint()
 	h := server.Default()
 

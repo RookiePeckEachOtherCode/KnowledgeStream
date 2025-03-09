@@ -1,4 +1,4 @@
-import { Api } from "./internal /api";
+import { Api } from "./internal/api";
 
 export const BASE_URL =
   process.env.NEXT_PUBLIC_BASE_API ?? "http://localhost:8888";

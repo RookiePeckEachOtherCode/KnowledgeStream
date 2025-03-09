@@ -98,3 +98,24 @@ func GetUserInfoWithId(c context.Context, id int64) (*entity.User, error) {
 	}
 	return user, err
 }
+
+func UpdateUserInfoWithId(c context.Context, id int64, name string, password string, avatar string, phone string) error {
+	u := query.User
+	user, err := u.WithContext(c).Where(u.ID.Eq(id)).First()
+	if err != nil {
+		return err
+	}
+	salt, err := utils.GenerateSalt(16)
+	if err != nil {
+		return err
+	}
+	hashedPassword := utils.HashPassword(password, salt)
+	user.Name = name
+	user.Password = hashedPassword
+	user.Avatar = avatar
+	user.Phone = phone
+	if err := u.WithContext(c).Save(user).Error; err != nil {
+		return fmt.Errorf("save error falied: %w", err)
+	}
+	return nil
+}

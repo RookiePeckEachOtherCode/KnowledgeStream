@@ -126,3 +126,42 @@ func UserInfo(ctx context.Context, c *app.RequestContext) {
 
 	c.JSON(consts.StatusOK, resp)
 }
+
+// UserInfoUpdate .
+// @router /user/updateinfo [GET]
+func UserInfoUpdate(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req user.UserInfoUpdateReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(user.UserInfoUpdateResp)
+	resp.Base = new(user.BaseResponse)
+	resp.Base.Msg = "修改信息成功"
+	resp.Base.Code = http.StatusOK
+
+	Uid, exists := c.Get("uid")
+	if !exists {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "未获取到权限信息"
+		c.JSON(http.StatusUnauthorized, resp)
+		return
+	}
+	_, exists = c.Get("authority")
+	if !exists {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "未获取到完整权限信息"
+		c.JSON(http.StatusUnauthorized, resp)
+		return
+	}
+	uid := Uid.(int64)
+	err = service.UpdateUserInfoWithId(ctx, uid, req.Name, req.Password, req.Avatar, req.Phone)
+	if err != nil {
+		resp.Base.Code = http.StatusBadRequest
+		resp.Base.Msg = err.Error()
+	}
+	c.JSON(consts.StatusOK, resp)
+}

@@ -32,3 +32,9 @@ func _userinfoMw() []app.HandlerFunc {
 		middleware.VerifyToken(),
 	}
 }
+
+func _userinfoupdateMw() []app.HandlerFunc {
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
+}

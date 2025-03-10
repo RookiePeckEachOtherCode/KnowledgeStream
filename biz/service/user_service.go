@@ -9,9 +9,33 @@ import (
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/utils"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/config"
 	"gorm.io/gorm"
+	"sync"
 )
 
-func UserRegister(
+var (
+	userServiceOnce sync.Once
+	userService     *UserService
+)
+
+func UserServ() *UserService {
+	userServiceOnce.Do(func() {
+		/**
+		* 依赖注入位置
+		* eg.
+		* userService = &UserService{
+			userRepo: UserRepo,
+			otherService: OtherService,
+		}
+		**/
+		userService = &UserService{}
+	})
+	return userService
+}
+
+type UserService struct {
+}
+
+func (s *UserService) UserRegister(
 	c context.Context,
 	name string,
 	phone string,
@@ -51,7 +75,7 @@ func UserRegister(
 	return nil
 }
 
-func UserLoginWithName(c context.Context, name string, password string) (*int64, *string, error) {
+func (s *UserService) UserLoginWithName(c context.Context, name string, password string) (*int64, *string, error) {
 
 	u := query.User
 	user, err := u.WithContext(c).Where(u.Name.Eq(name)).First()
@@ -70,7 +94,7 @@ func UserLoginWithName(c context.Context, name string, password string) (*int64,
 
 }
 
-func UserLoginWithPhone(c context.Context, phone string, password string) (*int64, *string, error) {
+func (s *UserService) UserLoginWithPhone(c context.Context, phone string, password string) (*int64, *string, error) {
 
 	u := query.User
 	user, err := u.WithContext(c).Where(u.Phone.Eq(phone)).First()
@@ -89,7 +113,7 @@ func UserLoginWithPhone(c context.Context, phone string, password string) (*int6
 
 }
 
-func GetUserInfoWithId(c context.Context, id int64) (*entity.User, error) {
+func (s *UserService) GetUserInfoWithId(c context.Context, id int64) (*entity.User, error) {
 	u := query.User
 	user, err := u.WithContext(c).Where(u.ID.Eq(id)).First()
 	if err != nil {
@@ -98,7 +122,7 @@ func GetUserInfoWithId(c context.Context, id int64) (*entity.User, error) {
 	return user, err
 }
 
-func UpdateUserInfoWithId(c context.Context, id int64, name string, password string, avatar string, phone string) error {
+func (s *UserService) UpdateUserInfoWithId(c context.Context, id int64, name string, password string, avatar string, phone string) error {
 	u := query.User
 	user, err := u.WithContext(c).Where(u.ID.Eq(id)).First()
 	if err != nil {
@@ -124,7 +148,7 @@ func UpdateUserInfoWithId(c context.Context, id int64, name string, password str
 }
 
 // ------------------------------------------Techer
-func CreateCourseWithId(c context.Context, id int64, title string, description string, cover string) error {
+func (s *UserService) CreateCourseWithId(c context.Context, id int64, title string, description string, cover string) error {
 	cid, err := utils.NextSnowFlakeId()
 	if err != nil {
 		return err
@@ -142,7 +166,7 @@ func CreateCourseWithId(c context.Context, id int64, title string, description s
 	}
 	return nil
 }
-func DeleteCourseWithCid(c context.Context, cid int64) error {
+func (s *UserService) DeleteCourseWithCid(c context.Context, cid int64) error {
 	cc := query.Course
 	course, err := cc.WithContext(c).Where(cc.ID.Eq(cid)).First()
 	if err != nil {
@@ -153,7 +177,7 @@ func DeleteCourseWithCid(c context.Context, cid int64) error {
 	}
 	return nil
 }
-func UpdateCourseWithCid(c context.Context, cid int64, title string, description string, cover string) error {
+func (s *UserService) UpdateCourseWithCid(c context.Context, cid int64, title string, description string, cover string) error {
 	cc := query.Course
 	course, err := cc.WithContext(c).Where(cc.ID.Eq(cid)).First()
 	if err != nil {
@@ -173,7 +197,7 @@ func UpdateCourseWithCid(c context.Context, cid int64, title string, description
 	}
 	return nil
 }
-func InviteStudentWithCidAndSid(c context.Context, cid int64, sid int64) error {
+func (s *UserService) InviteStudentWithCidAndSid(c context.Context, cid int64, sid int64) error {
 	uc := query.UserInCourse
 	uinc, err := uc.WithContext(c).Where(uc.UserID.Eq(sid), uc.CourseID.Eq(cid)).First()
 	if err != nil {
@@ -191,10 +215,10 @@ func InviteStudentWithCidAndSid(c context.Context, cid int64, sid int64) error {
 	}
 	return nil
 }
-func UploadVideoWithCidAndUid(c context.Context, uid int64, cid int64, source string, title string, description string, cover string, length int) error {
+func (s *UserService) UploadVideoWithCidAndUid(c context.Context, uid int64, cid int64, source string, title string, description string, cover string, length int) error {
 
 	return nil
 }
-func OperateMemberWithCidAndUid(c context.Context, cid int64, uid int64) error {
+func (s *UserService) OperateMemberWithCidAndUid(c context.Context, cid int64, uid int64) error {
 	return nil
 }

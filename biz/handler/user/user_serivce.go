@@ -35,9 +35,9 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 	var token = new(string)
 
 	if req.Name != "" {
-		uid, token, err = service.UserLoginWithName(ctx, req.Name, req.Password)
+		uid, token, err = service.UserServ().UserLoginWithName(ctx, req.Name, req.Password)
 	} else {
-		uid, token, err = service.UserLoginWithPhone(ctx, req.Phone, req.Password)
+		uid, token, err = service.UserServ().UserLoginWithPhone(ctx, req.Phone, req.Password)
 	}
 
 	if err != nil {
@@ -64,7 +64,7 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 
 	resp := new(user.UserRegisterResp)
 	resp.Base = new(user.BaseResponse)
-	err = service.UserRegister(ctx, req.Name, req.Phone, req.Password)
+	err = service.UserServ().UserRegister(ctx, req.Name, req.Phone, req.Password)
 	if err != nil {
 		resp.Base.Msg = err.Error()
 		resp.Base.Code = http.StatusBadRequest
@@ -107,7 +107,7 @@ func UserInfo(ctx context.Context, c *app.RequestContext) {
 	}
 	uid := Uid.(int64)
 	authority := Authority.(entity.AuthorityEnum)
-	dbuser, err := service.GetUserInfoWithId(ctx, uid)
+	dbuser, err := service.UserServ().GetUserInfoWithId(ctx, uid)
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
@@ -152,7 +152,7 @@ func UserInfoUpdate(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	uid := Uid.(int64)
-	err = service.UpdateUserInfoWithId(ctx, uid, req.Name, req.Password, req.Avatar, req.Phone)
+	err = service.UserServ().UpdateUserInfoWithId(ctx, uid, req.Name, req.Password, req.Avatar, req.Phone)
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
@@ -191,7 +191,7 @@ func CreateCourse(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	uid := Uid.(int64)
-	err = service.CreateCourseWithId(ctx, uid, req.Title, req.Description, req.Cover)
+	err = service.UserServ().CreateCourseWithId(ctx, uid, req.Title, req.Description, req.Cover)
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
@@ -234,7 +234,7 @@ func DeleteCourse(ctx context.Context, c *app.RequestContext) {
 		resp.Base.Msg = "课程域编号格式转换失败"
 		c.JSON(http.StatusUnauthorized, resp)
 	}
-	err = service.DeleteCourseWithCid(ctx, cid)
+	err = service.UserServ().DeleteCourseWithCid(ctx, cid)
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
@@ -277,7 +277,7 @@ func UpdateCourse(ctx context.Context, c *app.RequestContext) {
 		resp.Base.Msg = "课程域编号格式转换失败"
 		c.JSON(http.StatusUnauthorized, resp)
 	}
-	err = service.UpdateCourseWithCid(ctx, cid, req.Title, req.Description, req.Cover)
+	err = service.UserServ().UpdateCourseWithCid(ctx, cid, req.Title, req.Description, req.Cover)
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
@@ -326,7 +326,7 @@ func InviteStudent(ctx context.Context, c *app.RequestContext) {
 		resp.Base.Msg = "学生编号格式转换失败"
 		c.JSON(http.StatusUnauthorized, resp)
 	}
-	err = service.InviteStudentWithCidAndSid(ctx, cid, sid)
+	err = service.UserServ().InviteStudentWithCidAndSid(ctx, cid, sid)
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()

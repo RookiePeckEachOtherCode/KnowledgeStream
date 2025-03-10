@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync"
 
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/entity"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/query"
@@ -12,7 +13,30 @@ import (
 	"gorm.io/gorm"
 )
 
-func UserRegister(
+var (
+	userServiceOnce sync.Once
+	userService     *UserService
+)
+
+func UserServ() *UserService {
+	userServiceOnce.Do(func() {
+		/**
+		* 依赖注入位置
+		* eg.
+		* userService = &UserService{
+			userRepo: UserRepo,
+			otherService: OtherService,
+		}
+		**/
+		userService = &UserService{}
+	})
+	return userService
+}
+
+type UserService struct {
+}
+
+func (s *UserService) UserRegister(
 	c context.Context,
 	name string,
 	phone string,
@@ -52,7 +76,7 @@ func UserRegister(
 	return nil
 }
 
-func UserLoginWithName(c context.Context, name string, password string) (*int64, *string, error) {
+func (s *UserService) UserLoginWithName(c context.Context, name string, password string) (*int64, *string, error) {
 
 	u := query.User
 	user, err := u.WithContext(c).Where(u.Name.Eq(name)).First()
@@ -71,7 +95,7 @@ func UserLoginWithName(c context.Context, name string, password string) (*int64,
 
 }
 
-func UserLoginWithPhone(c context.Context, phone string, password string) (*int64, *string, error) {
+func (s *UserService) UserLoginWithPhone(c context.Context, phone string, password string) (*int64, *string, error) {
 
 	u := query.User
 	user, err := u.WithContext(c).Where(u.Phone.Eq(phone)).First()
@@ -90,7 +114,7 @@ func UserLoginWithPhone(c context.Context, phone string, password string) (*int6
 
 }
 
-func GetUserInfoWithId(c context.Context, id int64) (*entity.User, error) {
+func (s *UserService) GetUserInfoWithId(c context.Context, id int64) (*entity.User, error) {
 	u := query.User
 	user, err := u.WithContext(c).Where(u.ID.Eq(id)).First()
 	if err != nil {
@@ -99,7 +123,7 @@ func GetUserInfoWithId(c context.Context, id int64) (*entity.User, error) {
 	return user, err
 }
 
-func UpdateUserInfoWithId(c context.Context, id int64, name string, password string, avatar string, phone string) error {
+func (s *UserService) UpdateUserInfoWithId(c context.Context, id int64, name string, password string, avatar string, phone string) error {
 	u := query.User
 	user, err := u.WithContext(c).Where(u.ID.Eq(id)).First()
 	if err != nil {
@@ -114,7 +138,7 @@ func UpdateUserInfoWithId(c context.Context, id int64, name string, password str
 	user.Password = hashedPassword
 	user.Avatar = avatar
 	user.Phone = phone
-	if err := u.WithContext(c).Save(user).Error; err != nil {
+	if err := u.WithContext(c).Save(user); err != nil {
 		return fmt.Errorf("save error falied: %w", err)
 	}
 	return nil

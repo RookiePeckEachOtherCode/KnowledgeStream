@@ -1,4 +1,4 @@
-package initialize
+package redis
 
 import (
 	"context"
@@ -13,9 +13,13 @@ type RedisClient struct {
 	R *redis.Client
 }
 
-func InitRedis() *redis.Client {
+var Client *RedisClient
+
+func InitRedis() {
 	rdb := redis.NewClient(config.Get().RedisOption())
-	return rdb
+	Client = &RedisClient{
+		R: rdb,
+	}
 }
 func (r RedisClient) SetValue(ctx context.Context, key string, data any) {
 	marshal, err := json.Marshal(data)

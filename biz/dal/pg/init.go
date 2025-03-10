@@ -1,22 +1,24 @@
-package initialize
+package pg
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/entity"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/query"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/config"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"gorm.io/driver/postgres"
 	"gorm.io/gen"
 	"gorm.io/gorm"
 )
 
-func InitDB() *gorm.DB {
+var DB *gorm.DB
+
+func InitDB() {
 	outDir := "biz/dal/pg/query"
 	if err := os.MkdirAll(outDir, os.ModePerm); err != nil {
-		log.Fatal("无法创建目录:", err)
+		hlog.Fatal("无法创建目录:", err)
 	}
 
 	generator := gen.NewGenerator(gen.Config{
@@ -28,7 +30,7 @@ func InitDB() *gorm.DB {
 
 	db, err := gorm.Open(postgres.Open(config.Get().DBConnectURL()), &gorm.Config{})
 	if err != nil {
-		log.Fatal("failed to connect database:", err)
+		hlog.Fatal("failed to connect database:", err)
 	}
 
 	generator.UseDB(db)
@@ -45,8 +47,8 @@ func InitDB() *gorm.DB {
 	query.SetDefault(db)
 
 	if query.User == nil {
-		log.Fatal("query.User is nil")
+		hlog.Fatal("query.User is nil")
 	}
 
-	return db
+	DB = db
 }

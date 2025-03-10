@@ -21,13 +21,13 @@ var (
 func UserServ() *UserService {
 	userServiceOnce.Do(func() {
 		/**
-		  * 依赖注入位置
-		  * eg.
-		  * userService = &UserService{
-		  	userRepo: UserRepo,
-		  	otherService: OtherService,
-		  }
-		  **/
+		* 依赖注入位置
+		* eg.
+		* userService = &UserService{
+		  userRepo: UserRepo,
+		  otherService: OtherService,
+		}
+		**/
 		userService = &UserService{}
 	})
 	return userService

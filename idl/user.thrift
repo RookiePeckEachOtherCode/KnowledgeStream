@@ -14,7 +14,6 @@ struct userRegisterReq{
     1: string name(api.body="name")
     2: string password(api.body="password")
     3: string phone(api.body="phone")
-
 }
 struct userRegisterResp{
     1: common.BaseResponse base;

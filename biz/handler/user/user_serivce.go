@@ -4,6 +4,7 @@ package user
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -64,7 +65,6 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(user.UserRegisterResp)
-
 	if len(req.Name) == 0 || len(req.Phone) == 0 || len(req.Password) == 0 {
 		resp.Base = srverror.WrapWithCodeMsg(http.StatusBadRequest, "用户名、手机号或者密码不能为空")
 		c.JSON(consts.StatusOK, resp)

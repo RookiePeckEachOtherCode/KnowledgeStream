@@ -668,7 +668,6 @@ func (p *UserLoginReq) ReadField1(iprot thrift.TProtocol) error {
 	return nil
 }
 func (p *UserLoginReq) ReadField2(iprot thrift.TProtocol) error {
-
 	var _field string
 	if v, err := iprot.ReadString(); err != nil {
 		return err
@@ -878,7 +877,7 @@ ReadStructEndError:
 }
 
 func (p *UserLoginResp) ReadField1(iprot thrift.TProtocol) error {
-	_field := base.NewBaseResponse()
+  _field := base.NewBaseResponse()
 	if err := _field.Read(iprot); err != nil {
 		return err
 	}
@@ -6556,7 +6555,6 @@ func (p *UserSerivceUpdateCourseArgs) IsSetReq() bool {
 }
 
 func (p *UserSerivceUpdateCourseArgs) Read(iprot thrift.TProtocol) (err error) {
-
 	var fieldTypeId thrift.TType
 	var fieldId int16
 
@@ -6579,17 +6577,14 @@ func (p *UserSerivceUpdateCourseArgs) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
-			} else {
-				if err = iprot.Skip(fieldTypeId); err != nil {
-					goto SkipFieldError
-				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
 			}
 		default:
 			if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
 		}
-
 		if err = iprot.ReadFieldEnd(); err != nil {
 			goto ReadFieldEndError
 		}
@@ -6619,6 +6614,7 @@ func (p *UserSerivceUpdateCourseArgs) ReadField1(iprot thrift.TProtocol) error {
 	if err := p.Req.Read(iprot); err != nil {
 		return err
 	}
+	p.Req = _field
 	return nil
 }
 
@@ -6632,7 +6628,6 @@ func (p *UserSerivceUpdateCourseArgs) Write(oprot thrift.TProtocol) (err error) 
 			fieldId = 1
 			goto WriteFieldError
 		}
-
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
 		goto WriteFieldStopError
@@ -6685,6 +6680,7 @@ func NewUserSerivceUpdateCourseResult() *UserSerivceUpdateCourseResult {
 
 var UserSerivceUpdateCourseResult_Success_DEFAULT *UpdateCourseResp
 
+
 func (p *UserSerivceUpdateCourseResult) GetSuccess() (v *UpdateCourseResp) {
 	if !p.IsSetSuccess() {
 		return UserSerivceUpdateCourseResult_Success_DEFAULT
@@ -6700,7 +6696,9 @@ func (p *UserSerivceUpdateCourseResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
+
 func (p *UserSerivceUpdateCourseResult) Read(iprot thrift.TProtocol) (err error) {
+
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -6724,17 +6722,14 @@ func (p *UserSerivceUpdateCourseResult) Read(iprot thrift.TProtocol) (err error)
 				if err = p.ReadField0(iprot); err != nil {
 					goto ReadFieldError
 				}
-			} else {
-				if err = iprot.Skip(fieldTypeId); err != nil {
-					goto SkipFieldError
-				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
 			}
 		default:
 			if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
 		}
-
 		if err = iprot.ReadFieldEnd(); err != nil {
 			goto ReadFieldEndError
 		}
@@ -6759,11 +6754,14 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
+
 func (p *UserSerivceUpdateCourseResult) ReadField0(iprot thrift.TProtocol) error {
 	p.Success = NewUpdateCourseResp()
 	if err := p.Success.Read(iprot); err != nil {
+
 		return err
 	}
+	p.Success = _field
 	return nil
 }
 
@@ -6777,7 +6775,6 @@ func (p *UserSerivceUpdateCourseResult) Write(oprot thrift.TProtocol) (err error
 			fieldId = 0
 			goto WriteFieldError
 		}
-
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
 		goto WriteFieldStopError
@@ -6819,7 +6816,9 @@ func (p *UserSerivceUpdateCourseResult) String() string {
 	if p == nil {
 		return "<nil>"
 	}
+
 	return fmt.Sprintf("UserSerivceUpdateCourseResult(%+v)", *p)
+
 }
 
 type UserSerivceInviteStudentArgs struct {
@@ -6831,6 +6830,7 @@ func NewUserSerivceInviteStudentArgs() *UserSerivceInviteStudentArgs {
 }
 
 var UserSerivceInviteStudentArgs_Req_DEFAULT *InviteStudentReq
+
 
 func (p *UserSerivceInviteStudentArgs) GetReq() (v *InviteStudentReq) {
 	if !p.IsSetReq() {
@@ -6871,17 +6871,14 @@ func (p *UserSerivceInviteStudentArgs) Read(iprot thrift.TProtocol) (err error) 
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
-			} else {
-				if err = iprot.Skip(fieldTypeId); err != nil {
-					goto SkipFieldError
-				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
 			}
 		default:
 			if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
 		}
-
 		if err = iprot.ReadFieldEnd(); err != nil {
 			goto ReadFieldEndError
 		}
@@ -6909,8 +6906,10 @@ ReadStructEndError:
 func (p *UserSerivceInviteStudentArgs) ReadField1(iprot thrift.TProtocol) error {
 	p.Req = NewInviteStudentReq()
 	if err := p.Req.Read(iprot); err != nil {
+
 		return err
 	}
+	p.Req = _field
 	return nil
 }
 
@@ -6924,7 +6923,6 @@ func (p *UserSerivceInviteStudentArgs) Write(oprot thrift.TProtocol) (err error)
 			fieldId = 1
 			goto WriteFieldError
 		}
-
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
 		goto WriteFieldStopError
@@ -6964,7 +6962,9 @@ func (p *UserSerivceInviteStudentArgs) String() string {
 	if p == nil {
 		return "<nil>"
 	}
+
 	return fmt.Sprintf("UserSerivceInviteStudentArgs(%+v)", *p)
+
 }
 
 type UserSerivceInviteStudentResult struct {
@@ -6976,6 +6976,7 @@ func NewUserSerivceInviteStudentResult() *UserSerivceInviteStudentResult {
 }
 
 var UserSerivceInviteStudentResult_Success_DEFAULT *InviteStudentResp
+
 
 func (p *UserSerivceInviteStudentResult) GetSuccess() (v *InviteStudentResp) {
 	if !p.IsSetSuccess() {
@@ -6993,6 +6994,7 @@ func (p *UserSerivceInviteStudentResult) IsSetSuccess() bool {
 }
 
 func (p *UserSerivceInviteStudentResult) Read(iprot thrift.TProtocol) (err error) {
+
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -7016,17 +7018,14 @@ func (p *UserSerivceInviteStudentResult) Read(iprot thrift.TProtocol) (err error
 				if err = p.ReadField0(iprot); err != nil {
 					goto ReadFieldError
 				}
-			} else {
-				if err = iprot.Skip(fieldTypeId); err != nil {
-					goto SkipFieldError
-				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
 			}
 		default:
 			if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
 		}
-
 		if err = iprot.ReadFieldEnd(); err != nil {
 			goto ReadFieldEndError
 		}
@@ -7056,6 +7055,7 @@ func (p *UserSerivceInviteStudentResult) ReadField0(iprot thrift.TProtocol) erro
 	if err := p.Success.Read(iprot); err != nil {
 		return err
 	}
+	p.Success = _field
 	return nil
 }
 
@@ -7069,7 +7069,6 @@ func (p *UserSerivceInviteStudentResult) Write(oprot thrift.TProtocol) (err erro
 			fieldId = 0
 			goto WriteFieldError
 		}
-
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
 		goto WriteFieldStopError
@@ -7122,7 +7121,9 @@ func NewUserSerivceOperateMemberArgs() *UserSerivceOperateMemberArgs {
 	return &UserSerivceOperateMemberArgs{}
 }
 
+
 var UserSerivceOperateMemberArgs_Req_DEFAULT *OperateMemberReq
+
 
 func (p *UserSerivceOperateMemberArgs) GetReq() (v *OperateMemberReq) {
 	if !p.IsSetReq() {
@@ -7163,17 +7164,14 @@ func (p *UserSerivceOperateMemberArgs) Read(iprot thrift.TProtocol) (err error) 
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
-			} else {
-				if err = iprot.Skip(fieldTypeId); err != nil {
-					goto SkipFieldError
-				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
 			}
 		default:
 			if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
 		}
-
 		if err = iprot.ReadFieldEnd(); err != nil {
 			goto ReadFieldEndError
 		}
@@ -7197,12 +7195,12 @@ ReadFieldEndError:
 ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
-
 func (p *UserSerivceOperateMemberArgs) ReadField1(iprot thrift.TProtocol) error {
 	p.Req = NewOperateMemberReq()
 	if err := p.Req.Read(iprot); err != nil {
 		return err
 	}
+	p.Req = _field
 	return nil
 }
 
@@ -7216,7 +7214,6 @@ func (p *UserSerivceOperateMemberArgs) Write(oprot thrift.TProtocol) (err error)
 			fieldId = 1
 			goto WriteFieldError
 		}
-
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
 		goto WriteFieldStopError
@@ -7269,6 +7266,7 @@ func NewUserSerivceOperateMemberResult() *UserSerivceOperateMemberResult {
 
 var UserSerivceOperateMemberResult_Success_DEFAULT *OperateMemberResp
 
+
 func (p *UserSerivceOperateMemberResult) GetSuccess() (v *OperateMemberResp) {
 	if !p.IsSetSuccess() {
 		return UserSerivceOperateMemberResult_Success_DEFAULT
@@ -7284,8 +7282,8 @@ func (p *UserSerivceOperateMemberResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *UserSerivceOperateMemberResult) Read(iprot thrift.TProtocol) (err error) {
 
+func (p *UserSerivceOperateMemberResult) Read(iprot thrift.TProtocol) (err error) {
 	var fieldTypeId thrift.TType
 	var fieldId int16
 
@@ -7308,17 +7306,14 @@ func (p *UserSerivceOperateMemberResult) Read(iprot thrift.TProtocol) (err error
 				if err = p.ReadField0(iprot); err != nil {
 					goto ReadFieldError
 				}
-			} else {
-				if err = iprot.Skip(fieldTypeId); err != nil {
-					goto SkipFieldError
-				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
 			}
 		default:
 			if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
 		}
-
 		if err = iprot.ReadFieldEnd(); err != nil {
 			goto ReadFieldEndError
 		}
@@ -7348,6 +7343,7 @@ func (p *UserSerivceOperateMemberResult) ReadField0(iprot thrift.TProtocol) erro
 	if err := p.Success.Read(iprot); err != nil {
 		return err
 	}
+	p.Success = _field
 	return nil
 }
 
@@ -7361,7 +7357,6 @@ func (p *UserSerivceOperateMemberResult) Write(oprot thrift.TProtocol) (err erro
 			fieldId = 0
 			goto WriteFieldError
 		}
-
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
 		goto WriteFieldStopError
@@ -7403,6 +7398,7 @@ func (p *UserSerivceOperateMemberResult) String() string {
 	if p == nil {
 		return "<nil>"
 	}
+
 	return fmt.Sprintf("UserSerivceOperateMemberResult(%+v)", *p)
 }
 
@@ -7415,6 +7411,7 @@ func NewUserSerivceUploadVideoArgs() *UserSerivceUploadVideoArgs {
 }
 
 var UserSerivceUploadVideoArgs_Req_DEFAULT *UpdateCourseReq
+
 
 func (p *UserSerivceUploadVideoArgs) GetReq() (v *UpdateCourseReq) {
 	if !p.IsSetReq() {
@@ -7432,6 +7429,7 @@ func (p *UserSerivceUploadVideoArgs) IsSetReq() bool {
 }
 
 func (p *UserSerivceUploadVideoArgs) Read(iprot thrift.TProtocol) (err error) {
+
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -7455,17 +7453,14 @@ func (p *UserSerivceUploadVideoArgs) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
-			} else {
-				if err = iprot.Skip(fieldTypeId); err != nil {
-					goto SkipFieldError
-				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
 			}
 		default:
 			if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
 		}
-
 		if err = iprot.ReadFieldEnd(); err != nil {
 			goto ReadFieldEndError
 		}
@@ -7495,6 +7490,7 @@ func (p *UserSerivceUploadVideoArgs) ReadField1(iprot thrift.TProtocol) error {
 	if err := p.Req.Read(iprot); err != nil {
 		return err
 	}
+	p.Req = _field
 	return nil
 }
 
@@ -7508,7 +7504,6 @@ func (p *UserSerivceUploadVideoArgs) Write(oprot thrift.TProtocol) (err error) {
 			fieldId = 1
 			goto WriteFieldError
 		}
-
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
 		goto WriteFieldStopError
@@ -7559,7 +7554,9 @@ func NewUserSerivceUploadVideoResult() *UserSerivceUploadVideoResult {
 	return &UserSerivceUploadVideoResult{}
 }
 
+
 var UserSerivceUploadVideoResult_Success_DEFAULT *UploadVideoResp
+
 
 func (p *UserSerivceUploadVideoResult) GetSuccess() (v *UploadVideoResp) {
 	if !p.IsSetSuccess() {
@@ -7575,6 +7572,7 @@ var fieldIDToName_UserSerivceUploadVideoResult = map[int16]string{
 func (p *UserSerivceUploadVideoResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
+
 
 func (p *UserSerivceUploadVideoResult) Read(iprot thrift.TProtocol) (err error) {
 
@@ -7600,17 +7598,14 @@ func (p *UserSerivceUploadVideoResult) Read(iprot thrift.TProtocol) (err error) 
 				if err = p.ReadField0(iprot); err != nil {
 					goto ReadFieldError
 				}
-			} else {
-				if err = iprot.Skip(fieldTypeId); err != nil {
-					goto SkipFieldError
-				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
 			}
 		default:
 			if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
 		}
-
 		if err = iprot.ReadFieldEnd(); err != nil {
 			goto ReadFieldEndError
 		}
@@ -7640,6 +7635,7 @@ func (p *UserSerivceUploadVideoResult) ReadField0(iprot thrift.TProtocol) error 
 	if err := p.Success.Read(iprot); err != nil {
 		return err
 	}
+	p.Success = _field
 	return nil
 }
 
@@ -7653,7 +7649,6 @@ func (p *UserSerivceUploadVideoResult) Write(oprot thrift.TProtocol) (err error)
 			fieldId = 0
 			goto WriteFieldError
 		}
-
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
 		goto WriteFieldStopError

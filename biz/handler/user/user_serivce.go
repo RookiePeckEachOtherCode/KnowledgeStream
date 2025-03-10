@@ -4,10 +4,11 @@ package user
 
 import (
 	"context"
-	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/entity"
-	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/service"
 	"net/http"
 	"strconv"
+
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/entity"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/service"
 
 	user "github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/user"
 	"github.com/cloudwego/hertz/pkg/app"
@@ -30,17 +31,13 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 	resp.Base.Msg = "登录成功"
 	resp.Base.Code = http.StatusOK
 
-	name := c.Query("name")
-	password := c.Query("password")
-	phone := c.Query("phone")
-
 	var uid = new(int64)
 	var token = new(string)
 
-	if name != "" {
-		uid, token, err = service.UserLoginWithName(ctx, name, password)
+	if req.Name != "" {
+		uid, token, err = service.UserService().UserLoginWithName(ctx, req.Name, req.Password)
 	} else {
-		uid, token, err = service.UserLoginWithPhone(ctx, phone, password)
+		uid, token, err = service.UserService().UserLoginWithPhone(ctx, req.Phone, req.Password)
 	}
 
 	if err != nil {
@@ -67,10 +64,7 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 
 	resp := new(user.UserRegisterResp)
 	resp.Base = new(user.BaseResponse)
-	name := c.Query("name")
-	phone := c.Query("phone")
-	password := c.Query("password")
-	err = service.UserRegister(ctx, name, phone, password)
+	err = service.UserService().UserRegister(ctx, req.Name, req.Phone, req.Password)
 	if err != nil {
 		resp.Base.Msg = err.Error()
 		resp.Base.Code = http.StatusBadRequest
@@ -113,7 +107,7 @@ func UserInfo(ctx context.Context, c *app.RequestContext) {
 	}
 	uid := Uid.(int64)
 	authority := Authority.(entity.AuthorityEnum)
-	dbuser, err := service.GetUserInfoWithId(ctx, uid)
+	dbuser, err := service.UserService().GetUserInfoWithId(ctx, uid)
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
@@ -158,7 +152,7 @@ func UserInfoUpdate(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	uid := Uid.(int64)
-	err = service.UpdateUserInfoWithId(ctx, uid, req.Name, req.Password, req.Avatar, req.Phone)
+	err = service.UserService().UpdateUserInfoWithId(ctx, uid, req.Name, req.Password, req.Avatar, req.Phone)
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()

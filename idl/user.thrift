@@ -9,9 +9,9 @@ struct BaseResponse {
 //------------------------------------------Common
 
 struct userRegisterReq{
-    1:string name(api.query="name")
-    2:string password(api.query="password")
-    3:string phone(api.query="phone")
+    1:string name(api.query="name",api.auth="$!=''")
+    2:string password(api.query="password",api.auth="$!=''")
+    3:string phone(api.query="phone",api.auth="$!=''")
 
 }
 struct userRegisterResp{

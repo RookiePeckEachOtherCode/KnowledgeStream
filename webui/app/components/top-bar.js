@@ -4,9 +4,9 @@ export function TopBar(props) {
 
   return (
     <div
-      className={`w-full flex flex-row h-1/12 items-center pl-8 pr-8 justify-between transition-all bg-surface-container-high text-on-surface`}
+      className={`w-full flex flex-row h-1/10   items-center pl-8 pr-8  justify-between transition-all bg-surface-container-high text-on-surface`}
     >
-      <div className={`text-3xl`}>KnowledgeStram</div>
+      <div className={`text-3xl`}>KnowledgeStream</div>
       <img
         className={`h-3/4 aspect-square rounded-full`}
         src={tepSrc}
@@ -15,3 +15,4 @@ export function TopBar(props) {
     </div>
   );
 }
+ 

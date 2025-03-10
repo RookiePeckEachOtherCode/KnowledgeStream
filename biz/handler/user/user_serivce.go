@@ -4,6 +4,7 @@ package user
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -64,6 +65,13 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 
 	resp := new(user.UserRegisterResp)
 	resp.Base = new(user.BaseResponse)
+	if req.Name == "" || req.Phone == "" || req.Password == "" {
+		resp.Base.Msg = errors.New("请求字段中含有空参").Error()
+		resp.Base.Code = http.StatusBadRequest
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+
 	err = service.UserServ().UserRegister(ctx, req.Name, req.Phone, req.Password)
 	if err != nil {
 		resp.Base.Msg = err.Error()

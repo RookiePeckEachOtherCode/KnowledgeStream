@@ -8,8 +8,8 @@ export const api = new Api(async ({ uri, method, headers, body }) => {
     method,
     body: body !== undefined ? JSON.stringify(body) : undefined,
     headers: {
-      "content-type": "application/json;charset=UTF-8",
-      jinyum: localStorage.getItem("token") ?? "",
+      "content-type": "application/json;charset=UTF-8", 
+      Authorization: localStorage.getItem("token") ?? "",
       ...headers,
     },
   });

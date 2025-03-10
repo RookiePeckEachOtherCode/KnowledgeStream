@@ -159,3 +159,209 @@ func UserInfoUpdate(ctx context.Context, c *app.RequestContext) {
 	}
 	c.JSON(consts.StatusOK, resp)
 }
+
+// ------------------------------------------Techer
+// CreateCourse .
+// @router /user/teacher/createcourse [POST]
+func CreateCourse(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req user.CreateCourseReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(user.CreateCourseResp)
+	resp.Base = new(user.BaseResponse)
+	resp.Base.Msg = "创建课程域成功"
+	resp.Base.Code = http.StatusOK
+	Uid, exists := c.Get("uid")
+	if !exists {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "未获取到权限信息"
+		c.JSON(http.StatusUnauthorized, resp)
+		return
+	}
+	_, exists = c.Get("authority")
+	if !exists {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "未获取到完整权限信息"
+		c.JSON(http.StatusUnauthorized, resp)
+		return
+	}
+	uid := Uid.(int64)
+	err = service.UserServ().CreateCourseWithId(ctx, uid, req.Title, req.Description, req.Cover)
+	if err != nil {
+		resp.Base.Code = http.StatusBadRequest
+		resp.Base.Msg = err.Error()
+	}
+	c.JSON(consts.StatusOK, resp)
+}
+
+// DeleteCourse .
+// @router /user/teacher/deletecourse [POST]
+func DeleteCourse(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req user.DeleteCourseReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(user.DeleteCourseResp)
+	resp.Base = new(user.BaseResponse)
+	resp.Base.Msg = "删除课程域成功"
+	resp.Base.Code = http.StatusOK
+	_, exists := c.Get("uid")
+	if !exists {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "未获取到权限信息"
+		c.JSON(http.StatusUnauthorized, resp)
+		return
+	}
+	_, exists = c.Get("authority")
+	if !exists {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "未获取到完整权限信息"
+		c.JSON(http.StatusUnauthorized, resp)
+		return
+	}
+	cid, err := strconv.ParseInt(req.Cid, 10, 64)
+	if err != nil {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "课程域编号格式转换失败"
+		c.JSON(http.StatusUnauthorized, resp)
+	}
+	err = service.UserServ().DeleteCourseWithCid(ctx, cid)
+	if err != nil {
+		resp.Base.Code = http.StatusBadRequest
+		resp.Base.Msg = err.Error()
+	}
+	c.JSON(consts.StatusOK, resp)
+}
+
+// UpdateCourse .
+// @router /user/teacher/update/course [POST]
+func UpdateCourse(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req user.UpdateCourseReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(user.UpdateCourseResp)
+	resp.Base = new(user.BaseResponse)
+	resp.Base.Msg = "更新课程域成功"
+	resp.Base.Code = http.StatusOK
+	_, exists := c.Get("uid")
+	if !exists {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "未获取到权限信息"
+		c.JSON(http.StatusUnauthorized, resp)
+		return
+	}
+	_, exists = c.Get("authority")
+	if !exists {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "未获取到完整权限信息"
+		c.JSON(http.StatusUnauthorized, resp)
+		return
+	}
+	cid, err := strconv.ParseInt(req.Cid, 10, 64)
+	if err != nil {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "课程域编号格式转换失败"
+		c.JSON(http.StatusUnauthorized, resp)
+	}
+	err = service.UserServ().UpdateCourseWithCid(ctx, cid, req.Title, req.Description, req.Cover)
+	if err != nil {
+		resp.Base.Code = http.StatusBadRequest
+		resp.Base.Msg = err.Error()
+	}
+	c.JSON(consts.StatusOK, resp)
+}
+
+// InviteStudent .
+// @router /user/teacher/invite [POST]
+func InviteStudent(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req user.InviteStudentReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(user.InviteStudentResp)
+	resp.Base = new(user.BaseResponse)
+	resp.Base.Msg = "邀请成功"
+	resp.Base.Code = http.StatusOK
+	_, exists := c.Get("uid")
+	if !exists {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "未获取到权限信息"
+		c.JSON(http.StatusUnauthorized, resp)
+		return
+	}
+	_, exists = c.Get("authority")
+	if !exists {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "未获取到完整权限信息"
+		c.JSON(http.StatusUnauthorized, resp)
+		return
+	}
+	cid, err := strconv.ParseInt(req.Cid, 10, 64)
+	if err != nil {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "课程域编号格式转换失败"
+		c.JSON(http.StatusUnauthorized, resp)
+	}
+	sid, err := strconv.ParseInt(req.Sid, 10, 64)
+	if err != nil {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "学生编号格式转换失败"
+		c.JSON(http.StatusUnauthorized, resp)
+	}
+	err = service.UserServ().InviteStudentWithCidAndSid(ctx, cid, sid)
+	if err != nil {
+		resp.Base.Code = http.StatusBadRequest
+		resp.Base.Msg = err.Error()
+	}
+	c.JSON(consts.StatusOK, resp)
+}
+
+// OperateMember .
+// @router /user/teacher/update/course/member [POST]
+func OperateMember(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req user.OperateMemberReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(user.OperateMemberResp)
+
+	c.JSON(consts.StatusOK, resp)
+}
+
+// UploadVideo .
+// @router /user/teacher/uploadvideo [POST]
+func UploadVideo(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req user.UpdateCourseReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(user.UploadVideoResp)
+
+	c.JSON(consts.StatusOK, resp)
+}

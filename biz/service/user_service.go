@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/entity"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/query"
@@ -105,16 +106,13 @@ func UpdateUserInfoWithId(c context.Context, id int64, name string, password str
 	if err != nil {
 		return err
 	}
-	salt, err := utils.GenerateSalt(16)
-	if err != nil {
-		return err
-	}
-	hashedPassword := utils.HashPassword(password, salt)
+	hashedPassword := utils.HashPassword(password, user.Salt)
+	log.Println(password)
 	user.Name = name
 	user.Password = hashedPassword
 	user.Avatar = avatar
 	user.Phone = phone
-	if err := u.WithContext(c).Save(user).Error; err != nil {
+	if err := u.WithContext(c).Save(user); err != nil {
 		return fmt.Errorf("save error falied: %w", err)
 	}
 	return nil

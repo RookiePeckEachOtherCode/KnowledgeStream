@@ -64,3 +64,13 @@ func _courseMw() []app.HandlerFunc {
 func _updatecourseMw() []app.HandlerFunc { return nil }
 
 func _operatememberMw() []app.HandlerFunc { return nil }
+
+func _selectmycoursesMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _uploadvideosMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

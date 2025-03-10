@@ -91,15 +91,22 @@ struct OperateMemberReq{
 struct OperateMemberResp{
     1:BaseResponse base;
 }
-struct UploadVideoReq{//上传视频
+struct UploadVideosReq{//上传视频
     1:string source(api.query="source");
     2:string title(api.query="title");
     3:string description(api.query="description");
     4:string cover(api.query="cover");
     5:string cid(api.query="cid");
 }
-struct UploadVideoResp{
+struct UploadVideosResp{
     1:BaseResponse base;
+}
+struct SelectMyCoursesReq{
+
+}
+struct SelectMyCoursesResp{
+    1:BaseResponse base;
+    2:list<string> Courses;
 }
 service UserSerivce{
     userLoginResp UserLogin(1:userLoginReq req)(api.post="/user/login");
@@ -112,6 +119,7 @@ service UserSerivce{
     UpdateCourseResp UpdateCourse(1:UpdateCourseReq req)(api.post="/user/teacher/update/course")
     InviteStudentResp InviteStudent(1:InviteStudentReq req)(api.post="/user/teacher/invite")
     OperateMemberResp OperateMember(1:OperateMemberReq req)(api.post="/user/teacher/update/course/member")
-    UploadVideoResp UploadVideo(1:UpdateCourseReq req)(api.post="/user/teacher/uploadvideo")
+    UploadVideosResp UploadVideos(1:UploadVideosReq req)(api.post="/user/teacher/uploadvideo")
+    SelectMyCoursesResp SelectMyCourses(1:SelectMyCoursesReq req)(api.get="/user/teacher/mycourse")
     //------------------------------------------Student
 }

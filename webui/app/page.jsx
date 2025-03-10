@@ -19,7 +19,6 @@ import { useCallback, useEffect, useState } from "react";
 import { CourseDetail } from "./pageview/course-detail";
 import { UserHome } from "./pageview/user-home";
 import { MainPage } from "./pageview/main-page";
-import { api } from "@/api/instance";
 
 export default function Home() {
   const { theme, toggleTheme } = useTheme();

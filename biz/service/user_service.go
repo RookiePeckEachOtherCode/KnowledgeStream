@@ -46,7 +46,7 @@ func (s *UserService) UserRegister(
 ) error {
 	u := query.User
 	dbUser, err := u.WithContext(c).Select(u.ID).Where(u.Phone.Eq(phone)).First()
-	if err != nil {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return err
 	}
 	if dbUser != nil {

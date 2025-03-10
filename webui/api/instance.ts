@@ -9,7 +9,7 @@ export const api = new Api(async ({ uri, method, headers, body }) => {
     body: body !== undefined ? JSON.stringify(body) : undefined,
     headers: {
       "content-type": "application/json;charset=UTF-8",
-      jinyum: localStorage.getItem("token") ?? "",
+      Authorization: localStorage.getItem("token") ?? "",
       ...headers,
     },
   });
@@ -25,7 +25,7 @@ export const api = new Api(async ({ uri, method, headers, body }) => {
 
   const resp = JSON.parse(text);
   if (resp.base.code === 401) {
-    document.location.replace("/login");
+    document.location.replace("/auth/login");
   }
   return resp;
 });

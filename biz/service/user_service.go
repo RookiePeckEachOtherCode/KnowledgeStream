@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync"
+
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/entity"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/query"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/utils"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/config"
 	"gorm.io/gorm"
-	"sync"
 )
 
 var (
@@ -20,13 +21,13 @@ var (
 func UserServ() *UserService {
 	userServiceOnce.Do(func() {
 		/**
-		* 依赖注入位置
-		* eg.
-		* userService = &UserService{
-			userRepo: UserRepo,
-			otherService: OtherService,
-		}
-		**/
+		  * 依赖注入位置
+		  * eg.
+		  * userService = &UserService{
+		  	userRepo: UserRepo,
+		  	otherService: OtherService,
+		  }
+		  **/
 		userService = &UserService{}
 	})
 	return userService
@@ -76,7 +77,6 @@ func (s *UserService) UserRegister(
 }
 
 func (s *UserService) UserLoginWithName(c context.Context, name string, password string) (*int64, *string, error) {
-
 	u := query.User
 	user, err := u.WithContext(c).Where(u.Name.Eq(name)).First()
 	if err != nil {
@@ -95,7 +95,6 @@ func (s *UserService) UserLoginWithName(c context.Context, name string, password
 }
 
 func (s *UserService) UserLoginWithPhone(c context.Context, phone string, password string) (*int64, *string, error) {
-
 	u := query.User
 	user, err := u.WithContext(c).Where(u.Phone.Eq(phone)).First()
 	if err != nil {

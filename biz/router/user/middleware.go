@@ -38,3 +38,29 @@ func _userinfoupdateMw() []app.HandlerFunc {
 		middleware.VerifyToken(),
 	}
 }
+
+func _teacherMw() []app.HandlerFunc {
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
+}
+
+func _createcourseMw() []app.HandlerFunc { return nil }
+
+func _deletecourseMw() []app.HandlerFunc { return nil }
+
+func _invitestudentMw() []app.HandlerFunc { return nil }
+
+func _uploadvideoMw() []app.HandlerFunc { return nil }
+
+func _updateMw() []app.HandlerFunc { return nil }
+
+func _courseMw() []app.HandlerFunc {
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
+}
+
+func _updatecourseMw() []app.HandlerFunc { return nil }
+
+func _operatememberMw() []app.HandlerFunc { return nil }

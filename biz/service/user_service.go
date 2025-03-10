@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
-
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/entity"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/query"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/utils"
@@ -106,14 +104,97 @@ func UpdateUserInfoWithId(c context.Context, id int64, name string, password str
 	if err != nil {
 		return err
 	}
-	hashedPassword := utils.HashPassword(password, user.Salt)
-	log.Println(password)
-	user.Name = name
-	user.Password = hashedPassword
-	user.Avatar = avatar
-	user.Phone = phone
+	if name != "" {
+		user.Name = name
+	}
+	if password != "" {
+		hashedPassword := utils.HashPassword(password, user.Salt)
+		user.Password = hashedPassword
+	}
+	if avatar != "" {
+		user.Avatar = avatar
+	}
+	if phone != "" {
+		user.Phone = phone
+	}
 	if err := u.WithContext(c).Save(user); err != nil {
 		return fmt.Errorf("save error falied: %w", err)
 	}
+	return nil
+}
+
+// ------------------------------------------Techer
+func CreateCourseWithId(c context.Context, id int64, title string, description string, cover string) error {
+	cid, err := utils.NextSnowFlakeId()
+	if err != nil {
+		return err
+	}
+	cc := query.Course
+	course := entity.Course{
+		ID:          *cid,
+		Title:       title,
+		Description: description,
+		Cover:       cover,
+		Ascription:  id,
+	}
+	if err := cc.WithContext(c).Save(&course); err != nil {
+		return fmt.Errorf("save error falied: %w", err)
+	}
+	return nil
+}
+func DeleteCourseWithCid(c context.Context, cid int64) error {
+	cc := query.Course
+	course, err := cc.WithContext(c).Where(cc.ID.Eq(cid)).First()
+	if err != nil {
+		return err
+	}
+	if _, err = cc.WithContext(c).Delete(course); err != nil {
+		return fmt.Errorf("delete error falied: %w", err)
+	}
+	return nil
+}
+func UpdateCourseWithCid(c context.Context, cid int64, title string, description string, cover string) error {
+	cc := query.Course
+	course, err := cc.WithContext(c).Where(cc.ID.Eq(cid)).First()
+	if err != nil {
+		return err
+	}
+	if title != "" {
+		course.Title = title
+	}
+	if description != "" {
+		course.Description = description
+	}
+	if cover != "" {
+		course.Cover = cover
+	}
+	if err = cc.WithContext(c).Save(course); err != nil {
+		return fmt.Errorf("save error falied: %w", err)
+	}
+	return nil
+}
+func InviteStudentWithCidAndSid(c context.Context, cid int64, sid int64) error {
+	uc := query.UserInCourse
+	uinc, err := uc.WithContext(c).Where(uc.UserID.Eq(sid), uc.CourseID.Eq(cid)).First()
+	if err != nil {
+		return fmt.Errorf("查询关联记录失败: %w", err)
+	}
+	if uinc != nil {
+		return fmt.Errorf("该学生已在课程中")
+	}
+	ucc := entity.UserInCourse{
+		UserID:   sid,
+		CourseID: cid,
+	}
+	if err = uc.WithContext(c).Save(&ucc); err != nil {
+		return fmt.Errorf("save error falied: %w", err)
+	}
+	return nil
+}
+func UploadVideoWithCidAndUid(c context.Context, uid int64, cid int64, source string, title string, description string, cover string, length int) error {
+
+	return nil
+}
+func OperateMemberWithCidAndUid(c context.Context, cid int64, uid int64) error {
 	return nil
 }

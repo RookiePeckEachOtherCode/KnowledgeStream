@@ -6,6 +6,7 @@ import (
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/redis"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/utils"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/config"
 	"github.com/cloudwego/hertz/pkg/app/server"
 )
 
@@ -15,6 +16,7 @@ func main() {
 	utils.LogoPrint()
 
 	h := server.Default()
+	h.Use(config.Cors())
 
 	register(h)
 	h.Spin()

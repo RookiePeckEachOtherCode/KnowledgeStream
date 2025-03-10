@@ -200,11 +200,12 @@ func (s *UserService) UpdateCourseWithCid(c context.Context, cid int64, title st
 func (s *UserService) InviteStudentWithCidAndSid(c context.Context, cid int64, sid int64) error {
 	uc := query.UserInCourse
 	uinc, err := uc.WithContext(c).Where(uc.UserID.Eq(sid), uc.CourseID.Eq(cid)).First()
-	if err != nil {
+	if err == nil {
+		if uinc != nil {
+			return errors.New("该学生已在课程中")
+		}
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return fmt.Errorf("查询关联记录失败: %w", err)
-	}
-	if uinc != nil {
-		return fmt.Errorf("该学生已在课程中")
 	}
 	ucc := entity.UserInCourse{
 		UserID:   sid,

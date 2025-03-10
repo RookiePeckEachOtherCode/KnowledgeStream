@@ -101,7 +101,7 @@ struct UploadVideoResp{
     1:BaseResponse base;
 }
 service UserSerivce{
-    userLoginResp UserLogin(1:userLoginReq req)(api.get="/user/login");
+    userLoginResp UserLogin(1:userLoginReq req)(api.post="/user/login");
     userRegisterResp UserRegister(1:userRegisterReq req)(api.post="/user/register")
     userInfoResp UserInfo(1:userInfoReq req)(api.get="/user/info")
     userInfoUpdateResp UserInfoUpdate(1:userInfoUpdateReq req)(api.post="/user/update")

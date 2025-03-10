@@ -1,7 +1,11 @@
 export type UserServiceRequest = {
   LOGIN: {
-    name: string;
-    password: string;
     phone: string;
+    password: string;
+  };
+  REGISTER: {
+    name: string;
+    phone: string;
+    password: string;
   };
 };

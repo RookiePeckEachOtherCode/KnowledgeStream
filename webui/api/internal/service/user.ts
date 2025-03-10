@@ -8,11 +8,24 @@ export class UserService {
   async login(
     req: UserServiceRequest["LOGIN"]
   ): Promise<UserServiceResponse["LOGIN"]> {
-    const uri = `/user/login?name=${req.name}&phone=${req.phone}&password=${req.password}}`;
+    const uri = `/user/login`;
 
     return (await this.executor({
       uri: uri,
-      method: "GET",
+      method: "POST",
+      body: req,
     })) as UserServiceResponse["LOGIN"];
+  }
+
+  async register(
+    req: UserServiceRequest["REGISTER"]
+  ): Promise<UserServiceResponse["REGISTER"]> {
+    const uri = `/user/register`;
+
+    return (await this.executor({
+      uri: uri,
+      method: "POST",
+      body: req,
+    })) as UserServiceResponse["REGISTER"];
   }
 }

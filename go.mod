@@ -8,6 +8,7 @@ require (
 	github.com/cloudwego/hertz v0.9.6
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-redis/redis/v8 v8.11.5
+	github.com/hertz-contrib/cors v0.1.0
 	github.com/spf13/viper v1.19.0
 	golang.org/x/crypto v0.36.0
 	gorm.io/driver/postgres v1.5.11

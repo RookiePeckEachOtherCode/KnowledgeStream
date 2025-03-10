@@ -8,8 +8,10 @@ import (
 
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/entity"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/query"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/srverror"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/utils"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/config"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"gorm.io/gorm"
 )
 
@@ -42,6 +44,14 @@ func (s *UserService) UserRegister(
 	phone string,
 	password string,
 ) error {
+	u := query.User
+	dbUser, err := u.WithContext(c).Select(u.ID).Where(u.Phone.Eq(phone)).First()
+	if err != nil {
+		return err
+	}
+	if dbUser != nil {
+		return srverror.NewRuntimeError("手机号已存在")
+	}
 	id, err := utils.NextSnowFlakeId()
 	if err != nil {
 		return err
@@ -52,7 +62,6 @@ func (s *UserService) UserRegister(
 	}
 	hashedPassword := utils.HashPassword(password, salt)
 
-	u := query.User
 	user := entity.User{
 		ID:        *id,
 		Avatar:    config.Get().DefaultAvatarURL,
@@ -62,54 +71,30 @@ func (s *UserService) UserRegister(
 		Phone:     phone,
 		Authority: entity.AuthorityUser,
 	}
-	_, err = u.WithContext(c).Where(u.Name.Eq(name)).First()
-	if err == nil {
-		return errors.New("name existed")
-	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
-		return err
-	}
 
 	if err = u.WithContext(c).Save(&user); err != nil {
-		return fmt.Errorf("save error falied: %w", err)
+		return err
 	}
-
 	return nil
 }
 
-func (s *UserService) UserLoginWithName(c context.Context, name string, password string) (*int64, *string, error) {
+func (s *UserService) UserLoginWithPhone(c context.Context, phone string, password string) (int64, string, string, error) {
 	u := query.User
-	user, err := u.WithContext(c).Where(u.Name.Eq(name)).First()
-	if err != nil {
-		return nil, nil, err
-	}
-	if user == nil {
-		return nil, nil, errors.New("can't find user")
-	}
-	isValid := utils.VerifyPassword([]byte(user.Password), []byte(user.Salt), password)
-	if !isValid {
-		return nil, nil, errors.New("wrong password")
-	}
-	token := utils.GenerateToken(user.ID, user.Authority)
-	return &user.ID, &token, nil
 
-}
-
-func (s *UserService) UserLoginWithPhone(c context.Context, phone string, password string) (*int64, *string, error) {
-	u := query.User
 	user, err := u.WithContext(c).Where(u.Phone.Eq(phone)).First()
 	if err != nil {
-		return nil, nil, err
-	}
-	if user == nil {
-		return nil, nil, errors.New("no phone record")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return 0, "", "", srverror.NewRuntimeError("用户不存在")
+		}
+		hlog.Error(err)
+		return 0, "", "", err
 	}
 	isValid := utils.VerifyPassword([]byte(user.Password), []byte(user.Salt), password)
 	if !isValid {
-		return nil, nil, errors.New("wrong password")
+		return 0, "", "", srverror.NewRuntimeError("密码错误")
 	}
 	token := utils.GenerateToken(user.ID, user.Authority)
-	return &user.ID, &token, nil
-
+	return user.ID, user.Name, token, nil
 }
 
 func (s *UserService) GetUserInfoWithId(c context.Context, id int64) (*entity.User, error) {

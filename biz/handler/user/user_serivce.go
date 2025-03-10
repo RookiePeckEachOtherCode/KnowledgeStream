@@ -10,8 +10,10 @@ import (
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/entity"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/service"
 
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/srverror"
 	user "github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/user"
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
 
@@ -25,28 +27,27 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
-
 	resp := new(user.UserLoginResp)
-	resp.Base = new(user.BaseResponse)
-	resp.Base.Msg = "登录成功"
-	resp.Base.Code = http.StatusOK
 
-	var uid = new(int64)
-	var token = new(string)
-
-	if req.Name != "" {
-		uid, token, err = service.UserServ().UserLoginWithName(ctx, req.Name, req.Password)
-	} else {
-		uid, token, err = service.UserServ().UserLoginWithPhone(ctx, req.Phone, req.Password)
+	if len(req.Phone) == 0 || len(req.Password) == 0 {
+		resp.Base = srverror.WrapWithCodeMsg(http.StatusBadRequest, "手机号或者密码不能为空")
+		c.JSON(consts.StatusOK, resp)
+		return
 	}
+
+	uid, name, token, err := service.UserServ().UserLoginWithPhone(ctx, req.Phone, req.Password)
 
 	if err != nil {
-		resp.Base.Msg = err.Error()
-		resp.Base.Code = http.StatusUnauthorized
-	} else {
-		resp.ID = strconv.FormatInt(*uid, 10)
-		resp.Token = *token
+		resp.Base = srverror.WrapWithError(http.StatusUnauthorized, err)
+		hlog.Error("UserLoginWithPhone failed, err: ", err)
+		c.JSON(consts.StatusOK, resp)
+		return
 	}
+
+	resp.ID = strconv.FormatInt(uid, 10)
+	resp.Name = name
+	resp.Token = token
+	resp.Base = srverror.WrapWithSuccess()
 
 	c.JSON(consts.StatusOK, resp)
 }
@@ -63,15 +64,21 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(user.UserRegisterResp)
-	resp.Base = new(user.BaseResponse)
+
+	if len(req.Name) == 0 || len(req.Phone) == 0 || len(req.Password) == 0 {
+		resp.Base = srverror.WrapWithCodeMsg(http.StatusBadRequest, "用户名、手机号或者密码不能为空")
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+
 	err = service.UserServ().UserRegister(ctx, req.Name, req.Phone, req.Password)
 	if err != nil {
-		resp.Base.Msg = err.Error()
-		resp.Base.Code = http.StatusBadRequest
-	} else {
-		resp.Base.Msg = "注册成功"
-		resp.Base.Code = http.StatusOK
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		hlog.Error("UserRegister failed, err: ", err)
+		c.JSON(consts.StatusOK, resp)
+		return
 	}
+	resp.Base = srverror.WrapWithSuccess()
 	c.JSON(consts.StatusOK, resp)
 }
 

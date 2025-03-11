@@ -201,7 +201,7 @@ func CreateCourse(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	uid := Uid.(int64)
-	err = service.UserServ().CreateCourseWithUid(ctx, uid, req.Title, req.Description, req.Cover)
+	err = service.CourseServ().CreateCourseWithUid(ctx, uid, req.Title, req.Description, req.Cover)
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
@@ -247,7 +247,7 @@ func DeleteCourse(ctx context.Context, c *app.RequestContext) {
 		c.JSON(http.StatusUnauthorized, resp)
 		return
 	}
-	err = service.UserServ().DeleteCourseWithCid(ctx, cid)
+	err = service.CourseServ().DeleteCourseWithCid(ctx, cid)
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
@@ -292,7 +292,7 @@ func UpdateCourse(ctx context.Context, c *app.RequestContext) {
 		resp.Base.Msg = "课程域编号格式转换失败"
 		c.JSON(http.StatusUnauthorized, resp)
 	}
-	err = service.UserServ().UpdateCourseWithCid(ctx, cid, req.Title, req.Description, req.Cover)
+	err = service.CourseServ().UpdateCourseWithCid(ctx, cid, req.Title, req.Description, req.Cover)
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
@@ -345,7 +345,7 @@ func InviteStudent(ctx context.Context, c *app.RequestContext) {
 		c.JSON(http.StatusUnauthorized, resp)
 		return
 	}
-	err = service.UserServ().InviteUserWithCidAndUid(ctx, cid, sid)
+	err = service.CourseServ().InviteUserWithCidAndUid(ctx, cid, sid)
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
@@ -392,7 +392,7 @@ func OperateMember(ctx context.Context, c *app.RequestContext) {
 		c.JSON(http.StatusUnauthorized, resp)
 		return
 	}
-	err = service.UserServ().OperateMemberWithCidAndUid(ctx, cid, uid)
+	err = service.CourseServ().OperateMemberWithCidAndUid(ctx, cid, uid)
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
@@ -446,7 +446,7 @@ func UploadVideos(ctx context.Context, c *app.RequestContext) {
 		c.JSON(http.StatusUnauthorized, resp)
 		return
 	}
-	err = service.UserServ().UploadVideoWithCidAndUid(ctx, uid, cid, req.Source, req.Title, req.Description, req.Cover, int(length))
+	err = service.VideoServ().UploadVideoWithCidAndUid(ctx, uid, cid, req.Source, req.Title, req.Description, req.Cover, int(length))
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
@@ -485,7 +485,7 @@ func SelectMyCourses(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	uid := Uid.(int64)
-	result, err := service.UserServ().SelectMyCoursesWithUid(ctx, uid)
+	result, err := service.CourseServ().SelectMyCoursesWithUid(ctx, uid)
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
@@ -530,7 +530,7 @@ func DeleteVideo(ctx context.Context, c *app.RequestContext) {
 		c.JSON(http.StatusUnauthorized, resp)
 		return
 	}
-	err = service.UserServ().DeleteVideoWithVid(ctx, vid)
+	err = service.VideoServ().DeleteVideoWithVid(ctx, vid)
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
@@ -571,7 +571,7 @@ func StudentMyCourses(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	uid := Uid.(int64)
-	result, err := service.UserServ().SelectMyCoursesWithUid(ctx, uid)
+	result, err := service.CourseServ().SelectMyCoursesWithUid(ctx, uid)
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()

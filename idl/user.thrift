@@ -97,6 +97,7 @@ struct UploadVideosReq{//上传视频
     3:string description(api.query="description");
     4:string cover(api.query="cover");
     5:string cid(api.query="cid");
+    6:string length(api.query="length");
 }
 struct UploadVideosResp{
     1:BaseResponse base;

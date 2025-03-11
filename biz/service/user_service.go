@@ -200,7 +200,7 @@ func (s *UserService) InviteStudentWithCidAndSid(c context.Context, cid int64, s
 	}
 	return nil
 }
-func (s *UserService) UploadVideoWithCidAndUid(c context.Context, uid int64, cid int64, source string, title string, description string, cover string) error {
+func (s *UserService) UploadVideoWithCidAndUid(c context.Context, uid int64, cid int64, source string, title string, description string, cover string, length int) error {
 	v := query.Video
 	id, err := utils.NextSnowFlakeId()
 	if err != nil {
@@ -214,6 +214,7 @@ func (s *UserService) UploadVideoWithCidAndUid(c context.Context, uid int64, cid
 		Description: description,
 		Cover:       cover,
 		Ascription:  cid,
+		Length:      length,
 	}
 
 	err = v.WithContext(c).Save(&video)

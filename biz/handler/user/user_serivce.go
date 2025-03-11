@@ -239,6 +239,7 @@ func DeleteCourse(ctx context.Context, c *app.RequestContext) {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = "课程域编号格式转换失败"
 		c.JSON(http.StatusUnauthorized, resp)
+		return
 	}
 	err = service.UserServ().DeleteCourseWithCid(ctx, cid)
 	if err != nil {
@@ -325,12 +326,14 @@ func InviteStudent(ctx context.Context, c *app.RequestContext) {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = "课程域编号格式转换失败"
 		c.JSON(http.StatusUnauthorized, resp)
+		return
 	}
 	sid, err := strconv.ParseInt(req.Sid, 10, 64)
 	if err != nil {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = "学生编号格式转换失败"
 		c.JSON(http.StatusUnauthorized, resp)
+		return
 	}
 	err = service.UserServ().InviteStudentWithCidAndSid(ctx, cid, sid)
 	if err != nil {
@@ -375,6 +378,7 @@ func OperateMember(ctx context.Context, c *app.RequestContext) {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = "课程域编号格式转换失败"
 		c.JSON(http.StatusUnauthorized, resp)
+		return
 	}
 	err = service.UserServ().OperateMemberWithCidAndUid(ctx, cid, uid)
 	if err != nil {
@@ -419,8 +423,16 @@ func UploadVideos(ctx context.Context, c *app.RequestContext) {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = "课程域编号格式转换失败"
 		c.JSON(http.StatusUnauthorized, resp)
+		return
 	}
-	err = service.UserServ().UploadVideoWithCidAndUid(ctx, uid, cid, req.Source, req.Title, req.Description, req.Cover)
+	length, err := strconv.ParseInt(req.Length, 10, 64)
+	if err != nil {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "视频长度格式转换失败"
+		c.JSON(http.StatusUnauthorized, resp)
+		return
+	}
+	err = service.UserServ().UploadVideoWithCidAndUid(ctx, uid, cid, req.Source, req.Title, req.Description, req.Cover, int(length))
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()

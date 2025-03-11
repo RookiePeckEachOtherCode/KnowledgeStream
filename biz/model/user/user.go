@@ -3654,6 +3654,7 @@ type UploadVideosReq struct {
 	Description string `thrift:"description,3" json:"description" query:"description"`
 	Cover       string `thrift:"cover,4" json:"cover" query:"cover"`
 	Cid         string `thrift:"cid,5" json:"cid" query:"cid"`
+	Length      string `thrift:"length,6" json:"length" query:"length"`
 }
 
 func NewUploadVideosReq() *UploadVideosReq {
@@ -3680,12 +3681,17 @@ func (p *UploadVideosReq) GetCid() (v string) {
 	return p.Cid
 }
 
+func (p *UploadVideosReq) GetLength() (v string) {
+	return p.Length
+}
+
 var fieldIDToName_UploadVideosReq = map[int16]string{
 	1: "source",
 	2: "title",
 	3: "description",
 	4: "cover",
 	5: "cid",
+	6: "length",
 }
 
 func (p *UploadVideosReq) Read(iprot thrift.TProtocol) (err error) {
@@ -3750,6 +3756,16 @@ func (p *UploadVideosReq) Read(iprot thrift.TProtocol) (err error) {
 		case 5:
 			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField5(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 6:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField6(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else {
@@ -3832,6 +3848,15 @@ func (p *UploadVideosReq) ReadField5(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *UploadVideosReq) ReadField6(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.Length = v
+	}
+	return nil
+}
+
 func (p *UploadVideosReq) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("UploadVideosReq"); err != nil {
@@ -3856,6 +3881,10 @@ func (p *UploadVideosReq) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField5(oprot); err != nil {
 			fieldId = 5
+			goto WriteFieldError
+		}
+		if err = p.writeField6(oprot); err != nil {
+			fieldId = 6
 			goto WriteFieldError
 		}
 
@@ -3960,6 +3989,23 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 5 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 5 end error: ", p), err)
+}
+
+func (p *UploadVideosReq) writeField6(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("length", thrift.STRING, 6); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Length); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 6 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 6 end error: ", p), err)
 }
 
 func (p *UploadVideosReq) String() string {

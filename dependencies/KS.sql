@@ -18,16 +18,26 @@ CREATE TABLE courses (
     ascription BIGINT
 );
 
-CREATE TABLE videos (
-    id BIGINT NOT NULL CONSTRAINT video_pk PRIMARY KEY,
-    source TEXT,
-    title TEXT NOT NULL,
-    description TEXT DEFAULT '',
-    uploader BIGINT,
-    length INTEGER,
-    cover TEXT NOT NULL,
-    ascription BIGINT CONSTRAINT video_course_id_fk REFERENCES courses
+create table videos
+(
+    id          bigint not null
+        constraint video_pk
+            primary key,
+    source      text,
+    title       text   not null,
+    description text default ''::text,
+    uploader    bigint,
+    length      integer,
+    cover       text   not null,
+    ascription  bigint
+        constraint video_course_id_fk
+            references courses,
+    upload_time text
 );
+
+alter table videos
+    owner to postgres;
+
 
 CREATE TABLE user_course (
     uid BIGINT NOT NULL CONSTRAINT user_course_user_id_fk REFERENCES "users",

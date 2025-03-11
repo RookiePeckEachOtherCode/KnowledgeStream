@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/base"
 	"sync"
 
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/entity"
@@ -126,7 +127,7 @@ func (s *UserService) UpdateUserInfoWithId(c context.Context, id int64, name str
 		user.Phone = phone
 	}
 	if err := u.WithContext(c).Save(user); err != nil {
-		return fmt.Errorf("save error falied: %w", err)
+		return fmt.Errorf("更新用户信息失败: %w", err)
 	}
 	return nil
 }
@@ -146,7 +147,10 @@ func (s *UserService) CreateCourseWithUid(c context.Context, id int64, title str
 		Ascription:  id,
 	}
 	if err := cc.WithContext(c).Save(&course); err != nil {
-		return fmt.Errorf("save error falied: %w", err)
+		return fmt.Errorf("创建课程域失败: %w", err)
+	}
+	if err = UserServ().InviteUserWithCidAndUid(c, *cid, id); err != nil {
+		return fmt.Errorf("课程域初始化失败: %w", err)
 	}
 	return nil
 }
@@ -157,7 +161,7 @@ func (s *UserService) DeleteCourseWithCid(c context.Context, cid int64) error {
 		return err
 	}
 	if _, err = cc.WithContext(c).Delete(course); err != nil {
-		return fmt.Errorf("delete error falied: %w", err)
+		return fmt.Errorf("删除课程域失败: %w", err)
 	}
 	return nil
 }
@@ -177,13 +181,13 @@ func (s *UserService) UpdateCourseWithCid(c context.Context, cid int64, title st
 		course.Cover = cover
 	}
 	if err = cc.WithContext(c).Save(course); err != nil {
-		return fmt.Errorf("save error falied: %w", err)
+		return fmt.Errorf("更新课程域失败: %w", err)
 	}
 	return nil
 }
-func (s *UserService) InviteStudentWithCidAndSid(c context.Context, cid int64, sid int64) error {
+func (s *UserService) InviteUserWithCidAndUid(c context.Context, cid int64, uid int64) error {
 	uc := query.UserInCourse
-	uinc, err := uc.WithContext(c).Where(uc.UserID.Eq(sid), uc.CourseID.Eq(cid)).First()
+	uinc, err := uc.WithContext(c).Where(uc.UserID.Eq(uid), uc.CourseID.Eq(cid)).First()
 	if err == nil {
 		if uinc != nil {
 			return errors.New("该学生已在课程中")
@@ -192,11 +196,11 @@ func (s *UserService) InviteStudentWithCidAndSid(c context.Context, cid int64, s
 		return fmt.Errorf("查询关联记录失败: %w", err)
 	}
 	ucc := entity.UserInCourse{
-		UserID:   sid,
+		UserID:   uid,
 		CourseID: cid,
 	}
 	if err = uc.WithContext(c).Save(&ucc); err != nil {
-		return fmt.Errorf("save error falied: %w", err)
+		return fmt.Errorf("邀请学生加入课程域失败: %w", err)
 	}
 	return nil
 }
@@ -219,7 +223,7 @@ func (s *UserService) UploadVideoWithCidAndUid(c context.Context, uid int64, cid
 
 	err = v.WithContext(c).Save(&video)
 	if err != nil {
-		return fmt.Errorf("save error falied: %w", err)
+		return fmt.Errorf("上传视频失败: %w", err)
 	}
 	return nil
 }
@@ -230,26 +234,46 @@ func (s *UserService) OperateMemberWithCidAndUid(c context.Context, cid int64, u
 		return fmt.Errorf("该学生并不在该课程域中: %w", err)
 	}
 	if _, err = uc.WithContext(c).Delete(uinc); err != nil {
-		return fmt.Errorf("delete error falied: %w", err)
+		return fmt.Errorf("删除学生失败: %w", err)
 	}
 	return nil
 }
-func (s *UserService) SelectMyCoursesWithUid(c context.Context, uid int64) ([]string, error) {
-	cc := query.Course
-	var result []string
-	var courses []*entity.Course
-	var err error
-	if courses, err = cc.WithContext(c).
-		Where(cc.Ascription.Eq(uid)).
-		Find(); err != nil {
+func (s *UserService) SelectMyCoursesWithUid(c context.Context, uid int64) ([]*base.CourseInfo, error) {
+	uc := query.UserInCourse
+	courseids, err := uc.WithContext(c).Where(uc.UserID.Eq(uid)).Find()
+	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
-		return nil, fmt.Errorf("查询课程失败: %w", err)
+		return nil, fmt.Errorf("查询所在课程域失败: %w", err)
 	}
-	for _, course := range courses {
-		idStr := fmt.Sprintf("%d", course.ID)
-		result = append(result, idStr)
+	var result []*base.CourseInfo
+	for _, courseid := range courseids {
+		course, err := CourseServ().CourseInfoWithCid(c, courseid.CourseID)
+		if err != nil {
+			return nil, fmt.Errorf("查询所在课程域信息失败: %w", err)
+		}
+		courseInfo := new(base.CourseInfo)
+		courseInfo.Cid = fmt.Sprintf("%d", course.Cid)
+		courseInfo.Cover = course.Cover
+		courseInfo.Description = course.Description
+		courseInfo.Title = course.Title
+		result = append(result, courseInfo)
 	}
 	return result, nil
+}
+func (s *UserService) DeleteVideoWithVid(c context.Context, vid int64) error {
+	v := query.Video
+	video, err := v.WithContext(c).Where(v.ID.Eq(vid)).First()
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return fmt.Errorf("视频不存在或已被删除")
+		}
+		return fmt.Errorf("查询视频失败: %w", err)
+	}
+	_, err = v.WithContext(c).Delete(video)
+	if err != nil {
+		return fmt.Errorf("删除视频失败: %w", err)
+	}
+	return nil
 }

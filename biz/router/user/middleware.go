@@ -51,8 +51,6 @@ func _deletecourseMw() []app.HandlerFunc { return nil }
 
 func _invitestudentMw() []app.HandlerFunc { return nil }
 
-func _uploadvideoMw() []app.HandlerFunc { return nil }
-
 func _updateMw() []app.HandlerFunc { return nil }
 
 func _courseMw() []app.HandlerFunc {
@@ -71,6 +69,22 @@ func _selectmycoursesMw() []app.HandlerFunc {
 }
 
 func _uploadvideosMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _studentMw() []app.HandlerFunc {
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
+}
+
+func _studentmycoursesMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _deletevideoMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }

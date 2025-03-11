@@ -4,4 +4,22 @@ namespace go base
 struct BaseResponse {
      1: i32 code;
      2: string msg;
- }
+}
+struct UserInfo{
+    1:string uid;
+    2:string avatar;
+    3:string name;
+}
+struct CourseInfo{
+    1:string cid;
+    2:string title;
+    3:string description;
+    4:string cover;
+}
+struct VideoInfo{
+    1:string vid;
+    2:string title;
+    3:string description;
+    4:string cover;
+    5:string source;
+}

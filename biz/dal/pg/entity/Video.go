@@ -9,4 +9,5 @@ type Video struct {
 	Length      int    `gorm:"column:length" json:"length"`     // 视频长度（单位秒）
 	Cover       string `gorm:"column:cover" json:"cover"`
 	Ascription  int64  `gorm:"column:ascription" json:"ascription"` // 所属课程ID（外键）
+	UploadTime  string `gorm:"column:upload_time" json:"upload_time"`
 }

@@ -117,6 +117,8 @@ func UserInfo(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
+		c.JSON(http.StatusBadRequest, resp)
+		return
 	} else {
 		resp.Name = dbuser.Name
 		resp.Phone = dbuser.Phone
@@ -162,6 +164,8 @@ func UserInfoUpdate(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
+		c.JSON(http.StatusBadRequest, resp)
+		return
 	}
 	c.JSON(consts.StatusOK, resp)
 }
@@ -201,6 +205,8 @@ func CreateCourse(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
+		c.JSON(http.StatusBadRequest, resp)
+		return
 	}
 	c.JSON(consts.StatusOK, resp)
 }
@@ -245,6 +251,8 @@ func DeleteCourse(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
+		c.JSON(http.StatusBadRequest, resp)
+		return
 	}
 	c.JSON(consts.StatusOK, resp)
 }
@@ -288,6 +296,8 @@ func UpdateCourse(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
+		c.JSON(http.StatusBadRequest, resp)
+		return
 	}
 	c.JSON(consts.StatusOK, resp)
 }
@@ -335,10 +345,12 @@ func InviteStudent(ctx context.Context, c *app.RequestContext) {
 		c.JSON(http.StatusUnauthorized, resp)
 		return
 	}
-	err = service.UserServ().InviteStudentWithCidAndSid(ctx, cid, sid)
+	err = service.UserServ().InviteUserWithCidAndUid(ctx, cid, sid)
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
+		c.JSON(http.StatusBadRequest, resp)
+		return
 	}
 	c.JSON(consts.StatusOK, resp)
 }
@@ -384,6 +396,8 @@ func OperateMember(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
+		c.JSON(http.StatusBadRequest, resp)
+		return
 	}
 	c.JSON(consts.StatusOK, resp)
 }
@@ -436,6 +450,8 @@ func UploadVideos(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
+		c.JSON(http.StatusBadRequest, resp)
+		return
 	}
 	c.JSON(consts.StatusOK, resp)
 }
@@ -473,7 +489,95 @@ func SelectMyCourses(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		resp.Base.Code = http.StatusBadRequest
 		resp.Base.Msg = err.Error()
+		c.JSON(http.StatusBadRequest, resp)
+		return
 	}
-	resp.Courses = result
+	resp.Coursesinfo = result
+	c.JSON(consts.StatusOK, resp)
+}
+
+func DeleteVideo(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req user.DeleteVideoReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(user.DeleteVideoResp)
+	resp.Base = new(user.BaseResponse)
+	resp.Base.Msg = "删除视频成功"
+	resp.Base.Code = http.StatusOK
+	_, exists := c.Get("uid")
+	if !exists {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "未获取到权限信息"
+		c.JSON(http.StatusUnauthorized, resp)
+		return
+	}
+	_, exists = c.Get("authority")
+	if !exists {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "未获取到完整权限信息"
+		c.JSON(http.StatusUnauthorized, resp)
+		return
+	}
+	vid, err := strconv.ParseInt(req.Vid, 10, 64)
+	if err != nil {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = err.Error()
+		c.JSON(http.StatusUnauthorized, resp)
+		return
+	}
+	err = service.UserServ().DeleteVideoWithVid(ctx, vid)
+	if err != nil {
+		resp.Base.Code = http.StatusBadRequest
+		resp.Base.Msg = err.Error()
+		c.JSON(http.StatusBadRequest, resp)
+		return
+	}
+	c.JSON(consts.StatusOK, resp)
+}
+
+// ------------------------------------------Student
+// StudentMyCourses .
+// @router /user/student/mycourse [GET]
+func StudentMyCourses(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req user.StudentMyCoursesReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(user.StudentMyCoursesResp)
+	resp.Base = new(user.BaseResponse)
+	resp.Base.Msg = "获取所在课程域信息成功"
+	resp.Base.Code = http.StatusOK
+	Uid, exists := c.Get("uid")
+	if !exists {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "未获取到权限信息"
+		c.JSON(http.StatusUnauthorized, resp)
+		return
+	}
+	_, exists = c.Get("authority")
+	if !exists {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "未获取到完整权限信息"
+		c.JSON(http.StatusUnauthorized, resp)
+		return
+	}
+	uid := Uid.(int64)
+	result, err := service.UserServ().SelectMyCoursesWithUid(ctx, uid)
+	if err != nil {
+		resp.Base.Code = http.StatusBadRequest
+		resp.Base.Msg = err.Error()
+		c.JSON(http.StatusBadRequest, resp)
+		return
+	}
+	resp.Coursesinfo = result
 	c.JSON(consts.StatusOK, resp)
 }

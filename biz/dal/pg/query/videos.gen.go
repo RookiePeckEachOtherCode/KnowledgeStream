@@ -35,6 +35,7 @@ func newVideo(db *gorm.DB, opts ...gen.DOOption) video {
 	_video.Length = field.NewInt(tableName, "length")
 	_video.Cover = field.NewString(tableName, "cover")
 	_video.Ascription = field.NewInt64(tableName, "ascription")
+	_video.UploadTime = field.NewString(tableName, "upload_time")
 
 	_video.fillFieldMap()
 
@@ -53,6 +54,7 @@ type video struct {
 	Length      field.Int
 	Cover       field.String
 	Ascription  field.Int64
+	UploadTime  field.String
 
 	fieldMap map[string]field.Expr
 }
@@ -77,6 +79,7 @@ func (v *video) updateTableName(table string) *video {
 	v.Length = field.NewInt(table, "length")
 	v.Cover = field.NewString(table, "cover")
 	v.Ascription = field.NewInt64(table, "ascription")
+	v.UploadTime = field.NewString(table, "upload_time")
 
 	v.fillFieldMap()
 
@@ -93,7 +96,7 @@ func (v *video) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (v *video) fillFieldMap() {
-	v.fieldMap = make(map[string]field.Expr, 8)
+	v.fieldMap = make(map[string]field.Expr, 9)
 	v.fieldMap["id"] = v.ID
 	v.fieldMap["source"] = v.Source
 	v.fieldMap["title"] = v.Title
@@ -102,6 +105,7 @@ func (v *video) fillFieldMap() {
 	v.fieldMap["length"] = v.Length
 	v.fieldMap["cover"] = v.Cover
 	v.fieldMap["ascription"] = v.Ascription
+	v.fieldMap["upload_time"] = v.UploadTime
 }
 
 func (v video) clone(db *gorm.DB) video {

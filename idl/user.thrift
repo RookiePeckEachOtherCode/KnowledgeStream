@@ -50,8 +50,12 @@ struct userInfoUpdateResp{
     1:BaseResponse base;
 }
 //------------------------------------------Student
-
-
+struct StudentMyCoursesReq{
+}
+struct StudentMyCoursesResp{
+    1:BaseResponse base;
+    2:list<common.CourseInfo> coursesinfo
+}
 //------------------------------------------Techer
 struct CreateCourseReq{//创建课程域
     1:string title(api.query="title");
@@ -107,7 +111,13 @@ struct SelectMyCoursesReq{
 }
 struct SelectMyCoursesResp{
     1:BaseResponse base;
-    2:list<string> Courses;
+    2:list<common.CourseInfo> coursesinfo;
+}
+struct DeleteVideoReq{
+    1:string vid(api.query="vid");
+}
+struct DeleteVideoResp{
+    1:BaseResponse base;
 }
 service UserSerivce{
     userLoginResp UserLogin(1:userLoginReq req)(api.post="/user/login");
@@ -122,5 +132,7 @@ service UserSerivce{
     OperateMemberResp OperateMember(1:OperateMemberReq req)(api.post="/user/teacher/update/course/member")
     UploadVideosResp UploadVideos(1:UploadVideosReq req)(api.post="/user/teacher/uploadvideo")
     SelectMyCoursesResp SelectMyCourses(1:SelectMyCoursesReq req)(api.get="/user/teacher/mycourse")
+    DeleteVideoResp DeleteVideo(1:DeleteVideoReq req)(api.post="/user/teacher/deletevideo")
     //------------------------------------------Student
+    StudentMyCoursesResp StudentMyCourses(1:StudentMyCoursesReq req)(api.get="/user/student/mycourse")
 }

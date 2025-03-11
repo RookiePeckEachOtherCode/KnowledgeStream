@@ -24,9 +24,14 @@ func Register(r *server.Hertz) {
 		_user.POST("/register", append(_userregisterMw(), user.UserRegister)...)
 		_user.POST("/update", append(_userinfoupdateMw(), user.UserInfoUpdate)...)
 		{
+			_student := _user.Group("/student", _studentMw()...)
+			_student.GET("/mycourse", append(_studentmycoursesMw(), user.StudentMyCourses)...)
+		}
+		{
 			_teacher := _user.Group("/teacher", _teacherMw()...)
 			_teacher.POST("/createcourse", append(_createcourseMw(), user.CreateCourse)...)
 			_teacher.POST("/deletecourse", append(_deletecourseMw(), user.DeleteCourse)...)
+			_teacher.POST("/deletevideo", append(_deletevideoMw(), user.DeleteVideo)...)
 			_teacher.POST("/invite", append(_invitestudentMw(), user.InviteStudent)...)
 			_teacher.GET("/mycourse", append(_selectmycoursesMw(), user.SelectMyCourses)...)
 			_teacher.POST("/uploadvideo", append(_uploadvideosMw(), user.UploadVideos)...)

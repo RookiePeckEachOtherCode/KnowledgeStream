@@ -15,14 +15,12 @@ func WrapWithCodeMsg(code int32, msg string) *base.BaseResponse {
 	}
 }
 func WrapWithError(code int32, err error) *base.BaseResponse {
-	resp := &base.BaseResponse{
-		Code: code,
-		Msg:  err.Error(),
-	}
-
+	var resp *base.BaseResponse
 	switch err.(type) {
-	case RuntimeError:
-		break
+	case *RuntimeError:
+		resp = WrapWithCodeMsg(code, err.Error())
+	case *AuthError:
+		resp = WrapWithCodeMsg(401, err.Error())
 	default:
 		resp = WrapWithInternalError()
 	}

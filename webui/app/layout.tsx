@@ -5,6 +5,7 @@ import "@/styles/globals.css";
 import { ThemeProvider } from "@/context/theme-provider";
 import {ScreenRecordProvider} from "@/context/screen-record-provider";
 import {NotificationProvider} from "@/context/notification-provider";
+import {OssUploaderProvider} from "@/context/oss-uploader-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,8 +35,9 @@ export default function RootLayout({
         <ThemeProvider>
             <NotificationProvider>
                 <ScreenRecordProvider>
-                    
-                    {children}
+                    <OssUploaderProvider>
+                        {children}
+                    </OssUploaderProvider>
                 </ScreenRecordProvider>
             </NotificationProvider>
 

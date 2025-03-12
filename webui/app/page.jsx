@@ -24,8 +24,11 @@ import {ScreenRecordControlPage} from "./pageview/screen-recorder";
 export default function Home() {
   const { theme, toggleTheme } = useTheme();
   const [currentChildren, setCurrentChildren] = useState("mainPage");
+  
   const [leftNavigationHidden, setLeftNavigationHidden] = useState(false);
-
+  const [animationClass, setAnimationClass] = useState('');//用于子组件视图切换
+  const [isExiting, setIsExiting] = useState(false);
+  
   const ChildrenView = useCallback(() => {
     switch (currentChildren) {
       case "mainPage":
@@ -38,7 +41,27 @@ export default function Home() {
         return <ScreenRecordControlPage></ScreenRecordControlPage>
     }
   }, [currentChildren]);
-
+  
+  //设置切换动画
+  useEffect(()=>{
+      
+      setIsExiting(true)
+      setAnimationClass(`hidden`)
+      
+      const timer=setTimeout(()=>{
+          setIsExiting(false)
+          setAnimationClass(`opacity-0 translate-x-1/3`)
+          
+          requestAnimationFrame(()=>{
+              setAnimationClass('opacity-100 translate-x-0 z-0 transition-all duration-500');
+          })
+          
+      },300)
+      return ()=>clearTimeout(timer)
+      
+  },[currentChildren])
+  
+    
   return (
     <div
       className={`flex h-screen -mt-1  max-h-screen w-full flex-col transition-all overflow-hidden  items-center justify-center  bg-surface`}
@@ -53,6 +76,7 @@ export default function Home() {
                 isActive={currentChildren === "mainPage"}
                 isfitst={true}
                 onClick={() => {
+                    setAnimationClass("hidden")
                   setCurrentChildren("mainPage");
                 }}
             >
@@ -62,6 +86,7 @@ export default function Home() {
                 title={`课程`}
                 isActive={currentChildren === "course"}
                 onClick={() => {
+                    setAnimationClass("hidden")
                   setCurrentChildren("course");
                 }}
             >
@@ -71,6 +96,7 @@ export default function Home() {
                 title={`个人中心`}
                 isActive={currentChildren === "userHome"}
                 onClick={() => {
+                    setAnimationClass("hidden")
                   setCurrentChildren("userHome");
                 }}
             >
@@ -80,7 +106,8 @@ export default function Home() {
                 title={`录制`}
                 isActive={currentChildren === "screenRecord"}
                 onClick={() => {
-                  setCurrentChildren("screenRecord");
+                    setAnimationClass("hidden")
+                    setCurrentChildren("screenRecord");
                 }}
             >
               <FontAwesomeIcon icon={faVideo}></FontAwesomeIcon>
@@ -102,17 +129,17 @@ export default function Home() {
           <div
               className={`absolute duration-200 transition-all ${
                   leftNavigationHidden ? `left-0` : `left-1/16`
-              } top-1/2`}
+              } top-1/2 z-10`}
               onClick={() =>
                   setLeftNavigationHidden((prevState) => {
                     return !prevState;
                   })
               }
           >
-            <div className="text-primary">
+            <div className="text-primary ">
               {leftNavigationHidden ? (
                   <FontAwesomeIcon
-                      className={` hover:scale-125 hover:cursor-pointer  transition-all duration-200`}
+                      className={` hover:scale-125 hover:cursor-pointer   transition-all duration-200`}
                       size={`xl`}
                       icon={faAngleRight}
                   ></FontAwesomeIcon>
@@ -126,9 +153,11 @@ export default function Home() {
             </div>
           </div>
           <div
-              className={`w-full flex overflow-auto h-full bg-background text-on-background transition-all`}
+              className={`w-full  ${animationClass} relative overflow-auto h-full bg-background text-on-background transition-all`}
           >
-            {ChildrenView()}
+              <div className={`absolute h-full w-full flex transition-all`}>
+                  {ChildrenView()}
+              </div>
           </div>
 
         </div>

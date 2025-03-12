@@ -7,6 +7,7 @@ import SplitText from "@/app/components/split-text";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import {useNotification} from "@/context/notification-provider";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -19,23 +20,28 @@ export default function RegisterPage() {
     () => password === confirmPassword,
     [password, confirmPassword]
   );
+  var {message,showNotification} = useNotification();
+  const notify = (msg: string,type:string="error") => {
+    showNotification({type:type,message:message});
+  };
+
 
   const register = async () => {
     if (username.length == 0) {
-      //notify("用户名不能为空");
+      notify("用户名不能为空");
       return;
     }
     if (phone.length == 0) {
-      //notify("手机号不能为空");
+      notify("手机号不能为空");
       return;
     }
     if (password.length == 0) {
-      //notify("密码不能为空");
+      notify("密码不能为空");
       return;
     }
 
     if (!passwordIsValid) {
-      //notify("两次输入的密码不一致");
+      notify("两次输入的密码不一致");
       return;
     }
 
@@ -46,11 +52,11 @@ export default function RegisterPage() {
     });
 
     if (resp.base.code !== 200) {
-      //notify("注册失败: ",resp.base.msg);
+      notify("注册失败: ",resp.base.msg);
       return;
     }
 
-    //notify("注册成功，正在跳转登陆页面");
+    notify("注册成功，正在跳转登陆页面","success");
     router.push("/auth/login");
   };
 

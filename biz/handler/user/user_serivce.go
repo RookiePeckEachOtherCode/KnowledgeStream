@@ -38,7 +38,7 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 	uid, name, token, err := service.UserServ().UserLoginWithPhone(ctx, req.Phone, req.Password)
 
 	if err != nil {
-		resp.Base = srverror.WrapWithError(http.StatusUnauthorized, err)
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		hlog.Error("UserLoginWithPhone failed, err: ", err)
 		c.JSON(consts.StatusOK, resp)
 		return

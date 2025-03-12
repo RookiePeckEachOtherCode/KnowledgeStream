@@ -1,9 +1,13 @@
 package srverror
 
-import "errors"
+type RuntimeError struct {
+	Msg string
+}
 
-type RuntimeError error
+func (e *RuntimeError) Error() string {
+	return e.Msg
+}
 
-func NewRuntimeError(msg string) RuntimeError {
-	return errors.New(msg)
+func NewRuntimeError(msg string) *RuntimeError {
+	return &RuntimeError{Msg: msg}
 }

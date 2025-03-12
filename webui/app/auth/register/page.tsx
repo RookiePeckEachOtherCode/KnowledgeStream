@@ -7,6 +7,7 @@ import { useNotification } from "@/context/notification-provider";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import {useNotification} from "@/context/notification-provider";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -20,9 +21,15 @@ export default function RegisterPage() {
     () => password === confirmPassword,
     [password, confirmPassword]
   );
+  var {message,showNotification} = useNotification();
+  const notify = (msg: string,type:string="error") => {
+    showNotification({type:type,message:message});
+  };
+
 
   const register = async () => {
     if (username.length == 0) {
+
       showNotification({
         title: "注册失败",
         content: "用户名不能为空",
@@ -48,6 +55,7 @@ export default function RegisterPage() {
     }
 
     if (!passwordIsValid) {
+
       showNotification({
         title: "注册失败",
         content: "两次输入的密码不一致",
@@ -67,6 +75,7 @@ export default function RegisterPage() {
     });
 
     if (resp.base.code !== 200) {
+
       showNotification({
         title: "注册失败",
         content: resp.base.msg,

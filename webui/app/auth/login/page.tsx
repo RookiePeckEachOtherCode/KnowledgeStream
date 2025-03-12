@@ -8,6 +8,7 @@ import SplitText from "@/app/components/split-text";
 import { useNotification } from "@/context/notification-provider";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import {useNotification} from "@/context/notification-provider";
 
 export default function LoginPage() {
   const router = useRouter();

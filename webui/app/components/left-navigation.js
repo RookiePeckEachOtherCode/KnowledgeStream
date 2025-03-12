@@ -36,7 +36,7 @@ export function NavigationItem(props) {
 
       {/* 浮动标签 */}
       <div
-        className={`absolute left-full ml-3 px-3 py-1.5 rounded-md shadow-md
+        className={`absolute left-full ml-3 px-3 z-10 py-1.5 rounded-md shadow-md
         text-sm font-medium bg-surface
         opacity-0 group-hover:opacity-100 transition-opacity
         pointer-events-none whitespace-nowrap`}

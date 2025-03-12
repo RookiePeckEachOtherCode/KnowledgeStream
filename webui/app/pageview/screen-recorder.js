@@ -1,11 +1,12 @@
 import {useScreenRecord} from "../../context/screen-record-provider";
 import {useEffect, useRef} from "react";
 import {IconButton} from "../components/icon-button";
+import {useOss} from "../../context/oss-uploader-provider.js";
 
 export function ScreenRecordControlPage(props){
     const {isRecording,startRecording,stopRecording,recordedBlob,liveStream} = useScreenRecord();
     const previewVideoRef = useRef(null);//实时预览流
-    
+    var handleFileUpload = useOss();
 
     // 实时视频更新
     useEffect(() => {
@@ -13,6 +14,10 @@ export function ScreenRecordControlPage(props){
             previewVideoRef.current.srcObject = liveStream;
         }
     }, [liveStream]);
+    
+    const UploadVideo=async ()=>{
+       await handleFileUpload(recordedBlob,"test","ks-video")
+    }
 
     return (
         <div className={`w-full  space-x-6  h-full flex flex-row p-8`}>
@@ -34,6 +39,7 @@ export function ScreenRecordControlPage(props){
                 <IconButton
                     className={` bg-tertiary-container  text-on-tertiary-container
                      hover:text-on-tertiary hover:bg-tertiary w-24 h-12`}
+                    onClick={UploadVideo}
                     text={`上传录屏`}
                 >
                 </IconButton>

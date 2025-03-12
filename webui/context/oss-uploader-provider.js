@@ -2,13 +2,13 @@
 
 import {createContext, useContext, useState} from "react";
 import OSS from 'ali-oss';
-import {useNotification} from "./notification-provider.js";
+import {useNotification} from "./notification-provider.tsx";
 const OssContext=createContext(undefined)
 
 export function OssUploaderProvider({children}){
     const [uploading, setUploading] = useState(false)
     const [loading, setLoading] = useState(false);
-    var {message,showNotification} = useNotification();
+    var {showNotification} = useNotification();
     // 获取临时凭证
     const getSTSCredentials = async () => {
         const res = await fetch('/api/sts-token');
@@ -50,9 +50,19 @@ export function OssUploaderProvider({children}){
                     'Content-Type': file.type        // 确保 MIME 类型正确
                 }
             });
-            showNotification("success",`${result.url}`)
+            showNotification({
+                    title:"上传成功",
+                    content: "视频已上传",
+                    type: "success",
+                }
+            )
+            
         }catch (err){
-            showNotification("error",`${err}`)
+            showNotification({
+                title:"上传失败",
+                content: `${err}`,
+                type: "error",
+            })
         }finally {
             setLoading(false)
         }

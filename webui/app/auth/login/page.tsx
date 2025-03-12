@@ -5,6 +5,7 @@ import AnimatedContent from "@/app/components/animated-content";
 import MDButton from "@/app/components/md-button";
 import MDInput from "@/app/components/md-input";
 import SplitText from "@/app/components/split-text";
+import { useNotification } from "@/context/notification-provider";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {useNotification} from "@/context/notification-provider";
@@ -13,10 +14,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  var {message,showNotification} = useNotification();
-  const notify = (msg: string,type:string="success") => {
-    showNotification({type:type,message:message});
-  };
+  const { showNotification } = useNotification();
 
   const login = async () => {
     const resp = await api.userService.login({
@@ -24,10 +22,18 @@ export default function LoginPage() {
       password: password,
     });
     if (resp.base.code !== 200) {
-      notify("登陆失败: " + resp.base.msg,"error");
+      showNotification({
+        title: "登陆失败",
+        content: resp.base.msg,
+        type: "error",
+      });
       return;
     }
-    notify("登陆成功, 正在跳转到首页");
+    showNotification({
+      title: "登陆成功",
+      content: "欢迎回来",
+      type: "success",
+    });
 
     localStorage.setItem("token", resp.token);
     localStorage.setItem("username", resp.name);

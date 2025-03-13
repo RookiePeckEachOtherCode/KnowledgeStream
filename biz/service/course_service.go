@@ -41,7 +41,7 @@ func (s *CourseService) CourseInfoWithCid(c context.Context, cid int64) (*base.C
 	course, err := cc.WithContext(c).Where(cc.ID.Eq(cid)).First()
 	if err != nil {
 		hlog.Error("查询课程域信息失败: ", err)
-		return nil, fmt.Errorf("内部错误")
+		return nil, err
 	}
 	result := new(base.CourseInfo)
 	result.Title = course.Title
@@ -55,7 +55,7 @@ func (s *CourseService) CourseVideosInfoWithCid(c context.Context, cid int64) ([
 	videos, err := v.Where(v.Ascription.Eq(cid)).Find()
 	if err != nil {
 		hlog.Error("查询课程域视频列表信息失败: ", err)
-		return nil, fmt.Errorf("内部错误")
+		return nil, err
 	}
 	var result []*base.VideoInfo
 	for _, video := range videos {
@@ -74,14 +74,14 @@ func (s *CourseService) CourseMembersInfoWithCid(c context.Context, cid int64) (
 	memberids, err := uc.Where(uc.CourseID.Eq(cid)).Find()
 	if err != nil {
 		hlog.Error("查询课程域成员列表信息失败: ", err)
-		return nil, fmt.Errorf("内部错误")
+		return nil, err
 	}
 	var result []*base.UserInfo
 	for _, memberid := range memberids {
 		member, err := UserServ().GetUserInfoWithId(c, memberid.UserID)
 		if err != nil {
 			hlog.Error("查询用户信息失败: ", err)
-			return nil, fmt.Errorf("内部错误")
+			return nil, err
 		}
 		userInfo := new(base.UserInfo)
 		userInfo.Name = member.Name
@@ -99,14 +99,14 @@ func (s *CourseService) SelectMyCoursesWithUid(c context.Context, uid int64) ([]
 			return nil, nil
 		}
 		hlog.Error("查询所在课程域失败: ", err)
-		return nil, fmt.Errorf("内部错误")
+		return nil, err
 	}
 	var result []*base.CourseInfo
 	for _, courseid := range courseids {
 		course, err := CourseServ().CourseInfoWithCid(c, courseid.CourseID)
 		if err != nil {
 			hlog.Error("查询课程域信息失败: ", err)
-			return nil, fmt.Errorf("内部错误")
+			return nil, err
 		}
 		courseInfo := new(base.CourseInfo)
 		courseInfo.Cid = fmt.Sprintf("%d", course.Cid)
@@ -132,11 +132,11 @@ func (s *CourseService) CreateCourseWithUid(c context.Context, id int64, title s
 	}
 	if err := cc.WithContext(c).Save(&course); err != nil {
 		hlog.Error("创建课程域失败: ", err)
-		return fmt.Errorf("内部错误")
+		return err
 	}
 	if err = CourseServ().InviteUserWithCidAndUid(c, *cid, id); err != nil {
 		hlog.Error("课程初始化失败: ", err)
-		return fmt.Errorf("内部错误")
+		return err
 	}
 	return nil
 }
@@ -145,12 +145,12 @@ func (s *CourseService) DeleteCourseWithCid(c context.Context, cid int64) error 
 	course, err := cc.WithContext(c).Where(cc.ID.Eq(cid)).First()
 	if err != nil {
 		hlog.Error("查询课程域失败: ", err)
-		return fmt.Errorf("内部错误")
+		return err
 	}
 	if _, err = cc.WithContext(c).Delete(course); err != nil {
 
 		hlog.Error("删除课程域失败: ", err)
-		return fmt.Errorf("内部错误")
+		return err
 	}
 	return nil
 }
@@ -159,7 +159,7 @@ func (s *CourseService) UpdateCourseWithCid(c context.Context, cid int64, title 
 	course, err := cc.WithContext(c).Where(cc.ID.Eq(cid)).First()
 	if err != nil {
 		hlog.Error("查询课程域失败: ", err)
-		return fmt.Errorf("内部错误")
+		return err
 	}
 	if title != "" {
 		course.Title = title
@@ -172,7 +172,7 @@ func (s *CourseService) UpdateCourseWithCid(c context.Context, cid int64, title 
 	}
 	if err = cc.WithContext(c).Save(course); err != nil {
 		hlog.Error("更新课程域信息失败: ", err)
-		return fmt.Errorf("内部错误")
+		return err
 	}
 	return nil
 }
@@ -185,7 +185,7 @@ func (s *CourseService) InviteUserWithCidAndUid(c context.Context, cid int64, ui
 		}
 	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
 		hlog.Error("查询用户课程关联记录失败: ", err)
-		return fmt.Errorf("内部错误")
+		return err
 	}
 	ucc := entity.UserInCourse{
 		UserID:   uid,
@@ -193,7 +193,7 @@ func (s *CourseService) InviteUserWithCidAndUid(c context.Context, cid int64, ui
 	}
 	if err = uc.WithContext(c).Save(&ucc); err != nil {
 		hlog.Error("邀请用户加入课程域失败: ", err)
-		return fmt.Errorf("内部错误")
+		return err
 	}
 	return nil
 }
@@ -205,11 +205,11 @@ func (s *CourseService) OperateMemberWithCidAndUid(c context.Context, cid int64,
 			return fmt.Errorf("该用户并不在该课程域中")
 		}
 		hlog.Error("查询用户课程关联记录失败: ", err)
-		return fmt.Errorf("内部错误")
+		return err
 	}
 	if _, err = uc.WithContext(c).Delete(uinc); err != nil {
 		hlog.Error("删除用户失败: ", err)
-		return fmt.Errorf("内部错误")
+		return err
 	}
 	return nil
 }

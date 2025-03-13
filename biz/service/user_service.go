@@ -74,7 +74,7 @@ func (s *UserService) UserRegister(
 
 	if err = u.WithContext(c).Save(&user); err != nil {
 		hlog.Error("注册用户失败: ", err)
-		return fmt.Errorf("内部错误")
+		return err
 	}
 	return nil
 }
@@ -88,7 +88,7 @@ func (s *UserService) UserLoginWithPhone(c context.Context, phone string, passwo
 			return 0, "", "", srverror.NewRuntimeError("用户不存在")
 		}
 		hlog.Error("用户登录失败: ", err)
-		return 0, "", "", fmt.Errorf("内部错误")
+		return 0, "", "", err
 	}
 	isValid := utils.VerifyPassword([]byte(user.Password), []byte(user.Salt), password)
 	if !isValid {
@@ -103,7 +103,7 @@ func (s *UserService) GetUserInfoWithId(c context.Context, id int64) (*entity.Us
 	user, err := u.WithContext(c).Where(u.ID.Eq(id)).First()
 	if err != nil {
 		hlog.Error("获取用户信息失败: ", err)
-		return nil, fmt.Errorf("内部错误")
+		return nil, err
 	}
 	return user, err
 }
@@ -129,7 +129,7 @@ func (s *UserService) UpdateUserInfoWithId(c context.Context, id int64, name str
 	}
 	if err := u.WithContext(c).Save(user); err != nil {
 		hlog.Error("更新用户信息失败: ", err)
-		return fmt.Errorf("内部错误")
+		return err
 	}
 	return nil
 }
@@ -151,7 +151,7 @@ func (s *UserService) UpdateUserIdentityWithUid(c context.Context, uid int64, au
 	}
 	if err := u.WithContext(c).Save(user); err != nil {
 		hlog.Error("更新用户权限失败: ", err)
-		return fmt.Errorf("内部错误")
+		return err
 	}
 	return nil
 }
@@ -163,12 +163,12 @@ func (s *UserService) DeleteUserWithUid(c context.Context, uid int64) error {
 			return fmt.Errorf("用户不存在或已被删除")
 		}
 		hlog.Error("查询用户失败: ", err)
-		return fmt.Errorf("内部错误")
+		return err
 	}
 	_, err = u.WithContext(c).Delete(user)
 	if err != nil {
 		hlog.Error("删除用户失败: ", err)
-		return fmt.Errorf("内部错误")
+		return err
 	}
 	return nil
 }

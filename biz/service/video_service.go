@@ -44,7 +44,7 @@ func (s *VideoService) VideoInfoService(c context.Context, vid int64) (*base.Vid
 			return nil, fmt.Errorf("视频不存在或已被删除")
 		}
 		hlog.Error("查询视频信息失败: ", err)
-		return nil, fmt.Errorf("内部错误")
+		return nil, err
 	}
 	var result *base.VideoInfo
 	result.Vid = fmt.Sprintf("%d", video.ID)
@@ -62,12 +62,12 @@ func (s *VideoService) DeleteVideoWithVid(c context.Context, vid int64) error {
 			return fmt.Errorf("视频不存在或已被删除")
 		}
 		hlog.Error("查询视频失败: ", err)
-		return fmt.Errorf("内部错误")
+		return err
 	}
 	_, err = v.WithContext(c).Delete(video)
 	if err != nil {
 		hlog.Error("删除视频失败: ", err)
-		return fmt.Errorf("内部错误")
+		return err
 	}
 	return nil
 }
@@ -91,7 +91,7 @@ func (s *VideoService) UploadVideoWithCidAndUid(c context.Context, uid int64, ci
 	err = v.WithContext(c).Save(&video)
 	if err != nil {
 		hlog.Error("上传视频失败: ", err)
-		return fmt.Errorf("内部错误")
+		return err
 	}
 	return nil
 }

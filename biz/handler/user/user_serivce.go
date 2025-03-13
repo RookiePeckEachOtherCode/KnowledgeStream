@@ -48,7 +48,7 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 	resp.Name = name
 	resp.Token = token
 	resp.Authority = authority
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("登录成功")
 
 	c.JSON(consts.StatusOK, resp)
 }
@@ -77,7 +77,7 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("注册成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -111,7 +111,7 @@ func UserInfo(ctx context.Context, c *app.RequestContext) {
 		resp.Avatar = dbuser.Avatar
 		resp.Authoriry = string(authority)
 	}
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("查询用户信息成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -141,7 +141,7 @@ func UserInfoUpdate(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("更新用户信息成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -178,7 +178,7 @@ func CreateCourse(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("创建课程域成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -221,7 +221,7 @@ func DeleteCourse(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("删除课程域成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -264,7 +264,7 @@ func UpdateCourse(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("更新课程域信息成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -314,7 +314,7 @@ func InviteStudent(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("邀请学生加入课程域成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -357,7 +357,7 @@ func OperateMember(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("删除课程域成员成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -414,7 +414,7 @@ func UploadVideos(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("上传视频成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -450,7 +450,7 @@ func SelectMyCourses(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	resp.Coursesinfo = result
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("查询所在课程域信息成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -491,7 +491,7 @@ func DeleteVideo(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("删除视频成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -523,6 +523,6 @@ func StudentMyCourses(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	resp.Coursesinfo = result
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("查询所在课程域信息成功")
 	c.JSON(consts.StatusOK, resp)
 }

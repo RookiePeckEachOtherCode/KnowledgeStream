@@ -61,7 +61,7 @@ func DeleteTarget(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("删除对象成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -110,7 +110,7 @@ func UpdateUserInfo(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("更新用户信息成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -167,7 +167,7 @@ func UploadVideo(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("上传视频成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -203,7 +203,7 @@ func CreateCourse(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("创建课程域成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -253,7 +253,7 @@ func DeleteUserFromCourse(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("删除课程域成员成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -296,7 +296,7 @@ func UpdateCourseInfo(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("更新课程域信息成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -334,5 +334,6 @@ func ImportStudents(ctx context.Context, c *app.RequestContext) {
 			return
 		}
 	}
+	resp.Base = srverror.WrapWithSuccess("学生数据导入成功")
 	c.JSON(consts.StatusOK, resp)
 }

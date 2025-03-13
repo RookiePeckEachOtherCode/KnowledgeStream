@@ -50,7 +50,7 @@ func CourseInfo(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	resp.Courseinfo = result
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("查询课程域信息成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -88,7 +88,7 @@ func CourseVideosInfo(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	resp.Videosinfo = result
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("查询课程域视频列表信息成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -126,6 +126,6 @@ func CourseMembersInfo(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	resp.Usersinfo = result
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("查询课程域成员列表信息成功")
 	c.JSON(consts.StatusOK, resp)
 }

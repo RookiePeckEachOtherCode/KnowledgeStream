@@ -51,6 +51,6 @@ func VideoInfo(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	resp.Videoinfo = result
-	resp.Base = srverror.WrapWithSuccess()
+	resp.Base = srverror.WrapWithSuccess("查询视频信息成功")
 	c.JSON(consts.StatusOK, resp)
 }

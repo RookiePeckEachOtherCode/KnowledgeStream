@@ -292,3 +292,40 @@ func UpdateCourseInfo(ctx context.Context, c *app.RequestContext) {
 	resp.Base = srverror.WrapWithSuccess()
 	c.JSON(consts.StatusOK, resp)
 }
+
+// ImportStudents .
+// @router /admin/import [POST]
+func ImportStudents(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req admin.ImportStudentsReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(admin.ImportStudentsResp)
+	resp.Base = new(base.BaseResponse)
+	_, authority, err := utils.AuthCheck(c)
+	if err != nil {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = err.Error()
+		c.JSON(http.StatusUnauthorized, resp)
+		return
+	}
+	if authority != entity.AuthoritySuperAdmin {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "用户权限不够"
+		c.JSON(http.StatusUnauthorized, resp)
+		return
+	}
+	for _, student := range req.Students {
+		err = service.UserServ().UserRegister(ctx, student.Name, student.Phone, "123456")
+		if err != nil {
+			resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+			c.JSON(consts.StatusBadRequest, resp)
+			return
+		}
+	}
+	c.JSON(consts.StatusOK, resp)
+}

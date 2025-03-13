@@ -5,6 +5,10 @@ struct BaseResponse {
      1: i32 code;
      2: string msg;
 }
+struct StudentInfo{
+    1:string name;
+    2:string phone;
+}
 struct UserInfo{
     1:string uid;
     2:string avatar;

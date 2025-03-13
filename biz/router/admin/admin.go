@@ -21,6 +21,7 @@ func Register(r *server.Hertz) {
 		_admin := root.Group("/admin", _adminMw()...)
 		_admin.POST("/createcourse", append(_createcourseMw(), admin.CreateCourse)...)
 		_admin.POST("/delete", append(_deletetargetMw(), admin.DeleteTarget)...)
+		_admin.POST("/import", append(_importstudentsMw(), admin.ImportStudents)...)
 		_admin.POST("/uploadvideo", append(_uploadvideoMw(), admin.UploadVideo)...)
 		{
 			_update := _admin.Group("/update", _updateMw()...)

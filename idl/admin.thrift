@@ -1,6 +1,13 @@
 namespace go admin
 
 include "./base/common.thrift"
+
+struct ImportStudentsReq{
+    1:list<common.StudentInfo> students;
+}
+struct ImportStudentsResp{
+    1:common.BaseResponse base;
+}
 struct DeleteTargetReq{
     1:string target(api.query="target");
     2:string tid(api.query="tid");
@@ -57,6 +64,7 @@ struct UpdateCourseInfoResp{
     1:common.BaseResponse base;
 }
 service AdminService{
+    ImportStudentsResp ImportStudents(1:ImportStudentsReq req)(api.post="/admin/import");
     DeleteTargetResp DeleteTarget(1:DeleteTargetReq req)(api.post="/admin/delete");
     UpdateUserInfoResp UpdateUserInfo(1:UpdateUserInfoReq req)(api.post="/admin/update/user");
     UploadVideoResp UploadVideo(1:UploadVideoReq req)(api.post="/admin/uploadvideo");

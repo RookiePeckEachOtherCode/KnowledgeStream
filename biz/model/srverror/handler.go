@@ -2,10 +2,10 @@ package srverror
 
 import "github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/base"
 
-func WrapWithSuccess() *base.BaseResponse {
+func WrapWithSuccess(msg string) *base.BaseResponse {
 	return &base.BaseResponse{
 		Code: 200,
-		Msg:  "请求成功",
+		Msg:  msg,
 	}
 }
 func WrapWithCodeMsg(code int32, msg string) *base.BaseResponse {

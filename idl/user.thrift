@@ -9,10 +9,17 @@ struct BaseResponse {
 //------------------------------------------Common
 
 struct userRegisterReq{
+<<<<<<< Updated upstream
     1:string name(api.query="name")
     2:string password(api.query="password")
     3:string phone(api.query="phone")
 
+=======
+    1: string name(api.body="name")
+    2: string password(api.body="password")
+    3: string phone(api.body="phone")
+    4: string identity(api.body="identity")
+>>>>>>> Stashed changes
 }
 struct userRegisterResp{
     1:BaseResponse base;

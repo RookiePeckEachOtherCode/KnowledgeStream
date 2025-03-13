@@ -193,9 +193,16 @@ func (p *BaseResponse) String() string {
 
 // ------------------------------------------Common
 type UserRegisterReq struct {
+<<<<<<< Updated upstream
 	Name     string `thrift:"name,1" json:"name" query:"name"`
 	Password string `thrift:"password,2" json:"password" query:"password"`
 	Phone    string `thrift:"phone,3" json:"phone" query:"phone"`
+=======
+	Name     string `thrift:"name,1" form:"name" json:"name"`
+	Password string `thrift:"password,2" form:"password" json:"password"`
+	Phone    string `thrift:"phone,3" form:"phone" json:"phone"`
+	Identity string `thrift:"identity,4" form:"identity" json:"identity"`
+>>>>>>> Stashed changes
 }
 
 func NewUserRegisterReq() *UserRegisterReq {
@@ -214,10 +221,15 @@ func (p *UserRegisterReq) GetPhone() (v string) {
 	return p.Phone
 }
 
+func (p *UserRegisterReq) GetIdentity() (v string) {
+	return p.Identity
+}
+
 var fieldIDToName_UserRegisterReq = map[int16]string{
 	1: "name",
 	2: "password",
 	3: "phone",
+	4: "identity",
 }
 
 func (p *UserRegisterReq) Read(iprot thrift.TProtocol) (err error) {
@@ -262,6 +274,16 @@ func (p *UserRegisterReq) Read(iprot thrift.TProtocol) (err error) {
 		case 3:
 			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField3(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 4:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField4(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else {
@@ -326,6 +348,15 @@ func (p *UserRegisterReq) ReadField3(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *UserRegisterReq) ReadField4(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.Identity = v
+	}
+	return nil
+}
+
 func (p *UserRegisterReq) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("userRegisterReq"); err != nil {
@@ -342,6 +373,10 @@ func (p *UserRegisterReq) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField3(oprot); err != nil {
 			fieldId = 3
+			goto WriteFieldError
+		}
+		if err = p.writeField4(oprot); err != nil {
+			fieldId = 4
 			goto WriteFieldError
 		}
 
@@ -412,6 +447,23 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 3 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 3 end error: ", p), err)
+}
+
+func (p *UserRegisterReq) writeField4(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("identity", thrift.STRING, 4); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Identity); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 end error: ", p), err)
 }
 
 func (p *UserRegisterReq) String() string {

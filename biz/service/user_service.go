@@ -41,6 +41,7 @@ func (s *UserService) UserRegister(
 	name string,
 	phone string,
 	password string,
+	identity string,
 ) error {
 	id, err := utils.NextSnowFlakeId()
 	if err != nil {
@@ -62,10 +63,17 @@ func (s *UserService) UserRegister(
 		Phone:     phone,
 		Authority: entity.AuthorityUser,
 	}
+<<<<<<< Updated upstream
 	_, err = u.WithContext(c).Where(u.Name.Eq(name)).First()
 	if err == nil {
 		return errors.New("name existed")
 	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+=======
+	if identity == "teacher" {
+		user.Authority = entity.AuthorityAdmin
+	}
+	if err = u.WithContext(c).Save(&user); err != nil {
+>>>>>>> Stashed changes
 		return err
 	}
 
@@ -145,6 +153,7 @@ func (s *UserService) UpdateUserInfoWithId(c context.Context, id int64, name str
 	}
 	return nil
 }
+<<<<<<< Updated upstream
 
 // ------------------------------------------Techer
 func (s *UserService) CreateCourseWithUid(c context.Context, uid int64, title string, description string, cover string) error {
@@ -267,4 +276,41 @@ func (s *UserService) SelectMyCoursesWithUid(c context.Context, uid int64) ([]st
 		result = append(result, idStr)
 	}
 	return result, nil
+=======
+func (s *UserService) UpdateUserIdentityWithUid(c context.Context, uid int64, authority string) error {
+	u := query.User
+	user, err := u.WithContext(c).Where(u.ID.Eq(uid)).First()
+	if err != nil {
+		return err
+	}
+	if authority == "" {
+		return nil
+	}
+	if authority == "USER" {
+		user.Authority = entity.AuthorityUser
+	} else if authority == "ADMIN" {
+		user.Authority = entity.AuthorityAdmin
+	} else {
+		user.Authority = entity.AuthoritySuperAdmin
+	}
+	if err := u.WithContext(c).Save(user); err != nil {
+		return fmt.Errorf("更新用户权限失败: %w", err)
+	}
+	return nil
+}
+func (s *UserService) DeleteUserWithUid(c context.Context, uid int64) error {
+	u := query.User
+	user, err := u.WithContext(c).Where(u.ID.Eq(uid)).First()
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return fmt.Errorf("用户不存在或已被删除")
+		}
+		return fmt.Errorf("查询用户失败: %w", err)
+	}
+	_, err = u.WithContext(c).Delete(user)
+	if err != nil {
+		return fmt.Errorf("用户删除失败: %w", err)
+	}
+	return nil
+>>>>>>> Stashed changes
 }

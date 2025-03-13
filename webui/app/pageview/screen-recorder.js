@@ -1,12 +1,15 @@
 import {useScreenRecord} from "../../context/screen-record-provider";
-import {useEffect, useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import {IconButton} from "../components/icon-button";
 import {useOss} from "../../context/oss-uploader-provider.js";
+import {OssVideo} from "../components/oss-midea.tsx";
 
 export function ScreenRecordControlPage(props){
     const {isRecording,startRecording,stopRecording,recordedBlob,liveStream} = useScreenRecord();
     const previewVideoRef = useRef(null);//实时预览流
-    var handleFileUpload = useOss();
+
+    const [testUrl, setTestUrl] = useState()
+    var {handleFileUpload,generateSignedUrl} = useOss();
 
     // 实时视频更新
     useEffect(() => {
@@ -18,6 +21,8 @@ export function ScreenRecordControlPage(props){
     const UploadVideo=async ()=>{
        await handleFileUpload(recordedBlob,"test","ks-video")
     }
+
+
 
     return (
         <div className={`w-full  space-x-6  h-full flex flex-row p-8`}>
@@ -58,21 +63,22 @@ export function ScreenRecordControlPage(props){
             </div>
 
             <div className={`w-full items-center flex  justify-center`}>
-                {
-                    isRecording?<video
-                        ref={previewVideoRef}
-                        autoPlay={true}
-                        muted={true}
-                        className={`w-3/4 object-cover`}
-                        ></video>
-                    :recordedBlob&&(
-                        <video
-                            controls
-                            src={URL.createObjectURL(recordedBlob)}
-                            className={`w-3/4 object-cover`}
-                        />
-                    )
-                }
+                {/*{*/}
+                {/*    isRecording?<video*/}
+                {/*        ref={previewVideoRef}*/}
+                {/*        autoPlay={true}*/}
+                {/*        muted={true}*/}
+                {/*        className={`w-3/4 object-cover`}*/}
+                {/*        ></video>*/}
+                {/*    :recordedBlob&&(*/}
+                {/*        <video*/}
+                {/*            controls*/}
+                {/*            src={URL.createObjectURL(recordedBlob)}*/}
+                {/*            className={`w-3/4 object-cover`}*/}
+                {/*        />*/}
+                {/*    )*/}
+                {/*}*/}
+                    <OssVideo className={`w-3/4 `} bucket={"ks-video"} fileName={"test"} ></OssVideo>
             </div>
         </div>
     )

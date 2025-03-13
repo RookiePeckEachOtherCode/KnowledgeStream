@@ -1,6 +1,6 @@
 "use client"
 
-import {createContext, useContext, useState} from "react";
+import {createContext, useContext, useRef, useState} from "react";
 import OSS from 'ali-oss';
 import {useNotification} from "./notification-provider.tsx";
 const OssContext=createContext(undefined)
@@ -9,6 +9,9 @@ export function OssUploaderProvider({children}){
     const [uploading, setUploading] = useState(false)
     const [loading, setLoading] = useState(false);
     var {showNotification} = useNotification();
+
+    const clientCache = useRef(new Map());
+
     // 获取临时凭证
     const getSTSCredentials = async () => {
         const res = await fetch('/api/sts-token');
@@ -16,9 +19,15 @@ export function OssUploaderProvider({children}){
     };
     
     const initOSSClient = async (bucket) => {
+        
+        const cached = clientCache.current.get(bucket);// 检查缓存是否存在且未过期（5分钟）
+        if (cached && Date.now() - cached.lastRenew < 300000) {
+            return cached.client;
+        }
+        
         const credentials = await getSTSCredentials();
 
-        return new OSS({
+        const newClient = OSS({
             region: 'oss-cn-beijing', 
             accessKeyId: credentials.AccessKeyId,
             accessKeySecret: credentials.AccessKeySecret,
@@ -35,6 +44,14 @@ export function OssUploaderProvider({children}){
             },
             refreshSTSTokenInterval: 300000 // 5 分钟刷新一次
         });
+        // 更新缓存
+        clientCache.current.set(bucket, {
+            client: newClient,
+            lastRenew: Date.now()
+        });
+
+        return newClient;
+        
     };
     
     
@@ -68,8 +85,30 @@ export function OssUploaderProvider({children}){
         }
         
     }
+
+    const generateSignedUrl = async (fileName, bucket, expires = 36000) => {
+        try {
+            const client = await initOSSClient(bucket);
+            return client.signatureUrl(fileName, {
+                expires,
+                response: {
+                    'content-disposition': 'inline'
+                }
+            });
+        } catch (err) {
+            showNotification({
+                title: "生成链接失败",
+                content: `${err}`,
+                type: "error"
+            });
+            throw err;
+        }
+    };
+    
+    
+    
     return(
-        <OssContext.Provider value={handleUploadFile}>
+        <OssContext.Provider value={{handleUploadFile,generateSignedUrl}}>
             {children}
         </OssContext.Provider>
     )

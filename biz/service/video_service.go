@@ -8,6 +8,7 @@ import (
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/query"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/base"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/utils"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"gorm.io/gorm"
 	"sync"
 )
@@ -42,7 +43,8 @@ func (s *VideoService) VideoInfoService(c context.Context, vid int64) (*base.Vid
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, fmt.Errorf("视频不存在或已被删除")
 		}
-		return nil, fmt.Errorf("查询视频信息失败: %w", err)
+		hlog.Error("查询视频信息失败: ", err)
+		return nil, fmt.Errorf("内部错误")
 	}
 	var result *base.VideoInfo
 	result.Vid = fmt.Sprintf("%d", video.ID)
@@ -59,11 +61,13 @@ func (s *VideoService) DeleteVideoWithVid(c context.Context, vid int64) error {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return fmt.Errorf("视频不存在或已被删除")
 		}
-		return fmt.Errorf("查询视频失败: %w", err)
+		hlog.Error("查询视频失败: ", err)
+		return fmt.Errorf("内部错误")
 	}
 	_, err = v.WithContext(c).Delete(video)
 	if err != nil {
-		return fmt.Errorf("删除视频失败: %w", err)
+		hlog.Error("删除视频失败: ", err)
+		return fmt.Errorf("内部错误")
 	}
 	return nil
 }
@@ -86,7 +90,8 @@ func (s *VideoService) UploadVideoWithCidAndUid(c context.Context, uid int64, ci
 
 	err = v.WithContext(c).Save(&video)
 	if err != nil {
-		return fmt.Errorf("上传视频失败: %w", err)
+		hlog.Error("上传视频失败: ", err)
+		return fmt.Errorf("内部错误")
 	}
 	return nil
 }

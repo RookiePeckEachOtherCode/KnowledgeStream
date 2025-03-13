@@ -2,15 +2,11 @@ namespace go video
 
 include "./base/common.thrift"
 
-struct BaseResponse {
-     1: i32 code;
-     2: string msg;
- }
 struct VideoInfoReq{
     1:string vid(api.query="vid")
 }
 struct VideoInfoResp{
-    1:BaseResponse base;
+    1:common.BaseResponse base;
     2:common.VideoInfo videoinfo
 }
 service VideoService{

@@ -5,8 +5,10 @@ package course
 import (
 	"context"
 	course "github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/course"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/srverror"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/service"
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"net/http"
 	"strconv"
@@ -24,9 +26,7 @@ func CourseInfo(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(course.CourseInfoResp)
-	resp.Base = new(course.BaseResponse)
-	resp.Base.Msg = "查询课程域信息成功"
-	resp.Base.Code = http.StatusOK
+
 	_, exists := c.Get("uid")
 	if !exists {
 		resp.Base.Code = http.StatusUnauthorized
@@ -43,17 +43,19 @@ func CourseInfo(ctx context.Context, c *app.RequestContext) {
 	}
 	cid, err := strconv.ParseInt(req.Cid, 10, 64)
 	if err != nil {
-		resp.Base.Code = http.StatusUnauthorized
-		resp.Base.Msg = "课程域编号格式转换失败"
-		c.JSON(http.StatusUnauthorized, resp)
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		hlog.Error("课程域id数据格式转换失败失败：", err)
+		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
 	result, err := service.CourseServ().CourseInfoWithCid(ctx, cid)
 	if err != nil {
-		resp.Base.Code = http.StatusUnauthorized
-		resp.Base.Msg = err.Error()
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		c.JSON(consts.StatusBadRequest, resp)
+		return
 	}
 	resp.Courseinfo = result
+	resp.Base = srverror.WrapWithSuccess()
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -69,9 +71,7 @@ func CourseVideosInfo(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(course.CourseVideosInfoResp)
-	resp.Base = new(course.BaseResponse)
-	resp.Base.Msg = "查询课程域信息成功"
-	resp.Base.Code = http.StatusOK
+
 	_, exists := c.Get("uid")
 	if !exists {
 		resp.Base.Code = http.StatusUnauthorized
@@ -88,17 +88,19 @@ func CourseVideosInfo(ctx context.Context, c *app.RequestContext) {
 	}
 	cid, err := strconv.ParseInt(req.Cid, 10, 64)
 	if err != nil {
-		resp.Base.Code = http.StatusUnauthorized
-		resp.Base.Msg = "课程域编号格式转换失败"
-		c.JSON(http.StatusUnauthorized, resp)
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		hlog.Error("课程域id数据格式转换失败：", err)
+		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
 	result, err := service.CourseServ().CourseVideosInfoWithCid(ctx, cid)
 	if err != nil {
-		resp.Base.Code = http.StatusUnauthorized
-		resp.Base.Msg = err.Error()
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		c.JSON(consts.StatusBadRequest, resp)
+		return
 	}
 	resp.Videosinfo = result
+	resp.Base = srverror.WrapWithSuccess()
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -114,9 +116,7 @@ func CourseMembersInfo(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(course.CourseMembersInfoResp)
-	resp.Base = new(course.BaseResponse)
-	resp.Base.Msg = "查询课程域信息成功"
-	resp.Base.Code = http.StatusOK
+
 	_, exists := c.Get("uid")
 	if !exists {
 		resp.Base.Code = http.StatusUnauthorized
@@ -133,16 +133,18 @@ func CourseMembersInfo(ctx context.Context, c *app.RequestContext) {
 	}
 	cid, err := strconv.ParseInt(req.Cid, 10, 64)
 	if err != nil {
-		resp.Base.Code = http.StatusUnauthorized
-		resp.Base.Msg = "课程域编号格式转换失败"
-		c.JSON(http.StatusUnauthorized, resp)
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		hlog.Error("课程域id数据格式转换失败：", err)
+		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
 	result, err := service.CourseServ().CourseMembersInfoWithCid(ctx, cid)
 	if err != nil {
-		resp.Base.Code = http.StatusUnauthorized
-		resp.Base.Msg = err.Error()
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		c.JSON(consts.StatusBadRequest, resp)
+		return
 	}
 	resp.Usersinfo = result
+	resp.Base = srverror.WrapWithSuccess()
 	c.JSON(consts.StatusOK, resp)
 }

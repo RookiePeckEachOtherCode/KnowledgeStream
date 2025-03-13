@@ -9,189 +9,6 @@ import (
 	"github.com/apache/thrift/lib/go/thrift"
 )
 
-type BaseResponse struct {
-	Code int32  `thrift:"code,1" form:"code" json:"code" query:"code"`
-	Msg  string `thrift:"msg,2" form:"msg" json:"msg" query:"msg"`
-}
-
-func NewBaseResponse() *BaseResponse {
-	return &BaseResponse{}
-}
-
-func (p *BaseResponse) GetCode() (v int32) {
-	return p.Code
-}
-
-func (p *BaseResponse) GetMsg() (v string) {
-	return p.Msg
-}
-
-var fieldIDToName_BaseResponse = map[int16]string{
-	1: "code",
-	2: "msg",
-}
-
-func (p *BaseResponse) Read(iprot thrift.TProtocol) (err error) {
-
-	var fieldTypeId thrift.TType
-	var fieldId int16
-
-	if _, err = iprot.ReadStructBegin(); err != nil {
-		goto ReadStructBeginError
-	}
-
-	for {
-		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
-		if err != nil {
-			goto ReadFieldBeginError
-		}
-		if fieldTypeId == thrift.STOP {
-			break
-		}
-
-		switch fieldId {
-		case 1:
-			if fieldTypeId == thrift.I32 {
-				if err = p.ReadField1(iprot); err != nil {
-					goto ReadFieldError
-				}
-			} else {
-				if err = iprot.Skip(fieldTypeId); err != nil {
-					goto SkipFieldError
-				}
-			}
-		case 2:
-			if fieldTypeId == thrift.STRING {
-				if err = p.ReadField2(iprot); err != nil {
-					goto ReadFieldError
-				}
-			} else {
-				if err = iprot.Skip(fieldTypeId); err != nil {
-					goto SkipFieldError
-				}
-			}
-		default:
-			if err = iprot.Skip(fieldTypeId); err != nil {
-				goto SkipFieldError
-			}
-		}
-
-		if err = iprot.ReadFieldEnd(); err != nil {
-			goto ReadFieldEndError
-		}
-	}
-	if err = iprot.ReadStructEnd(); err != nil {
-		goto ReadStructEndError
-	}
-
-	return nil
-ReadStructBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
-ReadFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
-ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_BaseResponse[fieldId]), err)
-SkipFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
-
-ReadFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
-ReadStructEndError:
-	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
-}
-
-func (p *BaseResponse) ReadField1(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
-		return err
-	} else {
-		p.Code = v
-	}
-	return nil
-}
-
-func (p *BaseResponse) ReadField2(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadString(); err != nil {
-		return err
-	} else {
-		p.Msg = v
-	}
-	return nil
-}
-
-func (p *BaseResponse) Write(oprot thrift.TProtocol) (err error) {
-	var fieldId int16
-	if err = oprot.WriteStructBegin("BaseResponse"); err != nil {
-		goto WriteStructBeginError
-	}
-	if p != nil {
-		if err = p.writeField1(oprot); err != nil {
-			fieldId = 1
-			goto WriteFieldError
-		}
-		if err = p.writeField2(oprot); err != nil {
-			fieldId = 2
-			goto WriteFieldError
-		}
-
-	}
-	if err = oprot.WriteFieldStop(); err != nil {
-		goto WriteFieldStopError
-	}
-	if err = oprot.WriteStructEnd(); err != nil {
-		goto WriteStructEndError
-	}
-	return nil
-WriteStructBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
-WriteFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
-WriteFieldStopError:
-	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
-WriteStructEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
-}
-
-func (p *BaseResponse) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("code", thrift.I32, 1); err != nil {
-		goto WriteFieldBeginError
-	}
-	if err := oprot.WriteI32(p.Code); err != nil {
-		return err
-	}
-	if err = oprot.WriteFieldEnd(); err != nil {
-		goto WriteFieldEndError
-	}
-	return nil
-WriteFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
-WriteFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
-}
-
-func (p *BaseResponse) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("msg", thrift.STRING, 2); err != nil {
-		goto WriteFieldBeginError
-	}
-	if err := oprot.WriteString(p.Msg); err != nil {
-		return err
-	}
-	if err = oprot.WriteFieldEnd(); err != nil {
-		goto WriteFieldEndError
-	}
-	return nil
-WriteFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
-WriteFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
-}
-
-func (p *BaseResponse) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	return fmt.Sprintf("BaseResponse(%+v)", *p)
-}
-
 type VideoInfoReq struct {
 	Vid string `thrift:"vid,1" json:"vid" query:"vid"`
 }
@@ -330,17 +147,17 @@ func (p *VideoInfoReq) String() string {
 }
 
 type VideoInfoResp struct {
-	Base      *BaseResponse   `thrift:"base,1" form:"base" json:"base" query:"base"`
-	Videoinfo *base.VideoInfo `thrift:"videoinfo,2" form:"videoinfo" json:"videoinfo" query:"videoinfo"`
+	Base      *base.BaseResponse `thrift:"base,1" form:"base" json:"base" query:"base"`
+	Videoinfo *base.VideoInfo    `thrift:"videoinfo,2" form:"videoinfo" json:"videoinfo" query:"videoinfo"`
 }
 
 func NewVideoInfoResp() *VideoInfoResp {
 	return &VideoInfoResp{}
 }
 
-var VideoInfoResp_Base_DEFAULT *BaseResponse
+var VideoInfoResp_Base_DEFAULT *base.BaseResponse
 
-func (p *VideoInfoResp) GetBase() (v *BaseResponse) {
+func (p *VideoInfoResp) GetBase() (v *base.BaseResponse) {
 	if !p.IsSetBase() {
 		return VideoInfoResp_Base_DEFAULT
 	}
@@ -439,7 +256,7 @@ ReadStructEndError:
 }
 
 func (p *VideoInfoResp) ReadField1(iprot thrift.TProtocol) error {
-	p.Base = NewBaseResponse()
+	p.Base = base.NewBaseResponse()
 	if err := p.Base.Read(iprot); err != nil {
 		return err
 	}

@@ -4,7 +4,9 @@ package video
 
 import (
 	"context"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/srverror"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/service"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"net/http"
 	"strconv"
 
@@ -25,9 +27,7 @@ func VideoInfo(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(video.VideoInfoResp)
-	resp.Base = new(video.BaseResponse)
-	resp.Base.Msg = "获取视频信息成功"
-	resp.Base.Code = http.StatusOK
+
 	_, exists := c.Get("uid")
 	if !exists {
 		resp.Base.Code = http.StatusUnauthorized
@@ -44,18 +44,18 @@ func VideoInfo(ctx context.Context, c *app.RequestContext) {
 	}
 	vid, err := strconv.ParseInt(req.Vid, 10, 64)
 	if err != nil {
-		resp.Base.Code = http.StatusUnauthorized
-		resp.Base.Msg = "视频编号格式转换失败"
-		c.JSON(http.StatusUnauthorized, resp)
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		hlog.Error("视频id数据格式转换失败：", err)
+		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
 	result, err := service.VideoServ().VideoInfoService(ctx, vid)
 	if err != nil {
-		resp.Base.Code = http.StatusUnauthorized
-		resp.Base.Msg = "获取视频信息失败"
-		c.JSON(http.StatusBadRequest, resp)
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
 	resp.Videoinfo = result
+	resp.Base = srverror.WrapWithSuccess()
 	c.JSON(consts.StatusOK, resp)
 }

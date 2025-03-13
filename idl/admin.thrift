@@ -14,34 +14,53 @@ struct UpdateUserInfoReq{
     3:string phone(api.query="phone");
     4:string avatar(api.query="avatar");
     5:string authority(api.query="authority");
+    6:string password(api.query="password");
 }
 struct UpdateUserInfoResp{
     1:common.BaseResponse base;
 }
 struct UploadVideoReq{
-    
+    1:string source(api.query="source");
+    2:string title(api.query="title");
+    3:string description(api.query="description");
+    4:string cover(api.query="cover");
+    5:string cid(api.query="cid");
+    6:string length(api.query="length");
 }
 struct UploadVideoResp{
-
+    1:common.BaseResponse base;
 }
 struct CreateCourseReq{
-
+    1:string title(api.query="title");
+    2:string description(api.query="description");
+    3:string cover(api.query="cover");
+    4:string ascription(api.query="ascription");
 }
 struct CreateCourseResp{
-
+    1:common.BaseResponse base;
 }
 struct DeleteUserFromCourseReq{
-
+    1:string cid(api.query="cid");
+    2:string uid(api.query="uid");
 }
 struct DeleteUserFromCourseResp{
-
+    1:common.BaseResponse base;
 }
 struct UpdateCourseInfoReq{
-
+    1:string cid(api.query="cid");
+    2:string cover(api.query="cover");
+    3:string title(api.query="title");
+    4:string description(api.query="description");
+    5:string ascription(api.query="ascription");
 }
 struct UpdateCourseInfoResp{
-
+    1:common.BaseResponse base;
 }
 service AdminService{
-
+    DeleteTargetResp DeleteTarget(1:DeleteTargetReq req)(api.post="/admin/delete");
+    UpdateUserInfoResp UpdateUserInfo(1:UpdateUserInfoReq req)(api.post="/admin/update/user");
+    UploadVideoResp UploadVideo(1:UploadVideoReq req)(api.post="/admin/uploadvideo");
+    CreateCourseResp CreateCourse(1:CreateCourseReq req)(api.post="/admin/createcourse");
+    DeleteUserFromCourseResp DeleteUserFromCourse(1:DeleteUserFromCourseReq req)(api.post="/admin/update/course/member");
+    UpdateCourseInfoResp UpdateCourseInfo(1:UpdateCourseInfoReq req)(api.post="/admin/update/course");
 }

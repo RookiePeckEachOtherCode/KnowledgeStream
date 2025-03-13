@@ -2,12 +2,6 @@ namespace go user
 
 include "./base/common.thrift"
 
-
-struct BaseResponse {
-     1: i32 code;
-     2: string msg;
- }
-
 //------------------------------------------Common
 
 struct userRegisterReq{
@@ -34,7 +28,7 @@ struct userInfoReq{
 
 }
 struct userInfoResp{
-    1:BaseResponse base;
+    1:common.BaseResponse base;
     2:string name;
     3:string avatar;
     4:string authoriry;
@@ -47,13 +41,13 @@ struct userInfoUpdateReq{
     4:string phone(api.query="phone");
 }
 struct userInfoUpdateResp{
-    1:BaseResponse base;
+    1:common.BaseResponse base;
 }
 //------------------------------------------Student
 struct StudentMyCoursesReq{
 }
 struct StudentMyCoursesResp{
-    1:BaseResponse base;
+    1:common.BaseResponse base;
     2:list<common.CourseInfo> coursesinfo
 }
 //------------------------------------------Techer
@@ -63,13 +57,13 @@ struct CreateCourseReq{//创建课程域
     3:string cover(api.query="cover");
 }
 struct CreateCourseResp{
-    1:BaseResponse base;
+    1:common.BaseResponse base;
 }
 struct DeleteCourseReq{//删除课程域
     1:string cid(api.query="cid");
 }
 struct DeleteCourseResp{
-    1:BaseResponse base;
+    1:common.BaseResponse base;
 }
 struct UpdateCourseReq{//修改课程域信息
     1:string cid(api.query="cid");
@@ -78,14 +72,14 @@ struct UpdateCourseReq{//修改课程域信息
     4:string description(api.query="description");
 }
 struct UpdateCourseResp{
-    1:BaseResponse base;
+    1:common.BaseResponse base;
 }
 struct InviteStudentReq{//将学生拉入课程域
     1:string cid(api.query="cid");
     2:string sid(api.query="sid");
 }
 struct InviteStudentResp{
-    1:BaseResponse base;
+    1:common.BaseResponse base;
 }
 struct OperateMemberReq{
     1:string cid(api.query="cid");
@@ -93,7 +87,7 @@ struct OperateMemberReq{
     3:bool   delete(api.query="delete");
 }
 struct OperateMemberResp{
-    1:BaseResponse base;
+    1:common.BaseResponse base;
 }
 struct UploadVideosReq{//上传视频
     1:string source(api.query="source");
@@ -104,20 +98,20 @@ struct UploadVideosReq{//上传视频
     6:string length(api.query="length");
 }
 struct UploadVideosResp{
-    1:BaseResponse base;
+    1:common.BaseResponse base;
 }
 struct SelectMyCoursesReq{
 
 }
 struct SelectMyCoursesResp{
-    1:BaseResponse base;
+    1:common.BaseResponse base;
     2:list<common.CourseInfo> coursesinfo;
 }
 struct DeleteVideoReq{
     1:string vid(api.query="vid");
 }
 struct DeleteVideoResp{
-    1:BaseResponse base;
+    1:common.BaseResponse base;
 }
 service UserSerivce{
     userLoginResp UserLogin(1:userLoginReq req)(api.post="/user/login");

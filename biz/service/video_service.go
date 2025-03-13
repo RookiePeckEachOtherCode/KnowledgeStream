@@ -52,6 +52,7 @@ func (s *VideoService) VideoInfoService(c context.Context, vid int64) (*base.Vid
 	result.Description = video.Description
 	result.Cover = video.Cover
 	result.Source = video.Source
+	result.UploadTime = video.UploadTime
 	return result, nil
 }
 func (s *VideoService) DeleteVideoWithVid(c context.Context, vid int64) error {
@@ -71,7 +72,7 @@ func (s *VideoService) DeleteVideoWithVid(c context.Context, vid int64) error {
 	}
 	return nil
 }
-func (s *VideoService) UploadVideoWithCidAndUid(c context.Context, uid int64, cid int64, source string, title string, description string, cover string, length int) error {
+func (s *VideoService) UploadVideoWithCidAndUid(c context.Context, uid int64, cid int64, source string, title string, description string, cover string, length int, timestr string) error {
 	v := query.Video
 	id, err := utils.NextSnowFlakeId()
 	if err != nil {
@@ -86,6 +87,7 @@ func (s *VideoService) UploadVideoWithCidAndUid(c context.Context, uid int64, ci
 		Cover:       cover,
 		Ascription:  cid,
 		Length:      length,
+		UploadTime:  timestr,
 	}
 
 	err = v.WithContext(c).Save(&video)

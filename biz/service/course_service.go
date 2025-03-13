@@ -65,6 +65,7 @@ func (s *CourseService) CourseVideosInfoWithCid(c context.Context, cid int64) ([
 		videoInfo.Vid = fmt.Sprintf("%d", video.ID)
 		videoInfo.Title = video.Title
 		videoInfo.Description = video.Description
+		videoInfo.UploadTime = video.UploadTime
 		result = append(result, videoInfo)
 	}
 	return result, nil

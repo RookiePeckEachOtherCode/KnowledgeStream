@@ -27,4 +27,5 @@ struct VideoInfo{
     3:string description;
     4:string cover;
     5:string source;
+    6:string upload_time
 }

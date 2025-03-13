@@ -154,7 +154,14 @@ func UploadVideo(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
-	err = service.VideoServ().UploadVideoWithCidAndUid(ctx, uid, cid, req.Source, req.Title, req.Description, req.Cover, int(length))
+	timestr, err := utils.GetNowTime()
+	if err != nil {
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		hlog.Error("加载位置出错：", err)
+		c.JSON(consts.StatusBadRequest, resp)
+		return
+	}
+	err = service.VideoServ().UploadVideoWithCidAndUid(ctx, uid, cid, req.Source, req.Title, req.Description, req.Cover, int(length), timestr)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		c.JSON(consts.StatusBadRequest, resp)

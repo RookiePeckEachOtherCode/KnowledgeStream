@@ -4,13 +4,12 @@ package user
 
 import (
 	"context"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/entity"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/base"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/service"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/utils"
 	"net/http"
 	"strconv"
-
-	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/entity"
-	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/service"
 
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/srverror"
 	user "github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/user"
@@ -402,7 +401,14 @@ func UploadVideos(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusBadRequest, resp)
 		return
 	}
-	err = service.VideoServ().UploadVideoWithCidAndUid(ctx, uid, cid, req.Source, req.Title, req.Description, req.Cover, int(length))
+	timestr, err := utils.GetNowTime()
+	if err != nil {
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		hlog.Error("加载位置出错：", err)
+		c.JSON(consts.StatusBadRequest, resp)
+		return
+	}
+	err = service.VideoServ().UploadVideoWithCidAndUid(ctx, uid, cid, req.Source, req.Title, req.Description, req.Cover, int(length), timestr)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		c.JSON(consts.StatusBadRequest, resp)

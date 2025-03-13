@@ -86,6 +86,11 @@ func (s *CourseService) CourseMembersInfoWithCid(c context.Context, cid int64) (
 		userInfo := new(base.UserInfo)
 		userInfo.Name = member.Name
 		userInfo.Avatar = member.Avatar
+		if member.Authority == entity.AuthorityUser {
+			userInfo.Authority = "student"
+		} else if member.Authority == entity.AuthorityAdmin {
+			userInfo.Authority = "teacher"
+		}
 		userInfo.UID = fmt.Sprintf("%d", member.ID)
 		result = append(result, userInfo)
 	}
@@ -145,6 +150,12 @@ func (s *CourseService) DeleteCourseWithCid(c context.Context, cid int64) error 
 	course, err := cc.WithContext(c).Where(cc.ID.Eq(cid)).First()
 	if err != nil {
 		hlog.Error("查询课程域失败: ", err)
+		return err
+	}
+	uc := query.UserInCourse
+	_, err = uc.WithContext(c).Where(uc.CourseID.Eq(cid)).Delete()
+	if err != nil {
+		hlog.Error("删除课程域成员失败: ", err)
 		return err
 	}
 	if _, err = cc.WithContext(c).Delete(course); err != nil {

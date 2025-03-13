@@ -23,6 +23,7 @@ struct userLoginResp{
     2: string id;
     3: string name;
     4: string token;
+    5: string authority;
 }
 struct userInfoReq{
 

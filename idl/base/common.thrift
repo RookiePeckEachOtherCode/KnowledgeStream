@@ -9,6 +9,7 @@ struct UserInfo{
     1:string uid;
     2:string avatar;
     3:string name;
+    4:string authority;
 }
 struct CourseInfo{
     1:string cid;

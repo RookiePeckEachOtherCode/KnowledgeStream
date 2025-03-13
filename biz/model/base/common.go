@@ -191,9 +191,10 @@ func (p *BaseResponse) String() string {
 }
 
 type UserInfo struct {
-	UID    string `thrift:"uid,1" form:"uid" json:"uid" query:"uid"`
-	Avatar string `thrift:"avatar,2" form:"avatar" json:"avatar" query:"avatar"`
-	Name   string `thrift:"name,3" form:"name" json:"name" query:"name"`
+	UID       string `thrift:"uid,1" form:"uid" json:"uid" query:"uid"`
+	Avatar    string `thrift:"avatar,2" form:"avatar" json:"avatar" query:"avatar"`
+	Name      string `thrift:"name,3" form:"name" json:"name" query:"name"`
+	Authority string `thrift:"authority,4" form:"authority" json:"authority" query:"authority"`
 }
 
 func NewUserInfo() *UserInfo {
@@ -212,10 +213,15 @@ func (p *UserInfo) GetName() (v string) {
 	return p.Name
 }
 
+func (p *UserInfo) GetAuthority() (v string) {
+	return p.Authority
+}
+
 var fieldIDToName_UserInfo = map[int16]string{
 	1: "uid",
 	2: "avatar",
 	3: "name",
+	4: "authority",
 }
 
 func (p *UserInfo) Read(iprot thrift.TProtocol) (err error) {
@@ -260,6 +266,16 @@ func (p *UserInfo) Read(iprot thrift.TProtocol) (err error) {
 		case 3:
 			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField3(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 4:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField4(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else {
@@ -324,6 +340,15 @@ func (p *UserInfo) ReadField3(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *UserInfo) ReadField4(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.Authority = v
+	}
+	return nil
+}
+
 func (p *UserInfo) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("UserInfo"); err != nil {
@@ -340,6 +365,10 @@ func (p *UserInfo) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField3(oprot); err != nil {
 			fieldId = 3
+			goto WriteFieldError
+		}
+		if err = p.writeField4(oprot); err != nil {
+			fieldId = 4
 			goto WriteFieldError
 		}
 
@@ -410,6 +439,23 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 3 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 3 end error: ", p), err)
+}
+
+func (p *UserInfo) writeField4(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("authority", thrift.STRING, 4); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Authority); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 end error: ", p), err)
 }
 
 func (p *UserInfo) String() string {

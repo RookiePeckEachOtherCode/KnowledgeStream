@@ -2,9 +2,9 @@ package middleware
 
 import (
 	"context"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/base"
 	"net/http"
 
-	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/user"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/utils"
 	"github.com/cloudwego/hertz/pkg/app"
 )
@@ -14,7 +14,7 @@ func VerifyToken() app.HandlerFunc {
 		token := ctx.Request.Header.Get("Authorization")
 		if token == "" {
 			ctx.JSON(http.StatusUnauthorized, MiddleWareResponse{
-				Base: user.BaseResponse{
+				Base: base.BaseResponse{
 					Code: http.StatusUnauthorized,
 					Msg:  "未找到token",
 				},
@@ -27,7 +27,7 @@ func VerifyToken() app.HandlerFunc {
 		uid, authority, err := utils.ParseToken(token)
 		if err != nil {
 			ctx.JSON(http.StatusUnauthorized, MiddleWareResponse{
-				Base: user.BaseResponse{
+				Base: base.BaseResponse{
 					Code: http.StatusUnauthorized,
 					Msg:  err.Error(),
 				},

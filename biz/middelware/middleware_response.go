@@ -1,8 +1,10 @@
 package middleware
 
-import "github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/user"
+import (
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/base"
+)
 
 type MiddleWareResponse struct {
-	Base user.BaseResponse `json:"base"`
+	Base base.BaseResponse `json:"base"`
 	Data any               `json:"data"`
 }

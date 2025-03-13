@@ -79,23 +79,31 @@ func (s *UserService) UserRegister(
 	return nil
 }
 
-func (s *UserService) UserLoginWithPhone(c context.Context, phone string, password string) (int64, string, string, error) {
+func (s *UserService) UserLoginWithPhone(c context.Context, phone string, password string) (int64, string, string, string, error) {
 	u := query.User
 
 	user, err := u.WithContext(c).Where(u.Phone.Eq(phone)).First()
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return 0, "", "", srverror.NewRuntimeError("用户不存在")
+			return 0, "", "", "", srverror.NewRuntimeError("用户不存在")
 		}
 		hlog.Error("用户登录失败: ", err)
-		return 0, "", "", err
+		return 0, "", "", "", err
 	}
 	isValid := utils.VerifyPassword([]byte(user.Password), []byte(user.Salt), password)
 	if !isValid {
-		return 0, "", "", srverror.NewRuntimeError("密码错误")
+		return 0, "", "", "", srverror.NewRuntimeError("密码错误")
 	}
 	token := utils.GenerateToken(user.ID, user.Authority)
-	return user.ID, user.Name, token, nil
+	var authority string
+	if user.Authority == entity.AuthorityUser {
+		authority = "Student"
+	} else if user.Authority == entity.AuthorityAdmin {
+		authority = "Teacher"
+	} else {
+		authority = "Admin"
+	}
+	return user.ID, user.Name, token, authority, nil
 }
 
 func (s *UserService) GetUserInfoWithId(c context.Context, id int64) (*entity.User, error) {
@@ -142,11 +150,11 @@ func (s *UserService) UpdateUserIdentityWithUid(c context.Context, uid int64, au
 	if authority == "" {
 		return nil
 	}
-	if authority == "USER" {
+	if authority == "Student" {
 		user.Authority = entity.AuthorityUser
-	} else if authority == "ADMIN" {
+	} else if authority == "Teacher" {
 		user.Authority = entity.AuthorityAdmin
-	} else {
+	} else if authority == "Admin" {
 		user.Authority = entity.AuthoritySuperAdmin
 	}
 	if err := u.WithContext(c).Save(user); err != nil {

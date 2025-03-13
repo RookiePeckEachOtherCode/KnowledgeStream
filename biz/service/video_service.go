@@ -46,7 +46,7 @@ func (s *VideoService) VideoInfoService(c context.Context, vid int64) (*base.Vid
 		hlog.Error("查询视频信息失败: ", err)
 		return nil, err
 	}
-	var result *base.VideoInfo
+	result := new(base.VideoInfo)
 	result.Vid = fmt.Sprintf("%d", video.ID)
 	result.Title = video.Title
 	result.Description = video.Description

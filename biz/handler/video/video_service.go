@@ -4,8 +4,10 @@ package video
 
 import (
 	"context"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/base"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/srverror"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/service"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/utils"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"net/http"
 	"strconv"
@@ -27,18 +29,11 @@ func VideoInfo(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(video.VideoInfoResp)
-
-	_, exists := c.Get("uid")
-	if !exists {
+	resp.Base = new(base.BaseResponse)
+	_, _, err = utils.AuthCheck(c)
+	if err != nil {
 		resp.Base.Code = http.StatusUnauthorized
-		resp.Base.Msg = "未获取到权限信息"
-		c.JSON(http.StatusUnauthorized, resp)
-		return
-	}
-	_, exists = c.Get("authority")
-	if !exists {
-		resp.Base.Code = http.StatusUnauthorized
-		resp.Base.Msg = "未获取到完整权限信息"
+		resp.Base.Msg = err.Error()
 		c.JSON(http.StatusUnauthorized, resp)
 		return
 	}

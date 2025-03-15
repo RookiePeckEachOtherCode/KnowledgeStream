@@ -20,6 +20,8 @@ struct CourseInfo{
     2:string title;
     3:string description;
     4:string cover;
+    5:string tid;
+    6:string teacher_name;
 }
 struct VideoInfo{
     1:string vid;

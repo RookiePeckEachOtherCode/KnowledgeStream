@@ -10,6 +10,7 @@ import (
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/utils"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"gorm.io/gorm"
+	"strconv"
 	"sync"
 )
 
@@ -97,9 +98,43 @@ func (s *CourseService) CourseMembersInfoWithCid(c context.Context, cid int64) (
 	}
 	return result, nil
 }
-func (s *CourseService) SelectMyCoursesWithUid(c context.Context, uid int64) ([]*base.CourseInfo, error) {
+func (s *CourseService) StudentQueryCourse(
+	c context.Context,
+	uid int64,
+	keyword string,
+	size int32,
+	offset int32,
+) ([]*base.CourseInfo, error) {
 	uc := query.UserInCourse
-	courseids, err := uc.WithContext(c).Where(uc.UserID.Eq(uid)).Find()
+	qu := query.User
+	cu := query.Course
+
+	//先查关键字匹配的老师
+	teacher, err := qu.WithContext(c).Where(qu.Authority.In("ADMIN", "SUPER_ADMIN")).Where(qu.Name.Like("%" + keyword + "%")).Find()
+	var tides []int64
+	for _, user := range teacher {
+		tides = append(tides, user.ID)
+	}
+	userIn, err := uc.WithContext(c).Where(uc.UserID.Eq(uid)).Find()
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		hlog.Error("查询所在课程域失败: ", err)
+		return nil, err
+	}
+	//查询用户选的课程
+	var cides []int64
+	for _, courseRecord := range userIn {
+		cides = append(cides, courseRecord.CourseID)
+	}
+
+	courses, err := cu.WithContext(c).
+		Where(cu.ID.In(cides...)).
+		Where(cu.Title.Like("%" + keyword + "%")).
+		Or(cu.Ascription.In(tides...)).
+		Offset(int(offset)).
+		Limit(int(size)).Find()
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -108,21 +143,64 @@ func (s *CourseService) SelectMyCoursesWithUid(c context.Context, uid int64) ([]
 		return nil, err
 	}
 	var result []*base.CourseInfo
-	for _, courseid := range courseids {
-		course, err := CourseServ().CourseInfoWithCid(c, courseid.CourseID)
+	for _, course := range courses {
+		teacherInfo, err := UserServ().GetUserInfoWithId(c, course.Ascription)
 		if err != nil {
-			hlog.Error("查询课程域信息失败: ", err)
-			return nil, err
+			hlog.Error("查询用户信息失败: ", err)
+			return nil, fmt.Errorf("查询课程失败: %v", err)
 		}
+
 		courseInfo := new(base.CourseInfo)
-		courseInfo.Cid = fmt.Sprintf("%d", course.Cid)
+		courseInfo.Cid = fmt.Sprintf("%d", course.ID)
 		courseInfo.Cover = course.Cover
 		courseInfo.Description = course.Description
 		courseInfo.Title = course.Title
+		courseInfo.Tid = strconv.FormatInt(teacherInfo.ID, 10)
+		courseInfo.TeacherName = teacherInfo.Name
 		result = append(result, courseInfo)
 	}
 	return result, nil
 }
+
+func (s *CourseService) TeacherQueryCourse(
+	c context.Context,
+	uid int64,
+	keyword string,
+	size int32,
+	offset int32,
+) ([]*base.CourseInfo, error) {
+	cu := query.Course
+
+	courses, err := cu.WithContext(c).
+		Where(cu.Title.Like("%" + keyword + "%")).
+		Where(cu.Ascription.Eq(uid)).
+		Offset(int(offset)).
+		Limit(int(size)).Find()
+	if err != nil {
+		hlog.Error("查询课程失败: ", err)
+		return nil, fmt.Errorf("查询课程失败: %v", err)
+	}
+	result := make([]*base.CourseInfo, 0, len(courses))
+	for _, course := range courses {
+		teacherInfo, err := UserServ().GetUserInfoWithId(c, course.Ascription)
+		if err != nil {
+			hlog.Error("查询用户信息失败: ", err)
+			return nil, fmt.Errorf("查询课程失败: %v", err)
+		}
+
+		result = append(result, &base.CourseInfo{
+			Cid:         fmt.Sprintf("%d", course.ID),
+			Title:       course.Title,
+			Cover:       course.Cover,
+			Description: course.Description,
+			Tid:         strconv.FormatInt(teacherInfo.ID, 10),
+			TeacherName: teacherInfo.Name,
+		})
+	}
+	return result, nil
+
+}
+
 func (s *CourseService) CreateCourseWithUid(c context.Context, id int64, title string, description string, cover string) error {
 	cid, err := utils.NextSnowFlakeId()
 	if err != nil {

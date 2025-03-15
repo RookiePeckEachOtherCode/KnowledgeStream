@@ -46,6 +46,9 @@ struct userInfoUpdateResp{
 }
 //------------------------------------------Student
 struct StudentMyCoursesReq{
+    1:string keyword(api.query="keyword");
+    2:i32 offset(api.query="offset");
+    3:i32 size(api.query="size");
 }
 struct StudentMyCoursesResp{
     1:common.BaseResponse base;
@@ -102,7 +105,9 @@ struct UploadVideosResp{
     1:common.BaseResponse base;
 }
 struct SelectMyCoursesReq{
-
+    1:string keyword(api.query="keyword");
+    2:i32 offset(api.query="offset");
+    3:i32 size(api.query="size");
 }
 struct SelectMyCoursesResp{
     1:common.BaseResponse base;

@@ -63,22 +63,21 @@ export function ScreenRecordControlPage(props){
             </div>
 
             <div className={`w-full items-center flex  justify-center`}>
-                {/*{*/}
-                {/*    isRecording?<video*/}
-                {/*        ref={previewVideoRef}*/}
-                {/*        autoPlay={true}*/}
-                {/*        muted={true}*/}
-                {/*        className={`w-3/4 object-cover`}*/}
-                {/*        ></video>*/}
-                {/*    :recordedBlob&&(*/}
-                {/*        <video*/}
-                {/*            controls*/}
-                {/*            src={URL.createObjectURL(recordedBlob)}*/}
-                {/*            className={`w-3/4 object-cover`}*/}
-                {/*        />*/}
-                {/*    )*/}
-                {/*}*/}
-                    <OssVideo className={`w-3/4 `} bucket={"ks-video"} fileName={"test"} ></OssVideo>
+                {
+                    isRecording?<video
+                        ref={previewVideoRef}
+                        autoPlay={true}
+                        muted={true}
+                        className={`w-3/4 object-cover`}
+                        ></video>
+                    :recordedBlob&&(
+                        <video
+                            controls
+                            src={URL.createObjectURL(recordedBlob)}
+                            className={`w-3/4 object-cover`}
+                        />
+                    )
+                }
             </div>
         </div>
     )

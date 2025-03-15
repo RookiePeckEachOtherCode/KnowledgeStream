@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {useNotification} from "@/context/notification-provider";
 import {useOss} from "@/context/oss-uploader-provider";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faTruckLoading} from "@fortawesome/free-solid-svg-icons";
 
 
 interface OssVideoProps {
@@ -133,8 +135,9 @@ export function OssImage({
             onError={handleImageError}
         />
     ) : (
-        <div className="w-full h-full flex items-center justify-center">
-            <p>图片加载中...</p>
+        <div className="w-full  h-full flex flex-row  transition-all duration-300 space-x-6 items-center justify-center">
+            <FontAwesomeIcon className={`animate-spin transition-all duration-300`} icon={faTruckLoading}></FontAwesomeIcon>
+            <div>Loading...</div>
         </div>
     );
 }

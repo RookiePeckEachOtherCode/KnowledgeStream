@@ -443,7 +443,7 @@ func SelectMyCourses(ctx context.Context, c *app.RequestContext) {
 		c.JSON(http.StatusUnauthorized, resp)
 		return
 	}
-	result, err := service.CourseServ().SelectMyCoursesWithUid(ctx, uid)
+	result, err := service.CourseServ().TeacherQueryCourse(ctx, uid, req.Keyword, req.Size, req.Offset)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		c.JSON(consts.StatusBadRequest, resp)
@@ -516,7 +516,7 @@ func StudentMyCourses(ctx context.Context, c *app.RequestContext) {
 		c.JSON(http.StatusUnauthorized, resp)
 		return
 	}
-	result, err := service.CourseServ().SelectMyCoursesWithUid(ctx, uid)
+	result, err := service.CourseServ().StudentQueryCourse(ctx, uid, req.Keyword, req.Size, req.Offset)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		c.JSON(consts.StatusBadRequest, resp)

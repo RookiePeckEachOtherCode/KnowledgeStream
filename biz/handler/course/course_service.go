@@ -33,20 +33,20 @@ func CourseInfo(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = err.Error()
-		c.JSON(http.StatusUnauthorized, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	cid, err := strconv.ParseInt(req.Cid, 10, 64)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		hlog.Error("课程域id数据格式转换失败失败：", err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	result, err := service.CourseServ().CourseInfoWithCid(ctx, cid)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	resp.Courseinfo = result
@@ -71,20 +71,20 @@ func CourseVideosInfo(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = err.Error()
-		c.JSON(http.StatusUnauthorized, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	cid, err := strconv.ParseInt(req.Cid, 10, 64)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		hlog.Error("课程域id数据格式转换失败：", err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	result, err := service.CourseServ().CourseVideosInfoWithCid(ctx, cid)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	resp.Videosinfo = result
@@ -109,20 +109,20 @@ func CourseMembersInfo(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = err.Error()
-		c.JSON(http.StatusUnauthorized, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	cid, err := strconv.ParseInt(req.Cid, 10, 64)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		hlog.Error("课程域id数据格式转换失败：", err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	result, err := service.CourseServ().CourseMembersInfoWithCid(ctx, cid)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	resp.Usersinfo = result

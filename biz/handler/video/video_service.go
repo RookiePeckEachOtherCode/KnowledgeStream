@@ -34,20 +34,20 @@ func VideoInfo(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = err.Error()
-		c.JSON(http.StatusUnauthorized, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	vid, err := strconv.ParseInt(req.Vid, 10, 64)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		hlog.Error("视频id数据格式转换失败：", err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	result, err := service.VideoServ().VideoInfoService(ctx, vid)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	resp.Videoinfo = result

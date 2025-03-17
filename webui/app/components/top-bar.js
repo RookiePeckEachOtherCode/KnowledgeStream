@@ -4,7 +4,7 @@ import {useState} from "react";
 export function TopBar(props) {
   const tepSrc =
     "https://tse3-mm.cn.bing.net/th/id/OIP-C.huUG6H4rNQYhb6yiOl9ZugHaHW?rs=1&pid=ImgDetMain";
-  const [searchKeyword, setSearchKeyword] = useState(null)
+  const [searchKeyword, setSearchKeyword] = useState('')
 
   return (
       <div

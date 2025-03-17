@@ -35,20 +35,20 @@ func DeleteTarget(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = err.Error()
-		c.JSON(http.StatusUnauthorized, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	if authority != entity.AuthoritySuperAdmin {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = "用户权限不够"
-		c.JSON(http.StatusUnauthorized, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	tid, err := strconv.ParseInt(req.Tid, 10, 64)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		hlog.Error("对象id数据格式转换失败：", err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	if req.Target == "video" {
@@ -58,7 +58,7 @@ func DeleteTarget(ctx context.Context, c *app.RequestContext) {
 	}
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	resp.Base = srverror.WrapWithSuccess("删除对象成功")
@@ -82,32 +82,32 @@ func UpdateUserInfo(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = err.Error()
-		c.JSON(http.StatusUnauthorized, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	if authority != entity.AuthoritySuperAdmin {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = "用户权限不够"
-		c.JSON(http.StatusUnauthorized, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	uid, err := strconv.ParseInt(req.UID, 10, 64)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		hlog.Error("用户id数据格式转换失败：", err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	err = service.UserServ().UpdateUserInfoWithId(ctx, uid, req.Name, req.Password, req.Avatar, req.Phone)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	err = service.UserServ().UpdateUserIdentityWithUid(ctx, uid, req.Authority)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	resp.Base = srverror.WrapWithSuccess("更新用户信息成功")
@@ -131,40 +131,40 @@ func UploadVideo(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = err.Error()
-		c.JSON(http.StatusUnauthorized, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	if authority != entity.AuthoritySuperAdmin {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = "用户权限不够"
-		c.JSON(http.StatusUnauthorized, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	cid, err := strconv.ParseInt(req.Cid, 10, 64)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		hlog.Error("课程域id数据格式转换失败：", err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	length, err := strconv.ParseInt(req.Length, 10, 64)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		hlog.Error("长度数据格式转换失败：", err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	timestr, err := utils.GetNowTime()
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		hlog.Error("加载位置出错：", err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	err = service.VideoServ().UploadVideoWithCidAndUid(ctx, uid, cid, req.Source, req.Title, req.Description, req.Cover, int(length), timestr)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	resp.Base = srverror.WrapWithSuccess("上传视频成功")
@@ -188,19 +188,19 @@ func CreateCourse(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = err.Error()
-		c.JSON(http.StatusUnauthorized, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	if authority != entity.AuthoritySuperAdmin {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = "用户权限不够"
-		c.JSON(http.StatusUnauthorized, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	err = service.CourseServ().CreateCourseWithUid(ctx, uid, req.Title, req.Description, req.Cover)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	resp.Base = srverror.WrapWithSuccess("创建课程域成功")
@@ -224,33 +224,33 @@ func DeleteUserFromCourse(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = err.Error()
-		c.JSON(http.StatusUnauthorized, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	if authority != entity.AuthoritySuperAdmin {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = "用户权限不够"
-		c.JSON(http.StatusUnauthorized, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	cid, err := strconv.ParseInt(req.Cid, 10, 64)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		hlog.Error("课程域id数据格式转换失败：", err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	uid, err := strconv.ParseInt(req.UID, 10, 64)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		hlog.Error("用户id数据格式转换失败：", err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	err = service.CourseServ().OperateMemberWithCidAndUid(ctx, cid, uid)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	resp.Base = srverror.WrapWithSuccess("删除课程域成员成功")
@@ -274,26 +274,26 @@ func UpdateCourseInfo(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = err.Error()
-		c.JSON(http.StatusUnauthorized, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	if authority != entity.AuthoritySuperAdmin {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = "用户权限不够"
-		c.JSON(http.StatusUnauthorized, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	cid, err := strconv.ParseInt(req.Cid, 10, 64)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		hlog.Error("课程域id数据格式转换失败：", err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	err = service.CourseServ().UpdateCourseWithCid(ctx, cid, req.Title, req.Description, req.Cover)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
-		c.JSON(consts.StatusBadRequest, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	resp.Base = srverror.WrapWithSuccess("更新课程域信息成功")
@@ -317,20 +317,20 @@ func ImportStudents(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = err.Error()
-		c.JSON(http.StatusUnauthorized, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	if authority != entity.AuthoritySuperAdmin {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = "用户权限不够"
-		c.JSON(http.StatusUnauthorized, resp)
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	for _, student := range req.Students {
 		err = service.UserServ().UserRegister(ctx, student.Name, student.Phone, "123456")
 		if err != nil {
 			resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
-			c.JSON(consts.StatusBadRequest, resp)
+			c.JSON(consts.StatusOK, resp)
 			return
 		}
 	}

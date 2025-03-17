@@ -24,7 +24,7 @@ export  default function CourseCard({
     
     return(
         <div className={`${className} bg-primary-container  p-4
-        transition-all duration-300 flex flex-col space-y-3 rounded-2xl
+        transition-all duration-300 flex flex-col relative space-y-3 rounded-2xl
         hover:bg-primary-fixed-dim hover:cursor-pointer`}
              onMouseOver={() => setIsHover(true)}
              onMouseLeave={() => setIsHover(false)}

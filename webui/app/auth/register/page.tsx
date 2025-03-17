@@ -3,7 +3,6 @@ import { api } from "@/api/instance";
 import AnimatedContent from "@/app/components/animated-content";
 import MDButton from "@/app/components/md-button";
 import MDInput from "@/app/components/md-input";
-import { useNotification } from "@/context/notification-provider";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -15,17 +14,12 @@ export default function RegisterPage() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const { showNotification } = useNotification();
 
   const passwordIsValid = useMemo(
     () => password === confirmPassword,
     [password, confirmPassword]
   );
-  var {message,showNotification} = useNotification();
-  const notify = (msg: string,type:string="error") => {
-    showNotification({type:type,message:message});
-  };
-
+  var {showNotification} = useNotification();
 
   const register = async () => {
     if (username.length == 0) {

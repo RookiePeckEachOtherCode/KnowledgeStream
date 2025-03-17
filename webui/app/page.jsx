@@ -68,7 +68,7 @@ export default function Home() {
     >
         <TopBar />
         <div
-            className={`h-8/9 w-full  flex flex-row duration-300  transition-all`}
+            className={`h-8/9 w-full z-40 flex flex-row duration-300  transition-all`}
         >
           <LeftNavigation hidden={leftNavigationHidden}>
             <NavigationItem
@@ -153,9 +153,9 @@ export default function Home() {
             </div>
           </div>
           <div
-              className={`w-full  ${animationClass} relative overflow-auto h-full bg-background text-on-background transition-all`}
+              className={`w-full  ${animationClass}  overflow-auto h-full  bg-background text-on-background transition-all`}
           >
-              <div className={`absolute h-full w-full flex transition-all`}>
+              <div className={` h-full w-full flex transition-all`}>
                   {ChildrenView()}
               </div>
           </div>

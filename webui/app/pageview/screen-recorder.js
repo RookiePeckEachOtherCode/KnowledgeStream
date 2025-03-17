@@ -1,6 +1,6 @@
 import {useScreenRecord} from "../../context/screen-record-provider";
 import {useEffect, useRef, useState} from "react";
-import {IconButton} from "../components/icon-button";
+import {IconButton} from "../components/icon-button.tsx";
 import {useOss} from "../../context/oss-uploader-provider.js";
 import {OssVideo} from "../components/oss-midea.tsx";
 

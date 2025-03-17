@@ -20,6 +20,7 @@ export default function LoginPage() {
       phone: phone,
       password: password,
     });
+    console.log(resp)
     if (resp.base.code !== 200) {
       showNotification({
         title: "登陆失败",

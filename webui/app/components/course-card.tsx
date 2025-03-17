@@ -23,6 +23,7 @@ export default function CourseCard({
 }: CourseCardProps) {
     const [isHover, setIsHover] = useState(false)
 
+
     return (
         <div
             className={`${className} bg-primary-container  p-4

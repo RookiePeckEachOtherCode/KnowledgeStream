@@ -40,7 +40,7 @@ export default function MDInput({
             : "border-secondary focus:border-primary",
           className
         )}
-        value={value}
+        value={value || ''}
         placeholder=""
         onChange={(e) => onValueChange(e.target.value)}
         type={type}

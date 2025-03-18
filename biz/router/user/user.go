@@ -18,6 +18,13 @@ func Register(r *server.Hertz) {
 
 	root := r.Group("/", rootMw()...)
 	{
+		_teacher := root.Group("/teacher", _teacherMw()...)
+		{
+			_query := _teacher.Group("/query", _queryMw()...)
+			_query.POST("/student", append(_enquirystudentMw(), user.EnquiryStudent)...)
+		}
+	}
+	{
 		_user := root.Group("/user", _userMw()...)
 		_user.GET("/info", append(_userinfoMw(), user.UserInfo)...)
 		_user.POST("/login", append(_userloginMw(), user.UserLogin)...)
@@ -28,15 +35,15 @@ func Register(r *server.Hertz) {
 			_student.GET("/mycourse", append(_studentmycoursesMw(), user.StudentMyCourses)...)
 		}
 		{
-			_teacher := _user.Group("/teacher", _teacherMw()...)
-			_teacher.POST("/createcourse", append(_createcourseMw(), user.CreateCourse)...)
-			_teacher.POST("/deletecourse", append(_deletecourseMw(), user.DeleteCourse)...)
-			_teacher.POST("/deletevideo", append(_deletevideoMw(), user.DeleteVideo)...)
-			_teacher.POST("/invite", append(_invitestudentMw(), user.InviteStudent)...)
-			_teacher.GET("/mycourse", append(_selectmycoursesMw(), user.SelectMyCourses)...)
-			_teacher.POST("/uploadvideo", append(_uploadvideosMw(), user.UploadVideos)...)
+			_teacher0 := _user.Group("/teacher", _teacher0Mw()...)
+			_teacher0.POST("/createcourse", append(_createcourseMw(), user.CreateCourse)...)
+			_teacher0.POST("/deletecourse", append(_deletecourseMw(), user.DeleteCourse)...)
+			_teacher0.POST("/deletevideo", append(_deletevideoMw(), user.DeleteVideo)...)
+			_teacher0.POST("/invite", append(_invitestudentMw(), user.InviteStudent)...)
+			_teacher0.GET("/mycourse", append(_enquirymycoursesMw(), user.EnquiryMyCourses)...)
+			_teacher0.POST("/uploadvideo", append(_uploadvideosMw(), user.UploadVideos)...)
 			{
-				_update := _teacher.Group("/update", _updateMw()...)
+				_update := _teacher0.Group("/update", _updateMw()...)
 				_update.POST("/course", append(_updatecourseMw(), user.UpdateCourse)...)
 				_course := _update.Group("/course", _courseMw()...)
 				_course.POST("/member", append(_operatememberMw(), user.OperateMember)...)

@@ -62,3 +62,38 @@ func _importstudentsMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _selectcourseMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _selectuserMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _selectvideoMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _queryMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _enquirytcourseMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _enquiryuserMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _enquiryvideoMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

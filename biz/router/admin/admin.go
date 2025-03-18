@@ -24,6 +24,12 @@ func Register(r *server.Hertz) {
 		_admin.POST("/import", append(_importstudentsMw(), admin.ImportStudents)...)
 		_admin.POST("/uploadvideo", append(_uploadvideoMw(), admin.UploadVideo)...)
 		{
+			_query := _admin.Group("/query", _queryMw()...)
+			_query.POST("/course", append(_enquirytcourseMw(), admin.EnquirytCourse)...)
+			_query.POST("/user", append(_enquiryuserMw(), admin.EnquiryUser)...)
+			_query.POST("/video", append(_enquiryvideoMw(), admin.EnquiryVideo)...)
+		}
+		{
 			_update := _admin.Group("/update", _updateMw()...)
 			_update.POST("/course", append(_updatecourseinfoMw(), admin.UpdateCourseInfo)...)
 			_update.POST("/user", append(_updateuserinfoMw(), admin.UpdateUserInfo)...)

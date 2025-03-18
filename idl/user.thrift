@@ -104,12 +104,12 @@ struct UploadVideosReq{//上传视频
 struct UploadVideosResp{
     1:common.BaseResponse base;
 }
-struct SelectMyCoursesReq{
+struct EnquiryMyCoursesReq{
     1:string keyword(api.query="keyword");
     2:i32 offset(api.query="offset");
     3:i32 size(api.query="size");
 }
-struct SelectMyCoursesResp{
+struct EnquiryMyCoursesResp{
     1:common.BaseResponse base;
     2:list<common.CourseInfo> coursesinfo;
 }
@@ -118,6 +118,15 @@ struct DeleteVideoReq{
 }
 struct DeleteVideoResp{
     1:common.BaseResponse base;
+}
+struct EnquiryStudentReq{
+    1:string keyword(api.query="keyword");
+    2:i32 offset(api.query="offset");
+    3:i32 size(api.query="size");
+}
+struct EnquiryStudentResp{
+    1:common.BaseResponse base;
+    2:list<common.UserInfo> usersinfo;
 }
 service UserSerivce{
     userLoginResp UserLogin(1:userLoginReq req)(api.post="/user/login");
@@ -131,8 +140,9 @@ service UserSerivce{
     InviteStudentResp InviteStudent(1:InviteStudentReq req)(api.post="/user/teacher/invite")
     OperateMemberResp OperateMember(1:OperateMemberReq req)(api.post="/user/teacher/update/course/member")
     UploadVideosResp UploadVideos(1:UploadVideosReq req)(api.post="/user/teacher/uploadvideo")
-    SelectMyCoursesResp SelectMyCourses(1:SelectMyCoursesReq req)(api.get="/user/teacher/mycourse")
+    EnquiryMyCoursesResp EnquiryMyCourses(1:EnquiryMyCoursesReq req)(api.get="/user/teacher/mycourse")
     DeleteVideoResp DeleteVideo(1:DeleteVideoReq req)(api.post="/user/teacher/deletevideo")
+    EnquiryStudentResp EnquiryStudent(1:EnquiryStudentReq req)(api.post="/teacher/query/student")
     //------------------------------------------Student
     StudentMyCoursesResp StudentMyCourses(1:StudentMyCoursesReq req)(api.get="/user/student/mycourse")
 }

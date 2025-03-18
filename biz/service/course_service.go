@@ -200,7 +200,52 @@ func (s *CourseService) TeacherQueryCourse(
 	return result, nil
 
 }
+func (s *CourseService) AdminQueryCourse(
+	c context.Context,
+	keyword string,
+	size int32,
+	offset int32,
+) ([]*base.CourseInfo, error) {
+	qu := query.User
+	cu := query.Course
 
+	//先查关键字匹配的老师
+	teacher, err := qu.WithContext(c).Where(qu.Authority.In("ADMIN", "SUPER_ADMIN")).Where(qu.Name.Like("%" + keyword + "%")).Find()
+	var tides []int64
+	for _, user := range teacher {
+		tides = append(tides, user.ID)
+	}
+	courses, err := cu.WithContext(c).
+		Where(cu.Title.Like("%" + keyword + "%")).
+		Or(cu.Ascription.In(tides...)).
+		Offset(int(offset)).
+		Limit(int(size)).Find()
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		hlog.Error("查询所在课程域失败: ", err)
+		return nil, err
+	}
+	var result []*base.CourseInfo
+	for _, course := range courses {
+		teacherInfo, err := UserServ().GetUserInfoWithId(c, course.Ascription)
+		if err != nil {
+			hlog.Error("查询用户信息失败: ", err)
+			return nil, fmt.Errorf("查询课程失败: %v", err)
+		}
+
+		courseInfo := new(base.CourseInfo)
+		courseInfo.Cid = fmt.Sprintf("%d", course.ID)
+		courseInfo.Cover = course.Cover
+		courseInfo.Description = course.Description
+		courseInfo.Title = course.Title
+		courseInfo.Tid = strconv.FormatInt(teacherInfo.ID, 10)
+		courseInfo.TeacherName = teacherInfo.Name
+		result = append(result, courseInfo)
+	}
+	return result, nil
+}
 func (s *CourseService) CreateCourseWithUid(c context.Context, id int64, title string, description string, cover string) error {
 	cid, err := utils.NextSnowFlakeId()
 	if err != nil {

@@ -418,42 +418,6 @@ func UploadVideos(ctx context.Context, c *app.RequestContext) {
 	c.JSON(consts.StatusOK, resp)
 }
 
-// SelectMyCourses .
-// @router /user/teacher/mycourse [GET]
-func SelectMyCourses(ctx context.Context, c *app.RequestContext) {
-	var err error
-	var req user.SelectMyCoursesReq
-	err = c.BindAndValidate(&req)
-	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
-		return
-	}
-	resp := new(user.SelectMyCoursesResp)
-	resp.Base = new(base.BaseResponse)
-	uid, authority, err := utils.AuthCheck(c)
-	if err != nil {
-		resp.Base.Code = http.StatusUnauthorized
-		resp.Base.Msg = err.Error()
-		c.JSON(consts.StatusOK, resp)
-		return
-	}
-	if authority == entity.AuthorityUser {
-		resp.Base.Code = http.StatusUnauthorized
-		resp.Base.Msg = "用户权限不够"
-		c.JSON(consts.StatusOK, resp)
-		return
-	}
-	result, err := service.CourseServ().TeacherQueryCourse(ctx, uid, req.Keyword, req.Size, req.Offset)
-	if err != nil {
-		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
-		c.JSON(consts.StatusOK, resp)
-		return
-	}
-	resp.Coursesinfo = result
-	resp.Base = srverror.WrapWithSuccess("查询所在课程域信息成功")
-	c.JSON(consts.StatusOK, resp)
-}
-
 func DeleteVideo(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req user.DeleteVideoReq
@@ -524,5 +488,78 @@ func StudentMyCourses(ctx context.Context, c *app.RequestContext) {
 	}
 	resp.Coursesinfo = result
 	resp.Base = srverror.WrapWithSuccess("查询所在课程域信息成功")
+	c.JSON(consts.StatusOK, resp)
+}
+
+// EnquiryMyCourses .
+// @router /user/teacher/mycourse [GET]
+func EnquiryMyCourses(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req user.EnquiryMyCoursesReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+	resp := new(user.EnquiryMyCoursesResp)
+	resp.Base = new(base.BaseResponse)
+	uid, authority, err := utils.AuthCheck(c)
+	if err != nil {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = err.Error()
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	if authority == entity.AuthorityUser {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "用户权限不够"
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	result, err := service.CourseServ().TeacherQueryCourse(ctx, uid, req.Keyword, req.Size, req.Offset)
+	if err != nil {
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	resp.Coursesinfo = result
+	resp.Base = srverror.WrapWithSuccess("查询所在课程域信息成功")
+	c.JSON(consts.StatusOK, resp)
+}
+
+// EnquiryStudent .
+// @router /teacher/query/student [POST]
+func EnquiryStudent(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req user.EnquiryStudentReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(user.EnquiryStudentResp)
+	resp.Base = new(base.BaseResponse)
+	_, authority, err := utils.AuthCheck(c)
+	if err != nil {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = err.Error()
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	if authority == entity.AuthorityUser {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "用户权限不够"
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	result, err := service.UserServ().TeacherQueryStudent(ctx, req.Keyword, req.Size, req.Offset)
+	if err != nil {
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	resp.Usersinfo = result
+	resp.Base = srverror.WrapWithSuccess("查询学生成功")
 	c.JSON(consts.StatusOK, resp)
 }

@@ -88,3 +88,23 @@ func _deletevideoMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _queryMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _enquirystudentMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _teacher0Mw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _enquirymycoursesMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

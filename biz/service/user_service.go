@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/base"
 	"sync"
 
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/entity"
@@ -179,4 +180,64 @@ func (s *UserService) DeleteUserWithUid(c context.Context, uid int64) error {
 		return err
 	}
 	return nil
+}
+func (s *UserService) AdminQueryUser(
+	c context.Context,
+	keyword string,
+	size int32,
+	offset int32,
+) ([]*base.UserInfo, error) {
+	u := query.User
+	users, err := u.WithContext(c).
+		Where(u.Name.Like("%" + keyword + "%")).
+		Where(u.Authority.Neq("SUPER_ADMIN")).
+		Offset(int(offset)).
+		Limit(int(size)).Find()
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		hlog.Error("查询用户失败: ", err)
+		return nil, err
+	}
+	var result []*base.UserInfo
+	for _, user := range users {
+		userInfo := new(base.UserInfo)
+		userInfo.Name = user.Name
+		userInfo.Avatar = user.Avatar
+		userInfo.UID = fmt.Sprintf("%d", user.ID)
+		userInfo.Authority = string(user.Authority)
+		result = append(result, userInfo)
+	}
+	return result, nil
+}
+func (s *UserService) TeacherQueryStudent(
+	c context.Context,
+	keyword string,
+	size int32,
+	offset int32,
+) ([]*base.UserInfo, error) {
+	u := query.User
+	users, err := u.WithContext(c).
+		Where(u.Name.Like("%" + keyword + "%")).
+		Where(u.Authority.Eq("USER")).
+		Offset(int(offset)).
+		Limit(int(size)).Find()
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		hlog.Error("查询学生失败: ", err)
+		return nil, err
+	}
+	var result []*base.UserInfo
+	for _, user := range users {
+		userInfo := new(base.UserInfo)
+		userInfo.Name = user.Name
+		userInfo.Avatar = user.Avatar
+		userInfo.UID = fmt.Sprintf("%d", user.ID)
+		userInfo.Authority = string(user.Authority)
+		result = append(result, userInfo)
+	}
+	return result, nil
 }

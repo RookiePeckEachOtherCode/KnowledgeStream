@@ -63,6 +63,33 @@ struct UpdateCourseInfoReq{
 struct UpdateCourseInfoResp{
     1:common.BaseResponse base;
 }
+struct EnquiryCourseReq{
+    1:string keyword(api.query="keyword");
+    2:i32 offset(api.query="offset");
+    3:i32 size(api.query="size");
+}
+struct EnquiryCourseResp{
+    1:common.BaseResponse base;
+    2:list<common.CourseInfo> coursesinfo
+}
+struct EnquiryVideoReq{
+    1:string keyword(api.query="keyword");
+    2:i32 offset(api.query="offset");
+    3:i32 size(api.query="size");
+}
+struct EnquiryVideoResp{
+    1:common.BaseResponse base;
+    2:list<common.VideoInfo> videosinfo
+}
+struct EnquiryUserReq{
+    1:string keyword(api.query="keyword");
+    2:i32 offset(api.query="offset");
+    3:i32 size(api.query="size");
+}
+struct EnquiryUserResp{
+    1:common.BaseResponse base;
+    2:list<common.UserInfo> usersinfo
+}
 service AdminService{
     ImportStudentsResp ImportStudents(1:ImportStudentsReq req)(api.post="/admin/import");
     DeleteTargetResp DeleteTarget(1:DeleteTargetReq req)(api.post="/admin/delete");
@@ -71,4 +98,7 @@ service AdminService{
     CreateCourseResp CreateCourse(1:CreateCourseReq req)(api.post="/admin/createcourse");
     DeleteUserFromCourseResp DeleteUserFromCourse(1:DeleteUserFromCourseReq req)(api.post="/admin/update/course/member");
     UpdateCourseInfoResp UpdateCourseInfo(1:UpdateCourseInfoReq req)(api.post="/admin/update/course");
+    EnquiryCourseResp EnquirytCourse(1:EnquiryCourseReq req)(api.post="/admin/query/course");
+    EnquiryVideoResp EnquiryVideo(1:EnquiryVideoReq req)(api.post="/admin/query/video");
+    EnquiryUserResp EnquiryUser(1:EnquiryUserReq req)(api.post="/admin/query/user");
 }

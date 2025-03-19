@@ -49,6 +49,15 @@ func (s *CourseService) CourseInfoWithCid(c context.Context, cid int64) (*base.C
 	result.Cid = fmt.Sprintf("%d", course.ID)
 	result.Description = course.Description
 	result.Cover = course.Cover
+	result.EndTime = course.EndTime
+	result.BeginTime = course.BeginTime
+	t := query.User
+	teacher, err := t.WithContext(c).Where(t.ID.Eq(course.ID)).First()
+	if err != nil {
+		hlog.Error("查询老师信息失败: ", err)
+		result.TeacherName = "未查询到该课程老师"
+	}
+	result.TeacherName = teacher.Name
 	return result, nil
 }
 func (s *CourseService) CourseVideosInfoWithCid(c context.Context, cid int64) ([]*base.VideoInfo, error) {
@@ -157,6 +166,8 @@ func (s *CourseService) StudentQueryCourse(
 		courseInfo.Title = course.Title
 		courseInfo.Tid = strconv.FormatInt(teacherInfo.ID, 10)
 		courseInfo.TeacherName = teacherInfo.Name
+		courseInfo.EndTime = course.EndTime
+		courseInfo.BeginTime = course.BeginTime
 		result = append(result, courseInfo)
 	}
 	return result, nil
@@ -195,6 +206,8 @@ func (s *CourseService) TeacherQueryCourse(
 			Description: course.Description,
 			Tid:         strconv.FormatInt(teacherInfo.ID, 10),
 			TeacherName: teacherInfo.Name,
+			BeginTime:   course.BeginTime,
+			EndTime:     course.EndTime,
 		})
 	}
 	return result, nil
@@ -242,11 +255,13 @@ func (s *CourseService) AdminQueryCourse(
 		courseInfo.Title = course.Title
 		courseInfo.Tid = strconv.FormatInt(teacherInfo.ID, 10)
 		courseInfo.TeacherName = teacherInfo.Name
+		courseInfo.EndTime = course.EndTime
+		courseInfo.BeginTime = course.BeginTime
 		result = append(result, courseInfo)
 	}
 	return result, nil
 }
-func (s *CourseService) CreateCourseWithUid(c context.Context, id int64, title string, description string, cover string) error {
+func (s *CourseService) CreateCourseWithUid(c context.Context, id int64, title string, description string, cover string, begin_time string, end_time string) error {
 	cid, err := utils.NextSnowFlakeId()
 	if err != nil {
 		return err
@@ -258,6 +273,8 @@ func (s *CourseService) CreateCourseWithUid(c context.Context, id int64, title s
 		Description: description,
 		Cover:       cover,
 		Ascription:  id,
+		BeginTime:   begin_time,
+		EndTime:     end_time,
 	}
 	if err := cc.WithContext(c).Save(&course); err != nil {
 		hlog.Error("创建课程域失败: ", err)

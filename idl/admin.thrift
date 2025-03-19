@@ -22,6 +22,7 @@ struct UpdateUserInfoReq{
     4:string avatar(api.query="avatar");
     5:string authority(api.query="authority");
     6:string password(api.query="password");
+    7:string grade(api.query="grade");
 }
 struct UpdateUserInfoResp{
     1:common.BaseResponse base;
@@ -42,6 +43,8 @@ struct CreateCourseReq{
     2:string description(api.query="description");
     3:string cover(api.query="cover");
     4:string ascription(api.query="ascription");
+    5:string begin_time(api.query="begin_time");
+    6:string end_time(api.query="end_time");
 }
 struct CreateCourseResp{
     1:common.BaseResponse base;

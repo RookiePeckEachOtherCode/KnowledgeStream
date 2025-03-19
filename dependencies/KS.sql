@@ -1,22 +1,36 @@
-CREATE TYPE authority_enum AS ENUM('USER', 'ADMIN', 'SUPER_ADMIN');
-
-CREATE TABLE "users" (
-    id BIGINT NOT NULL CONSTRAINT user_pk PRIMARY KEY,
-    avatar TEXT DEFAULT '',
-    salt bytea NOT NULL,
-    PASSWORD bytea NOT NULL,
-    NAME TEXT,
-    phone TEXT UNIQUE,
-    authority authority_enum DEFAULT 'USER' NOT NULL
-  );
-
-CREATE TABLE courses (
-    id BIGINT NOT NULL CONSTRAINT course_pk PRIMARY KEY,
-    title TEXT NOT NULL,
-    description TEXT DEFAULT '',
-    cover TEXT DEFAULT '',
-    ascription BIGINT
+create table users
+(
+    id        bigint                                        not null
+        constraint user_pk
+            primary key,
+    avatar    text           default ''::text,
+    salt      bytea                                         not null,
+    password  bytea                                         not null,
+    name      text,
+    phone     text
+        unique,
+    authority authority_enum default 'USER'::authority_enum not null,
+    grade     text
 );
+
+alter table users
+    owner to postgres;
+
+create table courses
+(
+    id          bigint not null
+        constraint course_pk
+            primary key,
+    title       text   not null,
+    description text default ''::text,
+    cover       text default ''::text,
+    ascription  bigint,
+    begin_time  text,
+    end_time    text
+);
+
+alter table courses
+    owner to postgres;
 
 create table videos
 (
@@ -38,9 +52,17 @@ create table videos
 alter table videos
     owner to postgres;
 
-
-CREATE TABLE user_course (
-    uid BIGINT NOT NULL CONSTRAINT user_course_user_id_fk REFERENCES "users",
-    cid BIGINT NOT NULL CONSTRAINT user_course_course_id_fk REFERENCES courses,
-    CONSTRAINT user_course_pk PRIMARY KEY (uid, cid)
+create table user_course
+(
+    uid bigint not null
+        constraint user_course_user_id_fk
+            references users,
+    cid bigint not null
+        constraint user_course_course_id_fk
+            references courses,
+    constraint user_course_pk
+        primary key (uid, cid)
 );
+
+alter table user_course
+    owner to postgres;

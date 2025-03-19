@@ -655,6 +655,8 @@ type CourseInfo struct {
 	Cover       string `thrift:"cover,4" form:"cover" json:"cover" query:"cover"`
 	Tid         string `thrift:"tid,5" form:"tid" json:"tid" query:"tid"`
 	TeacherName string `thrift:"teacher_name,6" form:"teacher_name" json:"teacher_name" query:"teacher_name"`
+	BeginTime   string `thrift:"begin_time,7" form:"begin_time" json:"begin_time" query:"begin_time"`
+	EndTime     string `thrift:"end_time,8" form:"end_time" json:"end_time" query:"end_time"`
 }
 
 func NewCourseInfo() *CourseInfo {
@@ -685,6 +687,14 @@ func (p *CourseInfo) GetTeacherName() (v string) {
 	return p.TeacherName
 }
 
+func (p *CourseInfo) GetBeginTime() (v string) {
+	return p.BeginTime
+}
+
+func (p *CourseInfo) GetEndTime() (v string) {
+	return p.EndTime
+}
+
 var fieldIDToName_CourseInfo = map[int16]string{
 	1: "cid",
 	2: "title",
@@ -692,6 +702,8 @@ var fieldIDToName_CourseInfo = map[int16]string{
 	4: "cover",
 	5: "tid",
 	6: "teacher_name",
+	7: "begin_time",
+	8: "end_time",
 }
 
 func (p *CourseInfo) Read(iprot thrift.TProtocol) (err error) {
@@ -766,6 +778,26 @@ func (p *CourseInfo) Read(iprot thrift.TProtocol) (err error) {
 		case 6:
 			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField6(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 7:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField7(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 8:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField8(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else {
@@ -857,6 +889,24 @@ func (p *CourseInfo) ReadField6(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *CourseInfo) ReadField7(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.BeginTime = v
+	}
+	return nil
+}
+
+func (p *CourseInfo) ReadField8(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.EndTime = v
+	}
+	return nil
+}
+
 func (p *CourseInfo) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("CourseInfo"); err != nil {
@@ -885,6 +935,14 @@ func (p *CourseInfo) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField6(oprot); err != nil {
 			fieldId = 6
+			goto WriteFieldError
+		}
+		if err = p.writeField7(oprot); err != nil {
+			fieldId = 7
+			goto WriteFieldError
+		}
+		if err = p.writeField8(oprot); err != nil {
+			fieldId = 8
 			goto WriteFieldError
 		}
 
@@ -1006,6 +1064,40 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 6 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 6 end error: ", p), err)
+}
+
+func (p *CourseInfo) writeField7(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("begin_time", thrift.STRING, 7); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.BeginTime); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 7 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 7 end error: ", p), err)
+}
+
+func (p *CourseInfo) writeField8(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("end_time", thrift.STRING, 8); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.EndTime); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 8 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 8 end error: ", p), err)
 }
 
 func (p *CourseInfo) String() string {

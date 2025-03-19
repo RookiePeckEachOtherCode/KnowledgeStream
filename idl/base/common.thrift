@@ -22,6 +22,8 @@ struct CourseInfo{
     4:string cover;
     5:string tid;
     6:string teacher_name;
+    7:string begin_time;
+    8:string end_time;
 }
 struct VideoInfo{
     1:string vid;

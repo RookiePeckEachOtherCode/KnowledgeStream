@@ -16,4 +16,5 @@ type User struct {
 	Name      string        `gorm:"column:name" json:"name"`
 	Phone     string        `gorm:"column:phone" json:"phone"`
 	Authority AuthorityEnum `gorm:"column:authority;default:USER" json:"authority"` // 使用枚举类型
+	Grade     string        `gorm:"column:grade" json:"grade"`
 }

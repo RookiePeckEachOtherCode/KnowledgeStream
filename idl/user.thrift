@@ -40,6 +40,7 @@ struct userInfoUpdateReq{
     2:string password(api.query="password");
     3:string avatar(api.query="avatar");
     4:string phone(api.query="phone");
+    5:string grade(api.query="grade");
 }
 struct userInfoUpdateResp{
     1:common.BaseResponse base;
@@ -59,6 +60,8 @@ struct CreateCourseReq{//创建课程域
     1:string title(api.query="title");
     2:string description(api.query="description");
     3:string cover(api.query="cover");
+    4:string begin_time(api.query="begin_time");
+    5:string end_time(api.query="end_time");
 }
 struct CreateCourseResp{
     1:common.BaseResponse base;
@@ -74,6 +77,8 @@ struct UpdateCourseReq{//修改课程域信息
     2:string cover(api.query="cover");
     3:string title(api.query="title");
     4:string description(api.query="description");
+    5:string begin_time(api.query="begin_time");
+    6:string end_time(api.query="end_time");
 }
 struct UpdateCourseResp{
     1:common.BaseResponse base;

@@ -6,4 +6,6 @@ type Course struct {
 	Description string `gorm:"column:description" json:"description"`
 	Cover       string `gorm:"column:cover" json:"cover"`
 	Ascription  int64  `gorm:"column:ascription" json:"ascription"` // 所属用户ID
+	BeginTime   string `gorm:"column:begin_time" json:"begin_time"`
+	EndTime     string `gorm:"column:end_time" json:"end_time"`
 }

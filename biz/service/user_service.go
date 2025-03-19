@@ -117,7 +117,7 @@ func (s *UserService) GetUserInfoWithId(c context.Context, id int64) (*entity.Us
 	return user, err
 }
 
-func (s *UserService) UpdateUserInfoWithId(c context.Context, id int64, name string, password string, avatar string, phone string) error {
+func (s *UserService) UpdateUserInfoWithId(c context.Context, id int64, name string, password string, avatar string, phone string, grade string) error {
 	u := query.User
 	user, err := u.WithContext(c).Where(u.ID.Eq(id)).First()
 	if err != nil {
@@ -135,6 +135,9 @@ func (s *UserService) UpdateUserInfoWithId(c context.Context, id int64, name str
 	}
 	if phone != "" {
 		user.Phone = phone
+	}
+	if grade != " " {
+		user.Grade = grade
 	}
 	if err := u.WithContext(c).Save(user); err != nil {
 		hlog.Error("更新用户信息失败: ", err)

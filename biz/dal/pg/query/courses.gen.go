@@ -32,6 +32,8 @@ func newCourse(db *gorm.DB, opts ...gen.DOOption) course {
 	_course.Description = field.NewString(tableName, "description")
 	_course.Cover = field.NewString(tableName, "cover")
 	_course.Ascription = field.NewInt64(tableName, "ascription")
+	_course.BeginTime = field.NewString(tableName, "begin_time")
+	_course.EndTime = field.NewString(tableName, "end_time")
 
 	_course.fillFieldMap()
 
@@ -47,6 +49,8 @@ type course struct {
 	Description field.String
 	Cover       field.String
 	Ascription  field.Int64
+	BeginTime   field.String
+	EndTime     field.String
 
 	fieldMap map[string]field.Expr
 }
@@ -68,6 +72,8 @@ func (c *course) updateTableName(table string) *course {
 	c.Description = field.NewString(table, "description")
 	c.Cover = field.NewString(table, "cover")
 	c.Ascription = field.NewInt64(table, "ascription")
+	c.BeginTime = field.NewString(table, "begin_time")
+	c.EndTime = field.NewString(table, "end_time")
 
 	c.fillFieldMap()
 
@@ -84,12 +90,14 @@ func (c *course) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (c *course) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 5)
+	c.fieldMap = make(map[string]field.Expr, 7)
 	c.fieldMap["id"] = c.ID
 	c.fieldMap["title"] = c.Title
 	c.fieldMap["description"] = c.Description
 	c.fieldMap["cover"] = c.Cover
 	c.fieldMap["ascription"] = c.Ascription
+	c.fieldMap["begin_time"] = c.BeginTime
+	c.fieldMap["end_time"] = c.EndTime
 }
 
 func (c course) clone(db *gorm.DB) course {

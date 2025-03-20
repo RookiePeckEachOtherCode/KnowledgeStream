@@ -1,7 +1,7 @@
 import STS from "@alicloud/sts-sdk";
 import express from 'express';
 import next from 'next';
-import { createProxyMiddleware } from 'http-proxy-middleware';  // 关键修改点
+import { createProxyMiddleware } from 'http-proxy-middleware'; 
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -42,7 +42,7 @@ app.prepare().then(() => {
         return handle(req, res);
     });
 
-    const port = process.env.PORT || 3000;
+    const port = process.env.PORT || 3001;
     server.listen(port, (err) => {
         if (err) throw err;
         console.log(`> Ready on http://localhost:${port}`);

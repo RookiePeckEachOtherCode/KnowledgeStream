@@ -1,3 +1,5 @@
+"use client"
+
 import React, {useEffect, useState} from "react";
 import {useNotification} from "@/context/notification-provider";
 import {useOss} from "@/context/oss-uploader-provider";
@@ -5,20 +7,51 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTruckLoading} from "@fortawesome/free-solid-svg-icons";
 
 
+const parseOssUrl = (url?: string | null): { bucket?: string; fileName?: string } => {
+    if (!url) return { bucket: undefined, fileName: undefined };
+
+    const parts = url.split('/').filter(Boolean); // 过滤空字符串
+    if (parts.length < 2) return { bucket: undefined, fileName: undefined };
+
+    return {
+        bucket: parts[0],
+        fileName: parts.slice(1).join('/')
+    };
+};
+
 interface OssVideoProps {
-    className?: string;
-    fileName: string;
-    bucket: string;
+    url: string;
+    className:string
 }
 
 export function OssVideo(props: OssVideoProps) {
-    const { className = "", fileName, bucket } = props;
+    const { className = "", url } = props;
     const [blobUrl, setBlobUrl] = useState<string | null>(null);
     const {showNotification} = useNotification();
     const { generateSignedUrl } = useOss();
 
+    const { bucket, fileName } = parseOssUrl(url);
+
     useEffect(() => {
         const fetchVideo = async () => {
+
+            if (!url) {
+                showNotification({
+                    title: "参数缺失",
+                    content: "必须提供OSS资源地址",
+                    type: "error"
+                });
+                return;
+            }
+
+            if (!bucket || !fileName) {
+                showNotification({
+                    title: "地址格式错误",
+                    content: `无效的OSS地址格式: ${url}`,
+                    type: "error"
+                });
+                return;
+            }
             try {
                 const url = await generateSignedUrl(fileName, bucket);
                 if (!url) return;
@@ -72,22 +105,40 @@ export function OssVideo(props: OssVideoProps) {
 
 interface OssImageProps {
     className?: string;
-    fileName: string;
-    bucket: string;
+    url: string;
     alt?: string;
 }
 
 export function OssImage({
     className = "",
-    fileName,
-    bucket,
+    url,
     alt = "OSS存储图片",
 }: OssImageProps) {
     const [blobUrl, setBlobUrl] = useState<string | null>(null);
     const {showNotification} = useNotification();
     const { generateSignedUrl } = useOss();
+    const { bucket, fileName } = parseOssUrl(url);
 
     useEffect(() => {
+        
+        if (!url) {
+            showNotification({
+                title: "参数缺失",
+                content: "必须提供OSS资源地址",
+                type: "error"
+            });
+            return;
+        }
+
+        if (!bucket || !fileName) {
+            showNotification({
+                title: "地址格式错误",
+                content: `无效的OSS地址格式: ${url}`,
+                type: "error"
+            });
+            return;
+        }
+        
         const fetchImage = async () => {
             try {
                 const url = await generateSignedUrl(fileName, bucket);
@@ -131,7 +182,7 @@ export function OssImage({
         <img
             src={blobUrl}
             alt={alt || "OssImage"}
-            className={`${className?className:``} w-full h-full object-cover`} // 直接使用传入的 className
+            className={`${className?className:``}  object-cover`} // 直接使用传入的 className
             onError={handleImageError}
         />
     ) : (

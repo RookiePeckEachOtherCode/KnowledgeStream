@@ -28,7 +28,6 @@ export default function Home() {
 
   const [leftNavigationHidden, setLeftNavigationHidden] = useState(false);
   const [animationClass, setAnimationClass] = useState(""); //用于子组件视图切换
-  const [isExiting, setIsExiting] = useState(false);
 
   const ChildrenView = useCallback(() => {
     switch (currentChildren) {
@@ -45,11 +44,9 @@ export default function Home() {
 
   //设置切换动画
   useEffect(() => {
-    setIsExiting(true);
     setAnimationClass(`hidden`);
 
     const timer = setTimeout(() => {
-      setIsExiting(false);
       setAnimationClass(`opacity-0 translate-x-1/3`);
 
       requestAnimationFrame(() => {

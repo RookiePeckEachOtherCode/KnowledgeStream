@@ -2,16 +2,25 @@ import {OssImage} from "../components/oss-midea.tsx";
 import {Divider} from "../components/divider.tsx";
 import {useEffect, useRef, useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faArrowRight, faEdit, faIdCard, faPhone, faUpload, faUserGraduate} from "@fortawesome/free-solid-svg-icons";
+import {
+    faArrowRight,
+    faEdit,
+    faIdCard, faMagnet,
+    faPhone,
+    faSchool,
+    faUpload,
+    faUserGraduate
+} from "@fortawesome/free-solid-svg-icons";
 import {useModal} from "../../context/modal-provider.js";
 import {IconButton} from "../components/icon-button.tsx";
 import MDInput from "../components/md-input.tsx";
+import {useOss} from "../../context/oss-uploader-provider.tsx";
+import {useNotification} from "../../context/notification-provider.tsx";
 
 export function UserHome() {
     const userInfo={
         id:"114514",
-        bucket:"ks-course-cover",
-        fileName:"test.jpg",
+        url:"ks-course-cover/test.jpg",
         name:"raymes",
         authority:"Student",
         phone:""
@@ -25,11 +34,24 @@ export function UserHome() {
             case 0:
                 return <BaseInfo></BaseInfo>
             case 1:
-                return <UpdateAvatar bucket={userInfo.bucket} fileName={userInfo.fileName}></UpdateAvatar>
+                return <UpdateAvatar url={userInfo.url} uid={userInfo.id}></UpdateAvatar>
             case 2:
-                return <EditForm></EditForm>
+                return <EditPasswordForm></EditPasswordForm>
         }
     }
+
+    const [animationClass, setAnimationClass] = useState("");
+
+    useEffect(() => {
+        setTimeout(()=>{
+            setAnimationClass("opacity-0")
+            requestAnimationFrame(()=>{
+                setAnimationClass("opacity-100")
+            })
+        },200)
+    }, [pager]);
+    
+    
     
     
   return (
@@ -43,20 +65,23 @@ export function UserHome() {
               <div className={`flex w-full space-x-8  flex-row`}>
                   {
                       Block.map((item,index)=>
-                          <TagButton title={item} onClick={()=>setPager(index)} underline={index===pager}></TagButton>
+                          <TagButton title={item} onClick={()=>{setPager(index);setAnimationClass("hidden")}} underline={index===pager}></TagButton>
                       )
                   }
               </div>
           </div>
-          {
-              currentDisplay()
-          }
+          <div className={`${animationClass} w-full h-full transition-all`}>
+              {
+                  currentDisplay()
+              }
+          </div>
+
 
 
       </div>
   );
 }
-
+    
 function BaseInfo(){
     const userInfo={
         id:"114514",
@@ -66,6 +91,8 @@ function BaseInfo(){
         authority:"Student",
         phone:"1534658465846",
         grade:"2077",
+        faculty:"赔钱学院",
+        major:"区块链市场反向预测",
         signature:"wwwwwwjbwwwwwwwwwwwjbwwwwwwwwwwwjb",
     }
     var {isShowModal,toggleShowModal,setForm} = useModal();
@@ -81,18 +108,19 @@ function BaseInfo(){
             <div
                 className={`w-full flex items-center justify-between space-x-3 flex-row justify-items-start`}>
                 <div className={`h-48 w-48 bg-green-300 rounded-full space-x-6 flex flex-row`}>
-                    <OssImage fileName={userInfo.fileName} bucket={userInfo.bucket} className={`rounded-full`}>
+                    <OssImage
+                        url={"ks-course-cover/test.jpg"}
+                        className={`rounded-full`}>
                     </OssImage>
                     <div className={`flex flex-col space-y-6  justify-center h-full`}>
                         <div className={`flex text-3xl`}>{userInfo.name}</div>
                         <div className={`flex text-xl`}>{userInfo.authority}</div>
                     </div>
                 </div>
-
                 <div className="w-1/3 bg-inverse-primary rounded-lg shadow-lg overflow-hidden">
                     <table className="w-full">
                         <tbody className="divide-y divide-on-surface-variant">
-                        
+
                         {/* 学号行 */}
                         <tr className="hover:bg-surface-variant transition-colors">
                             <td className="px-4 py-3">
@@ -114,6 +142,27 @@ function BaseInfo(){
                                 </div>
                             </td>
                         </tr>
+                        {/*学院*/}
+                        <tr className={`hover:bg-surface-variant transition-all`}>
+                            <td className="px-4 py-3">
+                                <div className="flex items-center space-x-3 text-body-medium">
+                                    <FontAwesomeIcon icon={faSchool} className="text-primary w-4 h-4"/>
+                                    <span>学院:</span>
+                                    <span className="text-on-surface">{userInfo.faculty || '未绑定'}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        {/*专业*/}
+                        <tr className={`hover:bg-surface-variant transition-all`}>
+                            <td className="px-4 py-3">
+                                <div className="flex items-center space-x-3 text-body-medium">
+                                    <FontAwesomeIcon icon={faMagnet} className="text-primary w-4 h-4"/>
+                                    <span>学院:</span>
+                                    <span className="text-on-surface">{userInfo.major || '未绑定'}</span>
+                                </div>
+                            </td>
+                        </tr>
+
 
                         {/* 年级行 */}
                         <tr className="hover:bg-surface-variant transition-colors hover:cursor-pointer">
@@ -300,11 +349,15 @@ function UpdateBaseInfoForm(props) {
 }
 
 function UpdateAvatar(props) {
-    const { bucket, fileName } = props;
+    const {uid,url}=props
     const [newFileName, setNewFileName] = useState(null);
     const [newFile, setNewFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
     const fileInputRef = useRef(null);
+    
+    var { ossHandleUploadFile, generateSignedUrl } = useOss();
+    var {showNotification} = useNotification();
+    
 
     // 清理对象URL
     useEffect(() => {
@@ -327,6 +380,26 @@ function UpdateAvatar(props) {
             setPreviewUrl(objectUrl);
         }
     };
+    
+    const handleSubmit=async ()=>{
+        if(!newFile||!newFileName){
+            showNotification({
+                title:"未上传头像文件",
+                type:"error"
+                })
+            return
+        }
+        var parts = newFileName.split(".");
+        if(parts.length>2){
+            showNotification({
+                title:"哥们啥文件名啊",
+                type:"error"
+            })
+            return
+        }
+        const ossName=uid+"."+parts[1]
+        await ossHandleUploadFile(newFile, ossName, "ks-user-avatar")
+    }
 
     // 触发文件选择对话框
     const handleUploadClick = () => {
@@ -342,8 +415,7 @@ function UpdateAvatar(props) {
                 <div className="w-1/5 aspect-square">
                     <OssImage
                         className="w-full h-full rounded-sm"
-                        fileName={fileName}
-                        bucket={bucket}
+                        url={url}
                     />
                 </div>
 
@@ -358,7 +430,7 @@ function UpdateAvatar(props) {
                     />
                     <IconButton
                         text="上传头像"
-                        onClick={handleUploadClick}
+                        onClick={handleSubmit}
                         className="h-auto space-x-3 bg-primary-container text-on-primary-container"
                     >
                         <FontAwesomeIcon icon={faUpload} />
@@ -378,9 +450,13 @@ function UpdateAvatar(props) {
                             src={previewUrl}
                             alt="预览"
                             className="w-full h-full object-cover"
+                            onClick={handleUploadClick}
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center">
+                        <div 
+                            className="w-full h-full flex items-center justify-center"
+                            onClick={handleUploadClick}
+                        >
                             点击上传
                         </div>
                     )}
@@ -390,10 +466,78 @@ function UpdateAvatar(props) {
     );
 }
 
-function EditForm() {
+function EditPasswordForm() {
+    const [oldPassword, setOldPassword] = useState("")
+    const [newPassword, setNewPassword] = useState("")
+    const [errors, setErrors] = useState({});
+    
+    const validateForm = ()=>{
+        const newErrors={}
+        if(oldPassword.length<6){
+            newErrors.old = '密码大于等于6位';
+        }
+        if(newPassword.length){
+            newErrors.new="密码大于等于6位"
+        }
+        setErrors(newErrors)
+        return Object.keys(newErrors).length === 0;
+    }
+    
+    const handleSubmit=async ()=>{
+        if(!validateForm())return;
+        //TODO    
+    }
+    
     return (
         <div
-            className={`w-full bg-secondary-container rounded-2xl p-6 flex items-center space-x-3 flex-row justify-items-start`}>
+            className={`w-full bg-secondary-container rounded-2xl p-6 flex items-start space-x-3 flex-col justify-items-start`}>
+            <form className={`space-y-6`}>
+
+                <div className={`space-x-4`}>
+                    <label className={`text-on-secondary-container`}>
+                        旧密码
+                        <span className={`text-error`}>*</span>
+                    </label>
+                    <input
+                        type={`text`}
+                        value={oldPassword}
+                        onChange={e => setOldPassword(e.target.value)}
+                        className={`w-2/3 p-3 rounded-lg border ${
+                            errors.old ? 'border-error' : 'border-outline'
+                        } bg-inverse-surface text-inverse-on-surface `}
+                    />
+                    {errors.old && (
+                        <p className="text-error text-sm">{errors.old}</p>
+                    )}
+                </div>
+
+                <div className={`space-x-4`}>
+                    <label className={`text-on-secondary-container`}>
+                        新密码
+                        <span className={`text-error`}>*</span>
+                    </label>
+                    <input
+                        type={`text`}
+                        value={newPassword}
+                        onChange={e => setNewPassword(e.target.value)}
+                        className={`w-2/3 p-3 rounded-lg border ${
+                            errors.new ? 'border-error' : 'border-outline'
+                        } bg-inverse-surface text-inverse-on-surface `}
+                    />
+                    {errors.new && (
+                        <p className="text-error text-sm">{errors.new}</p>
+                    )}
+                </div>
+                <div className={`w-full flex justify-end pr-6`}>
+                    <IconButton
+                        text={"提交"}
+                        onClick={handleSubmit}
+                        className={`bg-secondary-container hover:bg-tertiary transition-all`}>
+
+                    </IconButton>
+                </div>
+            </form>
+
 
         </div>
     )

@@ -1,7 +1,7 @@
 import {useScreenRecord} from "../../context/screen-record-provider";
 import {useEffect, useRef, useState} from "react";
 import {IconButton} from "../components/icon-button.tsx";
-import {useOss} from "../../context/oss-uploader-provider.js";
+import {useOss} from "../../context/oss-uploader-provider.tsx";
 import {OssVideo} from "../components/oss-midea.tsx";
 
 export function ScreenRecordControlPage(props){

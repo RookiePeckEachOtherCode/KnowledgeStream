@@ -16,7 +16,7 @@ export const ScreenRecordProvider = ({ children }) => {
     const mediaRecorderRef = useRef(null);//媒体对象引用
     const combinedStreamRef = useRef(null);
     const audioContextRef = useRef(null);
-    var {message,showNotification} = useNotification();
+    var {showNotification} = useNotification();
 
     const [isClient, setIsClient] = useState(false)
 

@@ -21,15 +21,15 @@ export function MainPage() {
       <div className={`text-3xl`}>我の课程</div>
       <div className={`w-full h-auto p-3 justify-center flex flex-row flex-wrap gap-6 `}>
         {arr.map((item, index) => (
-          <CourseCard
+          <CourseCard 
             key={index}
             className={`w-1/6`}
-            bucket={`ks-course-cover`}
-            fileName={`test.jpg`}
+            url={`ks-course-cover/test.jpg`}
             gotoCourse={() => { router.push(`/course/114514`) }}
-            gotoTecher={() => { }}
+            gotoTeacher={() => { }}
             course={`区块链市场震荡生态经济学`}
             teacher={`罗民西`}
+            
           />
         ))}
       </div>

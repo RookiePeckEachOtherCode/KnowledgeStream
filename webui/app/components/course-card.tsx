@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { OssImage } from "./oss-midea";
+import {Key} from "node:readline";
 
 interface CourseCardProps {
     className: string
-    bucket: string,
-    fileName: string,
+    url:string,
     gotoCourse: () => void
-    gotoTecher: () => void
+    gotoTeacher: () => void
     course: string,
     teacher: string
 }
@@ -14,12 +14,11 @@ interface CourseCardProps {
 
 export default function CourseCard({
     className,
-    bucket,
-    fileName,
+    url,
     gotoCourse,
-    gotoTecher,
+    gotoTeacher,
     course,
-    teacher
+    teacher,
 }: CourseCardProps) {
     const [isHover, setIsHover] = useState(false)
 
@@ -35,12 +34,11 @@ export default function CourseCard({
             <div onClick={() => gotoCourse()}>
                 <OssImage
                     className={`w-full aspect-square rounded-2xl`}
-                    fileName={fileName}
-                    bucket={bucket}
+                    url={url}
                 />
             </div>
             <div className={`${isHover ? `text-on-primary-fixed-variant` : `text-on-primary-container`} `} onClick={() => gotoCourse()}>{course}</div>
-            <div className={`${isHover ? `text-on-primary-fixed-variant` : `text-on-primary-container`} `} onClick={() => gotoTecher()}>{teacher}</div>
+            <div className={`${isHover ? `text-on-primary-fixed-variant` : `text-on-primary-container`} `} onClick={() => gotoTeacher()}>{teacher}</div>
         </div>
     )
 }

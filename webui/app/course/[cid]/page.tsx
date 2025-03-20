@@ -9,11 +9,11 @@ import AnimatedContent from "@/app/components/animated-content";
 interface MockCourseDataType {
     id: string,
     name: string,
-    techer: {
+    teacher: {
         id: string,
         name: string
         avatar: string
-        signatrue: string
+        signature: string
     },
     list: Array<{
         id: string,
@@ -30,11 +30,11 @@ interface MockRequestType {
     },
     id: string,
     name: string,
-    techer: {
+    teacher: {
         id: string,
         name: string,
         avatar: string,
-        signatrue: string
+        signature: string
     },
     list: Array<{
         id: string,
@@ -53,11 +53,11 @@ async function mockData(cid: string): Promise<MockRequestType> {
         },
         id: "114514",
         name: "韭菜动力学",
-        techer: {
+        teacher: {
             id: "1919810",
             name: "罗民西",
             avatar: "https://tse3-mm.cn.bing.net/th/id/OIP-C.huUG6H4rNQYhb6yiOl9ZugHaHW?rs=1&pid=ImgDetMain",
-            signatrue: "我会使用指针拨动整个计算机世界！！！",
+            signature: "我会使用指针拨动整个计算机世界！！！",
         },
         list: [
             {
@@ -180,9 +180,9 @@ export default function CoursePage({
         fetchCourseData()
     }, [params, showNotification])
 
-    const gotoTecher = () => {
-        if (!courseData?.techer.id) return
-        router.push(`/techer/${courseData.techer.id}`)
+    const gotoTeacher = () => {
+        if (!courseData?.teacher.id) return
+        router.push(`/carte/${courseData.teacher.id}`)
     }
 
     return (
@@ -199,13 +199,13 @@ export default function CoursePage({
                             <h1 className="text-3xl font-bold text-on-surface mb-4">{courseData.name}</h1>
                             <div className="flex items-start space-x-4">
                                 <img
-                                    src={courseData.techer.avatar}
-                                    alt={courseData.techer.name}
+                                    src={courseData.teacher.avatar}
+                                    alt={courseData.teacher.name}
                                     className="w-12 h-12 rounded-full"
                                 />
                                 <div className="flex flex-col">
-                                    <span className="text-on-surface-variant text-xl hover:underline cursor-pointer" onClick={() => { gotoTecher() }}>{courseData.techer.name}</span>
-                                    <span className="text-sm text-on-surface-variant mt-1 italic">{courseData.techer.signatrue}</span>
+                                    <span className="text-on-surface-variant text-xl hover:underline cursor-pointer" onClick={() => { gotoTeacher() }}>{courseData.teacher.name}</span>
+                                    <span className="text-sm text-on-surface-variant mt-1 italic">{courseData.teacher.signature}</span>
                                 </div>
                             </div>
                         </div>

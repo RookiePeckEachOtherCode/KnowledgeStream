@@ -48,7 +48,7 @@ export function UserHome() {
             requestAnimationFrame(()=>{
                 setAnimationClass("opacity-100")
             })
-        },200)
+        },300)
     }, [pager]);
     
     
@@ -70,7 +70,7 @@ export function UserHome() {
                   }
               </div>
           </div>
-          <div className={`${animationClass} w-full h-full transition-all`}>
+          <div className={`${animationClass} w-full h-full transition-all duration-200`}>
               {
                   currentDisplay()
               }

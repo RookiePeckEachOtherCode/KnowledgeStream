@@ -40,6 +40,8 @@ func InitDB() {
 		entity.UserInCourse{},
 		entity.Course{},
 		entity.Video{},
+		entity.Notification{},
+		entity.Comment{},
 	)
 
 	generator.Execute()

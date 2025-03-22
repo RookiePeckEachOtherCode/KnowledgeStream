@@ -17,7 +17,9 @@ import (
 
 var (
 	Q            = new(Query)
+	Comment      *comment
 	Course       *course
+	Notification *notification
 	User         *user
 	UserInCourse *userInCourse
 	Video        *video
@@ -25,7 +27,9 @@ var (
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
+	Comment = &Q.Comment
 	Course = &Q.Course
+	Notification = &Q.Notification
 	User = &Q.User
 	UserInCourse = &Q.UserInCourse
 	Video = &Q.Video
@@ -34,7 +38,9 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
 		db:           db,
+		Comment:      newComment(db, opts...),
 		Course:       newCourse(db, opts...),
+		Notification: newNotification(db, opts...),
 		User:         newUser(db, opts...),
 		UserInCourse: newUserInCourse(db, opts...),
 		Video:        newVideo(db, opts...),
@@ -44,7 +50,9 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 type Query struct {
 	db *gorm.DB
 
+	Comment      comment
 	Course       course
+	Notification notification
 	User         user
 	UserInCourse userInCourse
 	Video        video
@@ -55,7 +63,9 @@ func (q *Query) Available() bool { return q.db != nil }
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
 		db:           db,
+		Comment:      q.Comment.clone(db),
 		Course:       q.Course.clone(db),
+		Notification: q.Notification.clone(db),
 		User:         q.User.clone(db),
 		UserInCourse: q.UserInCourse.clone(db),
 		Video:        q.Video.clone(db),
@@ -73,7 +83,9 @@ func (q *Query) WriteDB() *Query {
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
 		db:           db,
+		Comment:      q.Comment.replaceDB(db),
 		Course:       q.Course.replaceDB(db),
+		Notification: q.Notification.replaceDB(db),
 		User:         q.User.replaceDB(db),
 		UserInCourse: q.UserInCourse.replaceDB(db),
 		Video:        q.Video.replaceDB(db),
@@ -81,7 +93,9 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 }
 
 type queryCtx struct {
+	Comment      ICommentDo
 	Course       ICourseDo
+	Notification INotificationDo
 	User         IUserDo
 	UserInCourse IUserInCourseDo
 	Video        IVideoDo
@@ -89,7 +103,9 @@ type queryCtx struct {
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
+		Comment:      q.Comment.WithContext(ctx),
 		Course:       q.Course.WithContext(ctx),
+		Notification: q.Notification.WithContext(ctx),
 		User:         q.User.WithContext(ctx),
 		UserInCourse: q.UserInCourse.WithContext(ctx),
 		Video:        q.Video.WithContext(ctx),

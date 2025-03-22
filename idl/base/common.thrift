@@ -33,3 +33,18 @@ struct VideoInfo{
     5:string source;
     6:string upload_time
 }
+struct NotificationInfo{
+    1:string content;
+    2:string file;
+    3:string cid;
+    4:i32 favorite;
+    5:bool read;
+    6:string id;
+}
+struct CommentInfo{
+    1:string id;
+    2:string ascription;
+    3:string name;
+    4:string content;
+    5:string parent;
+}

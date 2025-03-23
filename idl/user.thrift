@@ -61,6 +61,7 @@ struct CreateCourseReq{//创建课程域
     6:string end_time;
     7:string major;
     8:string faculty;
+    9:string class;
 }
 struct CreateCourseResp{
     1:common.BaseResponse base;

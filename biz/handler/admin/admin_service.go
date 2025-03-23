@@ -197,7 +197,7 @@ func CreateCourse(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	err = service.CourseServ().CreateCourseWithUid(ctx, uid, req.Title, req.Description, req.Cover, req.BeginTime, req.EndTime, req.Major, req.Faculty)
+	err = service.CourseServ().CreateCourseWithUid(ctx, uid, req.Title, req.Description, req.Cover, req.BeginTime, req.EndTime, req.Major, req.Faculty, req.Class)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		c.JSON(consts.StatusOK, resp)

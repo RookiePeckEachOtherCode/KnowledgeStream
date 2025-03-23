@@ -250,7 +250,7 @@ func (s *CourseService) AdminQueryCourse(
 	}
 	return result, nil
 }
-func (s *CourseService) CreateCourseWithUid(c context.Context, id int64, title string, description string, cover string, begin_time string, end_time string, major string, faculty string) error {
+func (s *CourseService) CreateCourseWithUid(c context.Context, id int64, title string, description string, cover string, begin_time string, end_time string, major string, faculty string, class string) error {
 	cid, err := utils.NextSnowFlakeId()
 	if err != nil {
 		return err
@@ -266,6 +266,7 @@ func (s *CourseService) CreateCourseWithUid(c context.Context, id int64, title s
 		EndTime:     end_time,
 		Major:       major,
 		Faculty:     faculty,
+		Class:       class,
 	}
 	if err := cc.WithContext(c).Save(&course); err != nil {
 		hlog.Error("创建课程域失败: ", err)

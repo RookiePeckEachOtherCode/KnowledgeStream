@@ -4,10 +4,14 @@ package notification
 
 import (
 	"context"
-
+	"errors"
 	notification "github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/notification"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/srverror"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/service"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
+	"net/http"
+	"strconv"
 )
 
 // QueryNotification .
@@ -22,7 +26,21 @@ func QueryNotification(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(notification.QueryNotificationResp)
+	Uid, exists := c.Get("uid")
+	if !exists {
+		resp.Base = srverror.WrapWithCodeMsg(http.StatusUnauthorized, errors.New("未获取到用户信息").Error())
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	uid := Uid.(int64)
 
+	queryNotificationResp, err := service.NotificationServ().QueryUserNotification(ctx, uid)
+	if err != nil {
+		resp.Base = srverror.WrapWithCodeMsg(http.StatusBadRequest, err.Error())
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	resp = queryNotificationResp
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -38,6 +56,16 @@ func NotificationUnderCourse(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(notification.NotificationUnderCourseResp)
+
+	cid, err := strconv.ParseInt(req.Cid, 10, 64)
+
+	notificationUnderCourseResp, err := service.NotificationServ().QueryCourseNotifications(ctx, cid)
+	if err != nil {
+		resp.Base = srverror.WrapWithCodeMsg(http.StatusBadRequest, err.Error())
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	resp = notificationUnderCourseResp
 
 	c.JSON(consts.StatusOK, resp)
 }
@@ -55,22 +83,25 @@ func CreateNotification(ctx context.Context, c *app.RequestContext) {
 
 	resp := new(notification.CreateNotificationResp)
 
-	c.JSON(consts.StatusOK, resp)
-}
-
-// BrowseNotificatio .
-// @router /notification/browse [GET]
-func BrowseNotificatio(ctx context.Context, c *app.RequestContext) {
-	var err error
-	var req notification.BrowseNotificationReq
-	err = c.BindAndValidate(&req)
+	cid, err := strconv.ParseInt(req.Cid, 10, 64)
 	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+		resp.Base = srverror.WrapWithCodeMsg(http.StatusBadRequest, err.Error())
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 
-	resp := new(notification.BrowseNotificationResp)
-
+	response, err := service.NotificationServ().CreateNotification(
+		ctx,
+		cid,
+		req.Content,
+		req.File,
+	)
+	if err != nil {
+		resp.Base = srverror.WrapWithCodeMsg(http.StatusBadRequest, err.Error())
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	resp.Base = response
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -86,6 +117,29 @@ func BrowseNotification(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(notification.BrowseNotificationResp)
+
+	Uid, exists := c.Get("uid")
+	if !exists {
+		resp.Base = srverror.WrapWithCodeMsg(http.StatusUnauthorized, errors.New("未获取到用户信息").Error())
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	uid := Uid.(int64)
+
+	nid, err := strconv.ParseInt(req.Nid, 10, 64)
+	if err != nil {
+		resp.Base = srverror.WrapWithCodeMsg(http.StatusBadRequest, err.Error())
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+
+	browseNotificationResp, err := service.NotificationServ().BrowseNotification(ctx, uid, nid)
+	if err != nil {
+		resp.Base = srverror.WrapWithCodeMsg(http.StatusBadRequest, err.Error())
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	resp = browseNotificationResp
 
 	c.JSON(consts.StatusOK, resp)
 }

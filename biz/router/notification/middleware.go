@@ -20,25 +20,28 @@ func _notificationMw() []app.HandlerFunc {
 
 func _querynotificationMw() []app.HandlerFunc {
 	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }
 
 func _notificationundercourseMw() []app.HandlerFunc {
 	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }
 
 func _createnotificationMw() []app.HandlerFunc {
 	// your code...
-	return nil
-}
-
-func _browsenotificatioMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }
 
 func _browsenotificationMw() []app.HandlerFunc {
 	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }

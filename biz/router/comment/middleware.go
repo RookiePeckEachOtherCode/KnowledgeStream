@@ -14,37 +14,47 @@ func rootMw() []app.HandlerFunc {
 
 func _commentMw() []app.HandlerFunc {
 	// your code...
+	return nil
+}
+
+func _querychildrencommentMw() []app.HandlerFunc {
+	// your code...
 	return []app.HandlerFunc{
 		middleware.VerifyToken(),
 	}
 }
 
-func _querychildrencommentMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
 func _makecommentMw() []app.HandlerFunc {
 	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }
 
 func _querycommentundernotificationMw() []app.HandlerFunc {
 	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }
 
 func _querycommentundervideoMw() []app.HandlerFunc {
 	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }
 
 func _commentsMw() []app.HandlerFunc {
 	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }
 
 func _replycommentMw() []app.HandlerFunc {
 	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }

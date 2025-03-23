@@ -3,7 +3,7 @@ namespace go video
 include "./base/common.thrift"
 
 struct VideoInfoReq{
-    1:string vid(api.query="vid")
+    1:string vid;
 }
 struct VideoInfoResp{
     1:common.BaseResponse base;

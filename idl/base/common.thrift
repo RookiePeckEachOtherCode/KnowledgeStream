@@ -13,25 +13,35 @@ struct UserInfo{
     1:string uid;
     2:string avatar;
     3:string name;
-    4:string authority;
+    4:string authoriry;
+    5:string signature;
+    6:string grade;
+    7:string faculty;
+    8:string major;
+    9:string class;
 }
 struct CourseInfo{
     1:string cid;
     2:string title;
     3:string description;
     4:string cover;
-    5:string tid;
-    6:string teacher_name;
-    7:string begin_time;
-    8:string end_time;
+    5:string ascription;
+    6:string begin_time;
+    7:string end_time;
+    8:string major;
+    9:string class;
 }
 struct VideoInfo{
     1:string vid;
-    2:string title;
-    3:string description;
-    4:string cover;
+    2:string cover;
+    3:string chapter;
+    4:string title;
     5:string source;
-    6:string upload_time
+    6:string desciption;
+    7:string length;
+    8:string ascription;
+    9:string uploader;
+    10:string upload_time;
 }
 struct NotificationInfo{
     1:string content;

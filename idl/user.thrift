@@ -30,26 +30,22 @@ struct userInfoReq{
 }
 struct userInfoResp{
     1:common.BaseResponse base;
-    2:string name;
-    3:string avatar;
-    4:string authoriry;
-    5:string phone;
+    2:common.UserInfo userinfo
 }
 struct userInfoUpdateReq{
-    1:string name(api.query="name");
-    2:string password(api.query="password");
-    3:string avatar(api.query="avatar");
-    4:string phone(api.query="phone");
-    5:string grade(api.query="grade");
+    1:string name;
+    2:string password;
+    3:string avatar;
+    4:string phone;
 }
 struct userInfoUpdateResp{
     1:common.BaseResponse base;
 }
 //------------------------------------------Student
 struct StudentMyCoursesReq{
-    1:string keyword(api.query="keyword");
-    2:i32 offset(api.query="offset");
-    3:i32 size(api.query="size");
+    1:string keyword;
+    2:i32 offset;
+    3:i32 size;
 }
 struct StudentMyCoursesResp{
     1:common.BaseResponse base;
@@ -57,77 +53,84 @@ struct StudentMyCoursesResp{
 }
 //------------------------------------------Techer
 struct CreateCourseReq{//创建课程域
-    1:string title(api.query="title");
-    2:string description(api.query="description");
-    3:string cover(api.query="cover");
-    4:string begin_time(api.query="begin_time");
-    5:string end_time(api.query="end_time");
+    1:string title;
+    2:string description;
+    3:string public;
+    4:string cover;
+    5:string begin_time;
+    6:string end_time;
+    7:string major;
+    8:string faculty;
 }
 struct CreateCourseResp{
     1:common.BaseResponse base;
 }
 struct DeleteCourseReq{//删除课程域
-    1:string cid(api.query="cid");
+    1:string cid;
 }
 struct DeleteCourseResp{
     1:common.BaseResponse base;
 }
 struct UpdateCourseReq{//修改课程域信息
-    1:string cid(api.query="cid");
-    2:string cover(api.query="cover");
-    3:string title(api.query="title");
-    4:string description(api.query="description");
-    5:string begin_time(api.query="begin_time");
-    6:string end_time(api.query="end_time");
+    1:string cid;
+    2:string cover;
+    3:string title;
+    4:string description;
+    5:string begin_time;
+    6:string end_time;
 }
 struct UpdateCourseResp{
     1:common.BaseResponse base;
 }
 struct InviteStudentReq{//将学生拉入课程域
-    1:string cid(api.query="cid");
-    2:string sid(api.query="sid");
+    1:string cid;
+    2:string sid;
 }
 struct InviteStudentResp{
     1:common.BaseResponse base;
 }
 struct OperateMemberReq{
-    1:string cid(api.query="cid");
-    2:string uid(api.query="uid");
-    3:bool   delete(api.query="delete");
+    1:string cid;
+    2:string uid;
+    3:bool   delete;
 }
 struct OperateMemberResp{
     1:common.BaseResponse base;
 }
 struct UploadVideosReq{//上传视频
-    1:string source(api.query="source");
-    2:string title(api.query="title");
-    3:string description(api.query="description");
-    4:string cover(api.query="cover");
-    5:string cid(api.query="cid");
-    6:string length(api.query="length");
+    1:string source;
+    2:string title;
+    3:string description;
+    4:string cover;
+    5:string cid;
+    6:string length;
+    7:string chapter;
 }
 struct UploadVideosResp{
     1:common.BaseResponse base;
 }
 struct EnquiryMyCoursesReq{
-    1:string keyword(api.query="keyword");
-    2:i32 offset(api.query="offset");
-    3:i32 size(api.query="size");
+    1:string keyword;
+    2:i32 offset;
+    3:i32 size;
 }
 struct EnquiryMyCoursesResp{
     1:common.BaseResponse base;
     2:list<common.CourseInfo> coursesinfo;
 }
 struct DeleteVideoReq{
-    1:string vid(api.query="vid");
+    1:string vid;
 }
 struct DeleteVideoResp{
     1:common.BaseResponse base;
 }
 struct EnquiryStudentReq{
-    1:string keyword(api.query="keyword");
-    2:i32 offset(api.query="offset");
-    3:i32 size(api.query="size");
+    1:string keyword;
+    2:i32 offset;
+    3:i32 size;
+    4:string grade;
+    5:string faculty;
+    6:string major;
 }
 struct EnquiryStudentResp{
     1:common.BaseResponse base;

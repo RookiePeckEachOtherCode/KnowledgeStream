@@ -9,85 +9,94 @@ struct ImportStudentsResp{
     1:common.BaseResponse base;
 }
 struct DeleteTargetReq{
-    1:string target(api.query="target");
-    2:string tid(api.query="tid");
+    1:string target;
+    2:string tid;
 }
 struct DeleteTargetResp{
     1:common.BaseResponse base;
 }
 struct UpdateUserInfoReq{
-    1:string uid(api.query="uid");
-    2:string name(api.query="name");
-    3:string phone(api.query="phone");
-    4:string avatar(api.query="avatar");
-    5:string authority(api.query="authority");
-    6:string password(api.query="password");
-    7:string grade(api.query="grade");
+    1:string uid;
+    2:string name;
+    3:string phone;
+    4:string avatar;
+    5:string authority;
+    6:string grade;
+    7:string faculty;
+    8:string major;
+    9:string password;
 }
 struct UpdateUserInfoResp{
     1:common.BaseResponse base;
 }
 struct UploadVideoReq{
-    1:string source(api.query="source");
-    2:string title(api.query="title");
-    3:string description(api.query="description");
-    4:string cover(api.query="cover");
-    5:string cid(api.query="cid");
-    6:string length(api.query="length");
+    1:string source;
+    2:string title;
+    3:string description;
+    4:string cover;
+    5:string cid;
+    6:string length;
+    7:string chapter;
 }
 struct UploadVideoResp{
     1:common.BaseResponse base;
 }
 struct CreateCourseReq{
-    1:string title(api.query="title");
-    2:string description(api.query="description");
-    3:string cover(api.query="cover");
-    4:string ascription(api.query="ascription");
-    5:string begin_time(api.query="begin_time");
-    6:string end_time(api.query="end_time");
+    1:string title;
+    2:string description;
+    3:string public;
+    4:string cover;
+    5:string begin_time;
+    6:string end_time;
+    7:string major;
+    8:string faculty;
 }
 struct CreateCourseResp{
     1:common.BaseResponse base;
 }
 struct DeleteUserFromCourseReq{
-    1:string cid(api.query="cid");
-    2:string uid(api.query="uid");
+    1:string cid;
+    2:string uid;
 }
 struct DeleteUserFromCourseResp{
     1:common.BaseResponse base;
 }
 struct UpdateCourseInfoReq{
-    1:string cid(api.query="cid");
-    2:string cover(api.query="cover");
-    3:string title(api.query="title");
-    4:string description(api.query="description");
-    5:string ascription(api.query="ascription");
+    1:string cid;
+    2:string cover;
+    3:string title;
+    4:string description;
+    5:string begin_time;
+    6:string end_time;
 }
 struct UpdateCourseInfoResp{
     1:common.BaseResponse base;
 }
 struct EnquiryCourseReq{
-    1:string keyword(api.query="keyword");
-    2:i32 offset(api.query="offset");
-    3:i32 size(api.query="size");
+    1:string keyword;
+    2:i32 offset;
+    3:i32 size;
+    4:string major;
 }
 struct EnquiryCourseResp{
     1:common.BaseResponse base;
     2:list<common.CourseInfo> coursesinfo
 }
 struct EnquiryVideoReq{
-    1:string keyword(api.query="keyword");
-    2:i32 offset(api.query="offset");
-    3:i32 size(api.query="size");
+    1:string keyword;
+    2:i32 offset;
+    3:i32 size;
 }
 struct EnquiryVideoResp{
     1:common.BaseResponse base;
     2:list<common.VideoInfo> videosinfo
 }
 struct EnquiryUserReq{
-    1:string keyword(api.query="keyword");
-    2:i32 offset(api.query="offset");
-    3:i32 size(api.query="size");
+    1:string keyword;
+    2:i32 offset;
+    3:i32 size;
+    4:string faculty;
+    5:string major;
 }
 struct EnquiryUserResp{
     1:common.BaseResponse base;

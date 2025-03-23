@@ -10,4 +10,5 @@ type Video struct {
 	Cover       string `gorm:"column:cover" json:"cover"`
 	Ascription  int64  `gorm:"column:ascription" json:"ascription"` // 所属课程ID（外键）
 	UploadTime  string `gorm:"column:upload_time" json:"upload_time"`
+	Chapter     string `gorm:"column:chapter" json:"chapter"`
 }

@@ -13,7 +13,7 @@ struct UserInfo{
     1:string uid;
     2:string avatar;
     3:string name;
-    4:string authoriry;
+    4:string authority;
     5:string signature;
     6:string grade;
     7:string faculty;
@@ -37,7 +37,7 @@ struct VideoInfo{
     3:string chapter;
     4:string title;
     5:string source;
-    6:string desciption;
+    6:string description;
     7:string length;
     8:string ascription;
     9:string uploader;

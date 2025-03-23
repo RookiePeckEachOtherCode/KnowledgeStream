@@ -10,4 +10,5 @@ type Course struct {
 	EndTime     string `gorm:"column:end_time" json:"end_time"`
 	Major       string `gorm:"column:major" json:"major"`
 	Class       string `gorm:"column:class" json:"class"`
+	Faculty     string `gorm:"column:faculty" json:"faculty"`
 }

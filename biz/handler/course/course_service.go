@@ -50,6 +50,14 @@ func CourseInfo(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	resp.Courseinfo = result
+
+	members, err := service.CourseServ().CourseMembersInfoWithCid(ctx, cid)
+	if err != nil {
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	resp.Membersinfo = members
 	resp.Base = srverror.WrapWithSuccess("查询课程域信息成功")
 	c.JSON(consts.StatusOK, resp)
 }
@@ -89,43 +97,5 @@ func CourseVideosInfo(ctx context.Context, c *app.RequestContext) {
 	}
 	resp.Videosinfo = result
 	resp.Base = srverror.WrapWithSuccess("查询课程域视频列表信息成功")
-	c.JSON(consts.StatusOK, resp)
-}
-
-// CourseMembersInfo .
-// @router /course/members [POST]
-func CourseMembersInfo(ctx context.Context, c *app.RequestContext) {
-	var err error
-	var req course.CourseMembersInfoReq
-	err = c.BindAndValidate(&req)
-	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
-		return
-	}
-
-	resp := new(course.CourseMembersInfoResp)
-	resp.Base = new(base.BaseResponse)
-	_, _, err = utils.AuthCheck(c)
-	if err != nil {
-		resp.Base.Code = http.StatusUnauthorized
-		resp.Base.Msg = err.Error()
-		c.JSON(consts.StatusOK, resp)
-		return
-	}
-	cid, err := strconv.ParseInt(req.Cid, 10, 64)
-	if err != nil {
-		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
-		hlog.Error("课程域id数据格式转换失败：", err)
-		c.JSON(consts.StatusOK, resp)
-		return
-	}
-	result, err := service.CourseServ().CourseMembersInfoWithCid(ctx, cid)
-	if err != nil {
-		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
-		c.JSON(consts.StatusOK, resp)
-		return
-	}
-	resp.Usersinfo = result
-	resp.Base = srverror.WrapWithSuccess("查询课程域成员列表信息成功")
 	c.JSON(consts.StatusOK, resp)
 }

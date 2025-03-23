@@ -52,6 +52,10 @@ func (s *VideoService) VideoInfoService(c context.Context, vid int64) (*base.Vid
 	result.Description = video.Description
 	result.Cover = video.Cover
 	result.Source = video.Source
+	result.Chapter = video.Chapter
+	result.Ascription = fmt.Sprintf("%d", video.Ascription)
+	result.Uploader = fmt.Sprintf("%d", video.Uploader)
+	result.Length = fmt.Sprintf("%d", video.Length)
 	result.UploadTime = video.UploadTime
 	return result, nil
 }
@@ -72,7 +76,7 @@ func (s *VideoService) DeleteVideoWithVid(c context.Context, vid int64) error {
 	}
 	return nil
 }
-func (s *VideoService) UploadVideoWithCidAndUid(c context.Context, uid int64, cid int64, source string, title string, description string, cover string, length int, timestr string) error {
+func (s *VideoService) UploadVideoWithCidAndUid(c context.Context, uid int64, cid int64, source string, title string, description string, cover string, length int, timestr string, chapter string) error {
 	v := query.Video
 	id, err := utils.NextSnowFlakeId()
 	if err != nil {
@@ -88,6 +92,7 @@ func (s *VideoService) UploadVideoWithCidAndUid(c context.Context, uid int64, ci
 		Ascription:  cid,
 		Length:      length,
 		UploadTime:  timestr,
+		Chapter:     chapter,
 	}
 
 	err = v.WithContext(c).Save(&video)
@@ -124,6 +129,10 @@ func (s *VideoService) AdminQueryVideo(
 		videoInfo.UploadTime = video.UploadTime
 		videoInfo.Vid = fmt.Sprintf("%d", video.ID)
 		videoInfo.Title = video.Title
+		videoInfo.Ascription = fmt.Sprintf("%d", video.Ascription)
+		videoInfo.Chapter = video.Chapter
+		videoInfo.Length = fmt.Sprintf("%d", video.Length)
+		videoInfo.Uploader = fmt.Sprintf("%d", video.Uploader)
 		videoInfo.Description = video.Description
 		result = append(result, videoInfo)
 	}

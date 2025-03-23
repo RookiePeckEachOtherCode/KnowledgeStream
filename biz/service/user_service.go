@@ -117,7 +117,7 @@ func (s *UserService) GetUserInfoWithId(c context.Context, id int64) (*entity.Us
 	return user, err
 }
 
-func (s *UserService) UpdateUserInfoWithId(c context.Context, id int64, name string, password string, avatar string, phone string, grade string) error {
+func (s *UserService) UpdateUserInfoWithId(c context.Context, id int64, name string, password string, avatar string, phone string) error {
 	u := query.User
 	user, err := u.WithContext(c).Where(u.ID.Eq(id)).First()
 	if err != nil {
@@ -135,9 +135,6 @@ func (s *UserService) UpdateUserInfoWithId(c context.Context, id int64, name str
 	}
 	if phone != "" {
 		user.Phone = phone
-	}
-	if grade != " " {
-		user.Grade = grade
 	}
 	if err := u.WithContext(c).Save(user); err != nil {
 		hlog.Error("更新用户信息失败: ", err)
@@ -209,7 +206,16 @@ func (s *UserService) AdminQueryUser(
 		userInfo.Name = user.Name
 		userInfo.Avatar = user.Avatar
 		userInfo.UID = fmt.Sprintf("%d", user.ID)
-		userInfo.Authority = string(user.Authority)
+		userInfo.Signature = user.Signature
+		userInfo.Faculty = user.Faculty
+		userInfo.Class = user.Class
+		userInfo.Major = user.Major
+		userInfo.Grade = user.Grade
+		if user.Authority == entity.AuthorityUser {
+			userInfo.Authority = "Student"
+		} else if user.Authority == entity.AuthorityAdmin {
+			userInfo.Authority = "Teacher"
+		}
 		result = append(result, userInfo)
 	}
 	return result, nil
@@ -239,7 +245,16 @@ func (s *UserService) TeacherQueryStudent(
 		userInfo.Name = user.Name
 		userInfo.Avatar = user.Avatar
 		userInfo.UID = fmt.Sprintf("%d", user.ID)
-		userInfo.Authority = string(user.Authority)
+		if user.Authority == entity.AuthorityUser {
+			userInfo.Authority = "Student"
+		} else if user.Authority == entity.AuthorityAdmin {
+			userInfo.Authority = "Teacher"
+		}
+		userInfo.Class = user.Class
+		userInfo.Grade = user.Grade
+		userInfo.Signature = user.Signature
+		userInfo.Faculty = user.Faculty
+		userInfo.Major = user.Major
 		result = append(result, userInfo)
 	}
 	return result, nil

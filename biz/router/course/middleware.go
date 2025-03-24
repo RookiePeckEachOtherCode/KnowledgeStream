@@ -19,16 +19,13 @@ func _courseMw() []app.HandlerFunc {
 }
 
 func _courseinfoMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
-func _coursemembersinfoMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }
 
 func _coursevideosinfoMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }

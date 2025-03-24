@@ -10,7 +10,6 @@ import (
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/utils"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"gorm.io/gorm"
-	"strconv"
 	"sync"
 )
 
@@ -51,13 +50,9 @@ func (s *CourseService) CourseInfoWithCid(c context.Context, cid int64) (*base.C
 	result.Cover = course.Cover
 	result.EndTime = course.EndTime
 	result.BeginTime = course.BeginTime
-	t := query.User
-	teacher, err := t.WithContext(c).Where(t.ID.Eq(course.ID)).First()
-	if err != nil {
-		hlog.Error("查询老师信息失败: ", err)
-		result.TeacherName = "未查询到该课程老师"
-	}
-	result.TeacherName = teacher.Name
+	result.Class = course.Class
+	result.Major = course.Major
+	result.Ascription = fmt.Sprintf("%d", course.Ascription)
 	return result, nil
 }
 func (s *CourseService) CourseVideosInfoWithCid(c context.Context, cid int64) ([]*base.VideoInfo, error) {
@@ -76,6 +71,10 @@ func (s *CourseService) CourseVideosInfoWithCid(c context.Context, cid int64) ([
 		videoInfo.Title = video.Title
 		videoInfo.Description = video.Description
 		videoInfo.UploadTime = video.UploadTime
+		videoInfo.Chapter = video.Chapter
+		videoInfo.Length = fmt.Sprintf("%d", video.Length)
+		videoInfo.Ascription = fmt.Sprintf("%d", video.Ascription)
+		videoInfo.Uploader = fmt.Sprintf("%d", video.Uploader)
 		result = append(result, videoInfo)
 	}
 	return result, nil
@@ -97,10 +96,15 @@ func (s *CourseService) CourseMembersInfoWithCid(c context.Context, cid int64) (
 		userInfo := new(base.UserInfo)
 		userInfo.Name = member.Name
 		userInfo.Avatar = member.Avatar
+		userInfo.Faculty = member.Faculty
+		userInfo.Class = member.Class
+		userInfo.Major = member.Major
+		userInfo.Signature = member.Signature
+		userInfo.Grade = member.Grade
 		if member.Authority == entity.AuthorityUser {
-			userInfo.Authority = "student"
+			userInfo.Authority = "Student"
 		} else if member.Authority == entity.AuthorityAdmin {
-			userInfo.Authority = "teacher"
+			userInfo.Authority = "Teacher"
 		}
 		userInfo.UID = fmt.Sprintf("%d", member.ID)
 		result = append(result, userInfo)
@@ -153,21 +157,16 @@ func (s *CourseService) StudentQueryCourse(
 	}
 	var result []*base.CourseInfo
 	for _, course := range courses {
-		teacherInfo, err := UserServ().GetUserInfoWithId(c, course.Ascription)
-		if err != nil {
-			hlog.Error("查询用户信息失败: ", err)
-			return nil, fmt.Errorf("查询课程失败: %v", err)
-		}
-
 		courseInfo := new(base.CourseInfo)
 		courseInfo.Cid = fmt.Sprintf("%d", course.ID)
 		courseInfo.Cover = course.Cover
 		courseInfo.Description = course.Description
 		courseInfo.Title = course.Title
-		courseInfo.Tid = strconv.FormatInt(teacherInfo.ID, 10)
-		courseInfo.TeacherName = teacherInfo.Name
+		courseInfo.Major = course.Major
+		courseInfo.Class = course.Class
 		courseInfo.EndTime = course.EndTime
 		courseInfo.BeginTime = course.BeginTime
+		courseInfo.Ascription = fmt.Sprintf("%d", course.Ascription)
 		result = append(result, courseInfo)
 	}
 	return result, nil
@@ -193,19 +192,14 @@ func (s *CourseService) TeacherQueryCourse(
 	}
 	result := make([]*base.CourseInfo, 0, len(courses))
 	for _, course := range courses {
-		teacherInfo, err := UserServ().GetUserInfoWithId(c, course.Ascription)
-		if err != nil {
-			hlog.Error("查询用户信息失败: ", err)
-			return nil, fmt.Errorf("查询课程失败: %v", err)
-		}
-
 		result = append(result, &base.CourseInfo{
 			Cid:         fmt.Sprintf("%d", course.ID),
 			Title:       course.Title,
 			Cover:       course.Cover,
 			Description: course.Description,
-			Tid:         strconv.FormatInt(teacherInfo.ID, 10),
-			TeacherName: teacherInfo.Name,
+			Major:       course.Major,
+			Class:       course.Class,
+			Ascription:  fmt.Sprintf("%d", course.Ascription),
 			BeginTime:   course.BeginTime,
 			EndTime:     course.EndTime,
 		})
@@ -242,26 +236,21 @@ func (s *CourseService) AdminQueryCourse(
 	}
 	var result []*base.CourseInfo
 	for _, course := range courses {
-		teacherInfo, err := UserServ().GetUserInfoWithId(c, course.Ascription)
-		if err != nil {
-			hlog.Error("查询用户信息失败: ", err)
-			return nil, fmt.Errorf("查询课程失败: %v", err)
-		}
-
 		courseInfo := new(base.CourseInfo)
 		courseInfo.Cid = fmt.Sprintf("%d", course.ID)
 		courseInfo.Cover = course.Cover
 		courseInfo.Description = course.Description
 		courseInfo.Title = course.Title
-		courseInfo.Tid = strconv.FormatInt(teacherInfo.ID, 10)
-		courseInfo.TeacherName = teacherInfo.Name
+		courseInfo.Major = course.Major
+		courseInfo.Class = course.Class
+		courseInfo.Ascription = fmt.Sprintf("%d", course.Ascription)
 		courseInfo.EndTime = course.EndTime
 		courseInfo.BeginTime = course.BeginTime
 		result = append(result, courseInfo)
 	}
 	return result, nil
 }
-func (s *CourseService) CreateCourseWithUid(c context.Context, id int64, title string, description string, cover string, begin_time string, end_time string) error {
+func (s *CourseService) CreateCourseWithUid(c context.Context, id int64, title string, description string, cover string, begin_time string, end_time string, major string, faculty string, class string) error {
 	cid, err := utils.NextSnowFlakeId()
 	if err != nil {
 		return err
@@ -275,6 +264,9 @@ func (s *CourseService) CreateCourseWithUid(c context.Context, id int64, title s
 		Ascription:  id,
 		BeginTime:   begin_time,
 		EndTime:     end_time,
+		Major:       major,
+		Faculty:     faculty,
+		Class:       class,
 	}
 	if err := cc.WithContext(c).Save(&course); err != nil {
 		hlog.Error("创建课程域失败: ", err)
@@ -306,7 +298,7 @@ func (s *CourseService) DeleteCourseWithCid(c context.Context, cid int64) error 
 	}
 	return nil
 }
-func (s *CourseService) UpdateCourseWithCid(c context.Context, cid int64, title string, description string, cover string) error {
+func (s *CourseService) UpdateCourseWithCid(c context.Context, cid int64, title string, description string, cover string, begin_time string, end_time string) error {
 	cc := query.Course
 	course, err := cc.WithContext(c).Where(cc.ID.Eq(cid)).First()
 	if err != nil {
@@ -321,6 +313,12 @@ func (s *CourseService) UpdateCourseWithCid(c context.Context, cid int64, title 
 	}
 	if cover != "" {
 		course.Cover = cover
+	}
+	if begin_time != "" {
+		course.BeginTime = begin_time
+	}
+	if end_time != "" {
+		course.EndTime = end_time
 	}
 	if err = cc.WithContext(c).Save(course); err != nil {
 		hlog.Error("更新课程域信息失败: ", err)

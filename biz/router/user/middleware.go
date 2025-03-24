@@ -8,22 +8,16 @@ import (
 )
 
 func rootMw() []app.HandlerFunc {
-	// your code...
 	return nil
 }
 
-func _userMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
+func _userMw() []app.HandlerFunc { return nil }
 
 func _userloginMw() []app.HandlerFunc {
-	// your code...
 	return nil
 }
 
 func _userregisterMw() []app.HandlerFunc {
-	// your code...
 	return nil
 }
 
@@ -45,13 +39,29 @@ func _teacherMw() []app.HandlerFunc {
 	}
 }
 
-func _createcourseMw() []app.HandlerFunc { return nil }
+func _createcourseMw() []app.HandlerFunc {
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
+}
 
-func _deletecourseMw() []app.HandlerFunc { return nil }
+func _deletecourseMw() []app.HandlerFunc {
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
+}
 
-func _invitestudentMw() []app.HandlerFunc { return nil }
+func _invitestudentMw() []app.HandlerFunc {
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
+}
 
-func _updateMw() []app.HandlerFunc { return nil }
+func _updateMw() []app.HandlerFunc {
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
+}
 
 func _courseMw() []app.HandlerFunc {
 	return []app.HandlerFunc{
@@ -59,9 +69,17 @@ func _courseMw() []app.HandlerFunc {
 	}
 }
 
-func _updatecourseMw() []app.HandlerFunc { return nil }
+func _updatecourseMw() []app.HandlerFunc {
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
+}
 
-func _operatememberMw() []app.HandlerFunc { return nil }
+func _operatememberMw() []app.HandlerFunc {
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
+}
 
 func _selectmycoursesMw() []app.HandlerFunc {
 	// your code...
@@ -69,8 +87,9 @@ func _selectmycoursesMw() []app.HandlerFunc {
 }
 
 func _uploadvideosMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }
 
 func _studentMw() []app.HandlerFunc {
@@ -80,31 +99,37 @@ func _studentMw() []app.HandlerFunc {
 }
 
 func _studentmycoursesMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }
 
 func _deletevideoMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }
 
 func _queryMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }
 
 func _enquirystudentMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }
 
 func _teacher0Mw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }
 
 func _enquirymycoursesMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }

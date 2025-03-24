@@ -19,6 +19,7 @@ func _videoMw() []app.HandlerFunc {
 }
 
 func _videoinfoMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
 }

@@ -1029,9 +1029,6 @@ func NewBrowseNotificationReq() *BrowseNotificationReq {
 	return &BrowseNotificationReq{}
 }
 
-func (p *BrowseNotificationReq) InitDefault() {
-}
-
 func (p *BrowseNotificationReq) GetNid() (v string) {
 	return p.Nid
 }
@@ -1103,9 +1100,8 @@ func (p *BrowseNotificationReq) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
-		p.Cid = v
+		p.Nid = v
 	}
-	p.Nid = _field
 	return nil
 }
 

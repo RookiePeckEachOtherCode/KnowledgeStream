@@ -31,7 +31,7 @@ struct  CreateNotificationResp{
 }
 
 struct BrowseNotificationReq{
-    1:string cid;
+    1:string nid;
 }
 
 struct BrowseNotificationResp{

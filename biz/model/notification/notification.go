@@ -1022,19 +1022,22 @@ func (p *CreateNotificationResp) String() string {
 }
 
 type BrowseNotificationReq struct {
-	Cid string `thrift:"cid,1" form:"cid" json:"cid" query:"cid"`
+	Nid string `thrift:"nid,1" form:"nid" json:"nid" query:"nid"`
 }
 
 func NewBrowseNotificationReq() *BrowseNotificationReq {
 	return &BrowseNotificationReq{}
 }
 
-func (p *BrowseNotificationReq) GetCid() (v string) {
-	return p.Cid
+func (p *BrowseNotificationReq) InitDefault() {
+}
+
+func (p *BrowseNotificationReq) GetNid() (v string) {
+	return p.Nid
 }
 
 var fieldIDToName_BrowseNotificationReq = map[int16]string{
-	1: "cid",
+	1: "nid",
 }
 
 func (p *BrowseNotificationReq) Read(iprot thrift.TProtocol) (err error) {
@@ -1102,6 +1105,7 @@ func (p *BrowseNotificationReq) ReadField1(iprot thrift.TProtocol) error {
 	} else {
 		p.Cid = v
 	}
+	p.Nid = _field
 	return nil
 }
 
@@ -1135,10 +1139,10 @@ WriteStructEndError:
 }
 
 func (p *BrowseNotificationReq) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("cid", thrift.STRING, 1); err != nil {
+	if err = oprot.WriteFieldBegin("nid", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.Cid); err != nil {
+	if err := oprot.WriteString(p.Nid); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {

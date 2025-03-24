@@ -37,7 +37,6 @@ func newCourse(db *gorm.DB, opts ...gen.DOOption) course {
 	_course.Major = field.NewString(tableName, "major")
 	_course.Class = field.NewString(tableName, "class")
 	_course.Faculty = field.NewString(tableName, "faculty")
-
 	_course.fillFieldMap()
 
 	return _course

@@ -21,7 +21,7 @@ func Register(r *server.Hertz) {
 		_comment := root.Group("/comment", _commentMw()...)
 		_comment.GET("/children", append(_querychildrencommentMw(), comment.QueryChildrenComment)...)
 		_comment.POST("/create", append(_makecommentMw(), comment.MakeComment)...)
-		_comment.GET("/notifacation", append(_querycommentundernotificationMw(), comment.QueryCommentUnderNotification)...)
+		_comment.GET("/notification", append(_querycommentundernotificationMw(), comment.QueryCommentUnderNotification)...)
 		_comment.GET("/video", append(_querycommentundervideoMw(), comment.QueryCommentUnderVideo)...)
 	}
 	{

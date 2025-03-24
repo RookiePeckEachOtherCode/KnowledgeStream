@@ -197,3 +197,70 @@ func (s *NotificationService) BrowseNotification(
 	}
 
 }
+
+func (s *NotificationService) QueryUserNotification(
+	c context.Context,
+	uid int64,
+) (*notification.QueryNotificationResp, error) {
+
+	recordKey := redis.GenUserNotificationRecordKey(uid)
+
+	exists, err := redis.Client.R.Exists(c, recordKey).Result()
+	if err != nil {
+		hlog.Error("redis查用户通知存在时鼠了: ", err)
+		return nil, err
+	}
+	if exists < 1 {
+		return nil, errors.New("贝贝还没有收到过通知哦")
+	} else {
+		var rdNotification redis.UserNotificationRecord
+		res := &notification.QueryNotificationResp{}
+
+		err := redis.Client.GetValue(c, recordKey, &rdNotification)
+		if err != nil {
+			hlog.Error("redis查用户通知时鼠了: ", err)
+			return nil, err
+		}
+
+		res.Base = &base.BaseResponse{
+			Code: 200,
+			Msg:  "查询成功 ",
+		}
+		res.Notifications = rdNotification.Notifications
+		return res, nil
+	}
+}
+
+func (s *NotificationService) QueryCourseNotifications(
+	c context.Context,
+	cid int64,
+) (*notification.NotificationUnderCourseResp, error) {
+	var res = &notification.NotificationUnderCourseResp{
+		Base: &base.BaseResponse{
+			Code: 200,
+			Msg:  "",
+		},
+		Notifications: make([]*base.NotificationInfo, 0),
+	}
+
+	notifications, err := query.Notification.WithContext(c).Where(query.Notification.Cid.Eq(cid)).Find()
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		} else {
+			hlog.Error("查询db课程下通知鼠了:", err)
+			return nil, err
+		}
+	}
+	for _, item := range notifications {
+		res.Notifications = append(res.Notifications, &base.NotificationInfo{
+			Content:  item.Content,
+			File:     item.File,
+			Cid:      strconv.FormatInt(item.Cid, 10),
+			Favorite: item.Favorite,
+			ID:       strconv.FormatInt(item.ID, 10),
+		})
+	}
+	return res, nil
+
+}

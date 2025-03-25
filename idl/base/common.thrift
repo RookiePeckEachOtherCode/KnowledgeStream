@@ -19,6 +19,7 @@ struct UserInfo{
     7:string faculty;
     8:string major;
     9:string class;
+    10:string phone;
 }
 struct CourseInfo{
     1:string cid;

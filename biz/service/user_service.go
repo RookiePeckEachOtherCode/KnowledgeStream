@@ -117,26 +117,15 @@ func (s *UserService) GetUserInfoWithId(c context.Context, id int64) (*entity.Us
 	return user, err
 }
 
-func (s *UserService) UpdateUserInfoWithId(c context.Context, id int64, name string, password string, avatar string, phone string) error {
-	u := query.User
-	user, err := u.WithContext(c).Where(u.ID.Eq(id)).First()
+func (s *UserService) UpdateUserInfoWithId(c context.Context, id int64, name string, avatar string, phone string, signature string) error {
+
+	_, err := query.User.WithContext(c).Where(query.User.ID.Eq(id)).Updates(entity.User{
+		Name:      name,
+		Avatar:    avatar,
+		Phone:     phone,
+		Signature: signature,
+	})
 	if err != nil {
-		return err
-	}
-	if name != "" {
-		user.Name = name
-	}
-	if password != "" {
-		hashedPassword := utils.HashPassword(password, user.Salt)
-		user.Password = hashedPassword
-	}
-	if avatar != "" {
-		user.Avatar = avatar
-	}
-	if phone != "" {
-		user.Phone = phone
-	}
-	if err := u.WithContext(c).Save(user); err != nil {
 		hlog.Error("更新用户信息失败: ", err)
 		return err
 	}

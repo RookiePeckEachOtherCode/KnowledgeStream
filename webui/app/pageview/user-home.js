@@ -13,18 +13,46 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import {useModal} from "../../context/modal-provider.js";
 import {IconButton} from "../components/icon-button.tsx";
-import MDInput from "../components/md-input.tsx";
 import {useOss} from "../../context/oss-uploader-provider.tsx";
 import {useNotification} from "../../context/notification-provider.tsx";
+import {api} from "../../api/instance.ts";
 
 export function UserHome() {
-    const userInfo={
-        id:"114514",
-        url:"ks-course-cover/test.jpg",
-        name:"raymes",
-        authority:"Student",
-        phone:""
+    const { showNotification } = useNotification();
+    
+    
+    
+    const [userInfo, setUserInfo] = useState({
+        uid:"114514",
+        avatar:"",
+        name:"未知用户",
+        authority:"未知",
+        phone:"无",
+        grade:"2077",
+        faculty:"未归属",
+        major:"未归属",
+        signature:"nil",
+    })
+    
+    const GetUserInfo=async ()=>{
+       const resp = await api.userService.queryInfo({});
+       if(resp.base.code!==200){
+           showNotification({
+               title:"获取用户信息失败",
+               content:resp.base.msg,
+               type:"error"
+           })
+           return
+       }
+       setUserInfo(resp.userinfo)
+        
     }
+    useEffect(() => {
+        async function fetchData(){
+            await GetUserInfo()
+        }
+        fetchData()
+    }, []);
     
     const [pager, setPager] = useState(0)
     const Block=["基本资料","修改头像","修改密码","管理课程"]
@@ -32,16 +60,17 @@ export function UserHome() {
     const currentDisplay=()=>{
         switch (pager){
             case 0:
-                return <BaseInfo></BaseInfo>
+                return <BaseInfo userInfo={userInfo} flashUserInfo={GetUserInfo}></BaseInfo>
             case 1:
-                return <UpdateAvatar url={userInfo.url} uid={userInfo.id}></UpdateAvatar>
+                return <UpdateAvatar url={userInfo.avatar} uid={userInfo.uid} flashUserInfo={GetUserInfo}></UpdateAvatar>
             case 2:
                 return <EditPasswordForm></EditPasswordForm>
         }
     }
 
+    
+    
     const [animationClass, setAnimationClass] = useState("");
-
     useEffect(() => {
         setTimeout(()=>{
             setAnimationClass("opacity-0")
@@ -64,8 +93,10 @@ export function UserHome() {
               <Divider vertical={false}></Divider>
               <div className={`flex w-full space-x-8  flex-row`}>
                   {
-                      Block.map((item,index)=>
-                          <TagButton title={item} onClick={()=>{setPager(index);setAnimationClass("hidden")}} underline={index===pager}></TagButton>
+                      Block.map((item,index)=>{
+                          if(index!==3||userInfo.authority!=="USER") return  <TagButton  title={item} onClick={()=>{setPager(index);setAnimationClass("hidden")}} underline={index===pager}></TagButton>
+                          
+                      }
                       )
                   }
               </div>
@@ -82,35 +113,30 @@ export function UserHome() {
   );
 }
     
-function BaseInfo(){
-    const userInfo={
-        id:"114514",
-        bucket:"ks-course-cover",
-        fileName:"test.jpg",
-        name:"raymes",
-        authority:"Student",
-        phone:"1534658465846",
-        grade:"2077",
-        faculty:"赔钱学院",
-        major:"区块链市场反向预测",
-        signature:"wwwwwwjbwwwwwwwwwwwjbwwwwwwwwwwwjb",
-    }
+function BaseInfo({userInfo,flashUserInfo}){
     var {isShowModal,toggleShowModal,setForm} = useModal();
-    
 
 
     useEffect(() => {
-        setForm(<UpdateBaseInfoForm name={userInfo.name} phone={userInfo.phone} signature={userInfo.signature} />) //直接传递JSX元素
-    }, [setForm]);
-    
+        setForm(
+            <UpdateBaseInfoForm
+                key={Date.now()} // 添加key强制重新渲染
+                flashUserInfo={flashUserInfo}
+                name={userInfo.name}
+                phone={userInfo.phone}
+                signature={userInfo.signature}
+                avatar={userInfo.avatar}
+            />
+        );
+    }, [userInfo]); 
     return (
         <div className={`w-full bg-secondary-container space-y-3 rounded-2xl p-6 flex flex-col`}>
             <div
                 className={`w-full flex items-center justify-between space-x-3 flex-row justify-items-start`}>
                 <div className={`h-48 w-48 bg-green-300 rounded-full space-x-6 flex flex-row`}>
                     <OssImage
-                        url={"ks-course-cover/test.jpg"}
-                        className={`rounded-full`}>
+                        url={userInfo.avatar}
+                        className={`rounded-full aspect-square`}>
                     </OssImage>
                     <div className={`flex flex-col space-y-6  justify-center h-full`}>
                         <div className={`flex text-3xl`}>{userInfo.name}</div>
@@ -127,7 +153,7 @@ function BaseInfo(){
                                 <div className="flex items-center space-x-3 text-body-medium">
                                     <FontAwesomeIcon icon={faIdCard} className="text-primary w-4 h-4"/>
                                     <span>ID:</span>
-                                    <span className="text-on-surface">{userInfo.id}</span>
+                                    <span className="text-on-surface">{userInfo.uid}</span>
                                 </div>
                             </td>
                         </tr>
@@ -201,15 +227,16 @@ function BaseInfo(){
     )
 }
 
-function UpdateBaseInfoForm(props) {
+function UpdateBaseInfoForm({phone,signature,name,avatar,flashUserInfo}) {
     const { toggleShowModal } = useModal();
     const [formData, setFormData] = useState({
-        phone: props.phone || '',
-        signature: props.signature || '',
-        name: props.name || ''
+        phone: phone || '',
+        signature: signature || '',
+        name: name || '',
+        avatar:avatar
     });
     const [errors, setErrors] = useState({});
-
+    const { showNotification } = useNotification();
     // 统一处理输入变化
     const handleChange = (field) => (e) => {
         setFormData(prev => ({
@@ -247,11 +274,27 @@ function UpdateBaseInfoForm(props) {
         if (!validateForm()) return;
 
         try {
-            //TODO
-            // 这里替换为实际的API调用
-           // await updateUserInfo(formData);
+            const res = await api.userService.updateInfo({
+                name:formData.name,
+                signature:formData.signature,
+                phone:formData.phone,
+                avatar:formData.avatar
+            });
+            if(res.base.code!==200){
+                showNotification({
+                    title:"更新信息失败",
+                    content:res.base.msg,
+                    type:"error"
+                })
+            }else{
+                flashUserInfo()
+                showNotification({
+                    title:"用户信息已更新",
+                    type:"success"
+                })
+            }
             toggleShowModal(false);
-            // 可以在这里触发父组件刷新数据
+            
         } catch (error) {
             console.error('更新失败:', error);
         }
@@ -348,8 +391,7 @@ function UpdateBaseInfoForm(props) {
     );
 }
 
-function UpdateAvatar(props) {
-    const {uid,url}=props
+function UpdateAvatar({uid,url,flashUserInfo}) {
     const [newFileName, setNewFileName] = useState(null);
     const [newFile, setNewFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
@@ -398,7 +440,20 @@ function UpdateAvatar(props) {
             return
         }
         const ossName=uid+"."+parts[1]
-        await ossHandleUploadFile(newFile, ossName, "ks-user-avatar")
+        const upload_success= await ossHandleUploadFile(newFile, ossName, "ks-user-avatar")
+        if (upload_success){
+           var res = await api.userService.updateInfo({
+                avatar:"ks-user-avatar/"+ossName
+            });
+           if(res.base.code!==200){
+               showNotification({
+                   title:"用户头像字段更新失败",
+                   type:"error"
+               })
+               return
+           }
+        }
+        flashUserInfo()
     }
 
     // 触发文件选择对话框
@@ -544,20 +599,20 @@ function EditPasswordForm() {
 
 }
 
-function TagButton(props) {
+function TagButton({onClick,title,underline,hidden}) {
     const [isHover, setIsHover] = useState(false)
 
     return <div
-        className={`relative inline-flex flex-col items-center justify-center px-3 py-2 transition-colors`}
+        className={`relative inline-flex flex-col items-center justify-center px-3 py-2 transition-colors ${hidden&&`hidden`}`}
         onMouseOver={() => setIsHover(true)}
         onMouseLeave={() => setIsHover(false)}
-        onClick={props.onClick}
+        onClick={onClick}
     >
-        <div className={`relative z-10`}>{props.title}</div>
+        <div className={`relative z-10`}>{title}</div>
 
         <div
             className={`absolute bottom-0 left-0 h-[2px] bg-on-primary-container transition-all duration-300 
-                ${(props.underline || isHover) ? 'w-full' : 'w-0'}`}
+                ${(underline || isHover) ? 'w-full' : 'w-0'}`}
             style={{transformOrigin: 'center'}}
         />
     </div>

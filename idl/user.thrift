@@ -34,9 +34,9 @@ struct userInfoResp{
 }
 struct userInfoUpdateReq{
     1:string name;
-    2:string password;
     3:string avatar;
     4:string phone;
+    5:string signature;
 }
 struct userInfoUpdateResp{
     1:common.BaseResponse base;

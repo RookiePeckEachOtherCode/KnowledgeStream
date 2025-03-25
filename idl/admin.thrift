@@ -25,6 +25,7 @@ struct UpdateUserInfoReq{
     7:string faculty;
     8:string major;
     9:string password;
+    10:string signature;
 }
 struct UpdateUserInfoResp{
     1:common.BaseResponse base;

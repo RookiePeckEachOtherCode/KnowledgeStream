@@ -53,10 +53,10 @@ export default function LoginPage() {
           reverse={true}
           config={{ tension: 80, friction: 20 }}
         >
-          <div className="flex flex-col bg-surface-container p-24 rounded-3xl border-2 border-surface-variant shadow-xl gap-4 w-full">
+          <div className="flex flex-col bg-surface-container  p-24 rounded-3xl border-2 border-surface-variant shadow-xl gap-4 w-full">
             <SplitText
               text="KnowledgeStream 涟漪学习平台"
-              className="text-4xl font-semibold text-center"
+              className="text-4xl font-semibold text-center text-on-primary-container"
               delay={100}
               animationFrom={{
                 opacity: 0,
@@ -92,7 +92,7 @@ export default function LoginPage() {
           <div className="flex flex-col bg-surface-container p-8 rounded-3xl border-2 border-surface-variant shadow-xl gap-4">
             <SplitText
               text="加入我们"
-              className="text-2xl font-semibold text-center"
+              className="text-2xl font-semibold text-center text-on-primary-container"
               delay={150}
               animationFrom={{ opacity: 0, transform: "translate3d(0,30px,0)" }}
               animationTo={{ opacity: 1, transform: "translate3d(0,0,0)" }}

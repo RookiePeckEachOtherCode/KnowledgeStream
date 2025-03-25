@@ -117,6 +117,7 @@ func UserInfo(ctx context.Context, c *app.RequestContext) {
 		resp.Userinfo.Faculty = dbuser.Faculty
 		resp.Userinfo.Major = dbuser.Major
 		resp.Userinfo.Signature = dbuser.Signature
+		resp.Userinfo.Phone = dbuser.Phone
 	}
 	resp.Base = srverror.WrapWithSuccess("查询用户信息成功")
 	c.JSON(consts.StatusOK, resp)
@@ -142,7 +143,7 @@ func UserInfoUpdate(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	err = service.UserServ().UpdateUserInfoWithId(ctx, uid, req.Name, req.Password, req.Avatar, req.Phone)
+	err = service.UserServ().UpdateUserInfoWithId(ctx, uid, req.Name, req.Avatar, req.Phone, req.Signature)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		c.JSON(consts.StatusOK, resp)

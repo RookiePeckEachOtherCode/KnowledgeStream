@@ -98,7 +98,7 @@ func UpdateUserInfo(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	err = service.UserServ().UpdateUserInfoWithId(ctx, uid, req.Name, req.Password, req.Avatar, req.Phone)
+	err = service.UserServ().UpdateUserInfoWithId(ctx, uid, req.Name, req.Avatar, req.Phone, req.Signature)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		c.JSON(consts.StatusOK, resp)

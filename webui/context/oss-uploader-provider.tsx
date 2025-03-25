@@ -5,7 +5,7 @@ import OSS from 'ali-oss';
 import { useNotification } from "./notification-provider.tsx";
 
 type OssContextType = {
-    ossHandleUploadFile: (file: Blob, fileName: string, bucket: string) => Promise<void>;
+    ossHandleUploadFile: (file: Blob, fileName: string, bucket: string) => Promise<boolean>;
     generateSignedUrl: (fileName: string, bucket: string, expires?: number) => Promise<string>;
 };
 
@@ -69,10 +69,10 @@ export function OssUploaderProvider({ children }: ProviderProps) {
         return newClient;
     };
 
-    const ossHandleUploadFile = async (file: Blob, fileName: string, bucket: string): Promise<void> => {
+    const ossHandleUploadFile = async (file: Blob, fileName: string, bucket: string): Promise<boolean> => {
         if (!file) return;
         setLoading(true);
-
+        let success=true
         try {
             const client = await initOSSClient(bucket);
             const result = await client.put(fileName, file, {
@@ -93,9 +93,12 @@ export function OssUploaderProvider({ children }: ProviderProps) {
                 content: `${err instanceof Error ? err.message : String(err)}`,
                 type: "error",
             });
+            success=false
         } finally {
             setLoading(false);
         }
+        return success
+        
     };
 
     const generateSignedUrl = async (

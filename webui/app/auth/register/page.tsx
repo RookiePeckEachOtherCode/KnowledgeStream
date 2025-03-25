@@ -94,7 +94,7 @@ export default function RegisterPage() {
         config={{ tension: 80, friction: 20 }}
       >
         <div className="flex flex-col items-center justify-center bg-surface-container px-24 py-12 rounded-3xl shadow-xl border-2 border-surface-variant w-4xl mx-auto">
-          <div className="text-3xl font-semibold text-center">
+          <div className="text-3xl font-semibold text-center text-on-primary-container">
             注册到 KnowledgeStream 涟漪学习平台
           </div>
         </div>
@@ -106,7 +106,7 @@ export default function RegisterPage() {
         config={{ tension: 80, friction: 20 }}
       >
         <div className="flex flex-col p-24 pt-12 bg-surface-container shadow-xl rounded-3xl border-2 border-surface-variant w-4xl mx-auto gap-8">
-          <div className="text-center text-2xl font-semibold">
+          <div className="text-center text-2xl font-semibold text-on-primary-container">
             填写信息 喵喵喵
           </div>
           <MDInput

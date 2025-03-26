@@ -20,8 +20,10 @@ create table notifications
     cid      bigint,
     content  text,
     file     text,
-    favorite integer default 0
+    favorite integer default 0,
+    title    text
 );
+
 
 alter table notifications
     owner to root;

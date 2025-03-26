@@ -24,6 +24,7 @@ struct CreateNotificationReq{
     1:string cid;
     2:string content;
     3:string file;
+    4:string title;
 }
 
 struct  CreateNotificationResp{

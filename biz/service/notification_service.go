@@ -34,6 +34,7 @@ func (s *NotificationService) CreateNotification(
 	c context.Context,
 	cid int64,
 	content string,
+	title string,
 	file string,
 ) (*base.BaseResponse, error) {
 
@@ -48,6 +49,7 @@ func (s *NotificationService) CreateNotification(
 			ID:      *flakeId,
 			Cid:     cid,
 			Content: content,
+			Title:   title,
 			File:    file,
 		},
 	)

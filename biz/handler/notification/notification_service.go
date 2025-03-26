@@ -94,6 +94,7 @@ func CreateNotification(ctx context.Context, c *app.RequestContext) {
 		ctx,
 		cid,
 		req.Content,
+		req.Title,
 		req.File,
 	)
 	if err != nil {

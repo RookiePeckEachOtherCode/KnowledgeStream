@@ -51,6 +51,7 @@ struct NotificationInfo{
     4:i32 favorite;
     5:bool read;
     6:string id;
+    7:string title;
 }
 struct CommentInfo{
     1:string id;

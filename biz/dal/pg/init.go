@@ -42,6 +42,7 @@ func InitDB() {
 		entity.Video{},
 		entity.Notification{},
 		entity.Comment{},
+		entity.Class{},
 	)
 
 	generator.Execute()

@@ -45,3 +45,8 @@ func _browsenotificationMw() []app.HandlerFunc {
 		middleware.VerifyToken(),
 	}
 }
+
+func _favnotificationMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

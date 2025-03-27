@@ -1970,6 +1970,7 @@ type NotificationInfo struct {
 	Read_    bool   `thrift:"read,5" form:"read" json:"read" query:"read"`
 	ID       string `thrift:"id,6" form:"id" json:"id" query:"id"`
 	Title    string `thrift:"title,7" form:"title" json:"title" query:"title"`
+	Faved    bool   `thrift:"faved,8" form:"faved" json:"faved" query:"faved"`
 }
 
 func NewNotificationInfo() *NotificationInfo {
@@ -2007,6 +2008,10 @@ func (p *NotificationInfo) GetTitle() (v string) {
 	return p.Title
 }
 
+func (p *NotificationInfo) GetFaved() (v bool) {
+	return p.Faved
+}
+
 var fieldIDToName_NotificationInfo = map[int16]string{
 	1: "content",
 	2: "file",
@@ -2015,6 +2020,7 @@ var fieldIDToName_NotificationInfo = map[int16]string{
 	5: "read",
 	6: "id",
 	7: "title",
+	8: "faved",
 }
 
 func (p *NotificationInfo) Read(iprot thrift.TProtocol) (err error) {
@@ -2086,6 +2092,14 @@ func (p *NotificationInfo) Read(iprot thrift.TProtocol) (err error) {
 		case 7:
 			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField7(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 8:
+			if fieldTypeId == thrift.BOOL {
+				if err = p.ReadField8(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
@@ -2197,6 +2211,17 @@ func (p *NotificationInfo) ReadField7(iprot thrift.TProtocol) error {
 	p.Title = _field
 	return nil
 }
+func (p *NotificationInfo) ReadField8(iprot thrift.TProtocol) error {
+
+	var _field bool
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.Faved = _field
+	return nil
+}
 
 func (p *NotificationInfo) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
@@ -2230,6 +2255,10 @@ func (p *NotificationInfo) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField7(oprot); err != nil {
 			fieldId = 7
+			goto WriteFieldError
+		}
+		if err = p.writeField8(oprot); err != nil {
+			fieldId = 8
 			goto WriteFieldError
 		}
 	}
@@ -2361,6 +2390,22 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 7 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 7 end error: ", p), err)
+}
+func (p *NotificationInfo) writeField8(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("faved", thrift.BOOL, 8); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.Faved); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 8 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 8 end error: ", p), err)
 }
 
 func (p *NotificationInfo) String() string {

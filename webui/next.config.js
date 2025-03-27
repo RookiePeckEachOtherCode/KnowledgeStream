@@ -4,6 +4,9 @@ const require = createRequire(import.meta.url);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    compiler: {
+        emotion: true,
+    },
     webpack: (config, { isServer }) => {
         config.resolve.alias = {
             ...config.resolve.alias,

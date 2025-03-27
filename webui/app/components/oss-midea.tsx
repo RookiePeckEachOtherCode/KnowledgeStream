@@ -186,9 +186,9 @@ export function OssImage({
             onError={handleImageError}
         />
     ) : (
-        <div className="w-full  h-full flex flex-row  transition-all duration-300 space-x-6 items-center justify-center">
-            <FontAwesomeIcon className={`animate-spin transition-all duration-300`} icon={faTruckLoading}></FontAwesomeIcon>
-            <div>Loading...</div>
+        <div className={` ${className?className:``}  flex flex-col min-w-max  transition-all duration-300 space-x-6 items-center justify-center`}>
+            <FontAwesomeIcon className={`w-full animate-spin transition-all duration-300`} icon={faTruckLoading}></FontAwesomeIcon>
+            <div className={`w-full`}>Loading...</div>
         </div>
     );
 }

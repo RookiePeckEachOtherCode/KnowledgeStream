@@ -33,7 +33,7 @@ export type  StudentServiceResponse={
 export type TeacherServiceResponse={
   MY_COURSE:{
     base:BaseResponse,
-    courses:Array<CourseInfo>
+    coursesinfo:Array<CourseInfo>
   }
   INVITE_STUDENT:{
     base:BaseResponse

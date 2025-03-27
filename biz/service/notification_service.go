@@ -266,3 +266,31 @@ func (s *NotificationService) QueryCourseNotifications(
 	return res, nil
 
 }
+func (s *NotificationService) FavNotification(
+	nid string,
+	uid int64,
+	c context.Context,
+) (*notification.FavNotificationResp, error) {
+	recordKey := redis.GenUserNotificationRecordKey(uid)
+	record := redis.UserNotificationRecord{}
+
+	err := redis.Client.GetValue(c, recordKey, record)
+	if err != nil {
+		hlog.Error("redis查用户通知时鼠了: ", err)
+		return nil, err
+	}
+	for _, item := range record.Notifications {
+		if item.ID == nid {
+			item.Faved = !item.Faved
+		}
+	}
+	redis.Client.SetValue(c, recordKey, record)
+	var res = &notification.FavNotificationResp{
+		Base: &base.BaseResponse{
+			Code: 200,
+			Msg:  "",
+		},
+	}
+	return res, nil
+
+}

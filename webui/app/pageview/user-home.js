@@ -3,12 +3,13 @@ import {Divider} from "../components/divider.tsx";
 import {useEffect, useRef, useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
-    faArrowRight,
+    faAdd,
+    faArrowRight, faBook, faCalendar, faClock,
     faEdit,
     faIdCard, faMagnet,
     faPhone,
     faSchool,
-    faUpload,
+    faUpload, faUpRightFromSquare,
     faUserGraduate
 } from "@fortawesome/free-solid-svg-icons";
 import {useModal} from "../../context/modal-provider.js";
@@ -16,7 +17,12 @@ import {IconButton} from "../components/icon-button.tsx";
 import {useOss} from "../../context/oss-uploader-provider.tsx";
 import {useNotification} from "../../context/notification-provider.tsx";
 import {api} from "../../api/instance.ts";
-
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import {CustomDatePicker} from "../components/custom-date-picker.jsx.tsx";
 export function UserHome() {
     const { showNotification } = useNotification();
     
@@ -65,6 +71,8 @@ export function UserHome() {
                 return <UpdateAvatar url={userInfo.avatar} uid={userInfo.uid} flashUserInfo={GetUserInfo}></UpdateAvatar>
             case 2:
                 return <EditPasswordForm></EditPasswordForm>
+            case 3:
+                return <CourseList></CourseList>
         }
     }
 
@@ -593,7 +601,6 @@ function EditPasswordForm() {
                 </div>
             </form>
 
-
         </div>
     )
 
@@ -617,3 +624,466 @@ function TagButton({onClick,title,underline,hidden}) {
         />
     </div>
 }
+
+function CourseList({}) {
+    const { showNotification } = useNotification();
+    const [offset, setOffset] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const { isShowModal, toggleShowModal, setForm } = useModal();
+    const [list, setList] = useState([{
+        title: "123",
+        cid: "123",
+        cover: "ks-user-avatar/114514.jpg",
+        ascription: "1903740564063391744",
+        begin_time: "null",
+        end_time: "null",
+        major: "rj",
+        class: "miaomiao1"
+    }]);
+
+    const GetCourseListInfo = async (page = 1) => {
+        const newOffset = (page - 1) * 10;
+        const res = await api.teacherService.myCourse({
+            keyword: "",
+            offset: newOffset,
+            size: 10
+        });
+
+        if (res.base.code === 200) {
+            setList(res.coursesinfo);
+            // 添加自动计算总页数逻辑
+            const calculatedTotalPages = res.total ? Math.ceil(res.total / 10) : page;
+            setTotalPages(calculatedTotalPages);
+            setCurrentPage(page);
+        }
+    };
+
+    useEffect(() => {
+        async function fetchCourseData() {
+            await GetCourseListInfo(currentPage);
+        }
+        fetchCourseData();
+    }, [currentPage]);  // 依赖改为 currentPage
+
+    useEffect(() => {
+        setForm(<CreateCourseForm key={Date.now()}  flashList={GetCourseListInfo}/>);
+    }, [list]);
+
+    // 分页控制器组件
+    const Pagination = () => {
+        const pageNumbers = [];
+        const maxVisiblePages = 5;
+
+        // 生成可见页码范围
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+        if (endPage - startPage < maxVisiblePages - 1) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            pageNumbers.push(i);
+        }
+
+        return (
+            <div className="flex justify-center items-center gap-2 mt-6">
+                <button
+                    className={`px-3 py-1 rounded ${currentPage === 1 ?
+                        'bg-gray-200 cursor-not-allowed' :
+                        'bg-primary hover:bg-primary-dark text-on-primary'}`}
+                    onClick={() => GetCourseListInfo(currentPage - 1)}
+                    disabled={currentPage === 1}
+                >
+                    上一页
+                </button>
+
+                {startPage > 1 && (
+                    <button
+                        className="px-3 py-1"
+                        onClick={() => GetCourseListInfo(1)}
+                    >
+                        1
+                    </button>
+                )}
+                {startPage > 2 && <span className="px-2">...</span>}
+
+                {pageNumbers.map(number => (
+                    <button
+                        key={number}
+                        className={`px-3 py-1 rounded ${
+                            currentPage === number
+                                ? 'bg-primary text-on-primary'
+                                : 'hover:bg-secondary-container'
+                        }`}
+                        onClick={() => GetCourseListInfo(number)}
+                    >
+                        {number}
+                    </button>
+                ))}
+
+                {endPage < totalPages - 1 && <span className="px-2">...</span>}
+                {endPage < totalPages && (
+                    <button
+                        className="px-3 py-1"
+                        onClick={() => GetCourseListInfo(totalPages)}
+                    >
+                        {totalPages}
+                    </button>
+                )}
+
+                <button
+                    className={`px-3 py-1 rounded ${currentPage === totalPages ?
+                        'bg-gray-200 cursor-not-allowed' :
+                        'bg-primary hover:bg-primary-dark text-on-primary'}`}
+                    onClick={() => GetCourseListInfo(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                >
+                    下一页
+                </button>
+            </div>
+        );
+    };
+
+    return (
+        <div className="w-full bg-secondary-container rounded-2xl p-6 flex flex-col space-y-6">
+            <div className="w-full flex p-3 text-2xl">我管理的课程</div>
+
+            <div className="w-full flex flex-col space-y-3">
+                <div 
+                    onClick={()=>toggleShowModal(true)}
+                    className={`w-full p-3 hover:bg-surface-variant rounded-2xl flex flex-row`}>
+                    <IconWithText text={`新建课程`} className={``}>
+                        <FontAwesomeIcon size={`2x`} icon={faAdd}></FontAwesomeIcon>
+                    </IconWithText>
+                </div>
+                {list.map((item, index) => (
+                    <CourseListItem
+                        key={item.cid}
+                        title={item.title}
+                        cover={item.cover}
+                        major={item.major}
+                        begin_time={item.begin_time}
+                        end_time={item.end_time}
+                        class_name={item.class}
+                    />
+                ))}
+            </div>
+            <Pagination />
+        </div>
+    );
+}
+
+function CourseListItem({ title, cover, major, begin_time, end_time, class_name }) {
+    const [openDrawer, setOpenDrawer] = useState(false)
+    const [isHover, setIsHover] = useState(false)
+
+    return (
+        <div className="w-full flex flex-col">
+            <div
+                onMouseOver={() => setIsHover(true)}
+                onMouseLeave={() => setIsHover(false)}
+                onClick={() => setOpenDrawer(!openDrawer)}
+                className="w-full hover:bg-surface-variant flex flex-row justify-between h-24 items-center rounded-2xl transition-all duration-300 cursor-pointer">
+
+                <OssImage
+                    url={cover}
+                    className="ml-6 h-2/3 aspect-square  rounded-2xl"
+                />
+                <text className="w-1/4">{title}</text>
+                <text className="w-1/4">{class_name || "未知班级"}</text>
+                <div
+                    className={`transition-all duration-300 mr-6 p-3 rounded-full
+                        ${isHover
+                        ? "opacity-100 translate-x-0 bg-primary text-on-primary"
+                        : "opacity-0 translate-x-12"}`}>
+                    <FontAwesomeIcon icon={faUpRightFromSquare} />
+                </div>
+            </div>
+
+            <div
+                className={`w-full p-3 flex transition-all overflow-hidden
+                    ${openDrawer ? "max-h-52 opacity-100" : "max-h-0 opacity-0"}`}>
+                <div className="w-full flex flex-row gap-4">
+                    <IconWithText text={major || "未知专业"}>
+                        <FontAwesomeIcon icon={faBook} />
+                    </IconWithText>
+                    <IconWithText text={begin_time || "未设置开始时间"}>
+                        <FontAwesomeIcon icon={faCalendar} />
+                    </IconWithText>
+                    <IconWithText text={end_time || "未设置结束时间"}>
+                        <FontAwesomeIcon icon={faClock} />
+                    </IconWithText>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+function IconWithText({ children, text, className }) {
+    return (
+        <div className={` flex flex-row items-center p-1 space-x-2`}>
+            {children}
+            <div className={`${className}`}>{text}</div>
+        </div>
+    );
+}
+
+function CreateCourseForm({flashList}) {
+    const { toggleShowModal } = useModal();
+    var {showNotification} = useNotification();
+    const [formData, setFormData] = useState({
+        title:"",
+        description:"",
+        cover:"",
+        begin_time:"",
+        end_time:"",
+        major:"",
+        faculty:"",
+        class:""
+    })
+    const [errors, setErrors] = useState({});
+    const handleChange = (field) => (e) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: e.target.value
+        }));
+        // 清除对应字段的错误
+        if (errors[field]) {
+            setErrors(prev => ({
+                ...prev,
+                [field]: ''
+            }));
+        }
+    };
+    const handleTimeChange = (field) => (value) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value ? dayjs(value).format('YYYY-MM-DD') : '' // 转换为字符串
+        }));
+
+        // 清除错误
+        if (errors[field]) {
+            setErrors(prev => ({
+                ...prev,
+                [field]: ''
+            }));
+        }
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+        if (!formData.title.trim()) {
+            newErrors.name = '标题不能为控';
+        }
+        if(!formData.major.trim()){
+            newErrors.major='专业不能为控'
+        }
+        if(!formData.class.trim()){
+            newErrors.class='班级不能为空'
+        }
+        if(formData.description.length>100){
+            newErrors.description = '课程简介不能超过100字';
+        }
+        if (!formData.begin_time) {
+            newErrors.begin_time = '请选择开始时间';
+        }
+        if (!formData.end_time) {
+            newErrors.end_time = '请选择结束时间';
+        }
+        if (formData.begin_time && formData.end_time &&
+            dayjs(formData.end_time).isBefore(dayjs(formData.begin_time))) {
+            newErrors.end_time = '结束时间不能早于开始时间';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+    const handleSubmit= async (e)=>{
+        e.preventDefault();
+        if (!validateForm()) return;
+        console.log(formData)
+        var res = await api.teacherService.createCourse({
+            title:formData.title,
+            description:formData.description,
+            begin_time:formData.begin_time,
+            end_time:formData.end_time,
+            major:formData.major,
+            cover:"ks-course-cover/default.jpg",
+            faculty:formData.faculty,
+            class:formData.class
+        });
+        if(res.base.code===200){
+            showNotification({
+                type:"success",
+                title:"课程信息已保存"
+            })
+            flashList()
+            toggleShowModal(false)
+        }else{
+            showNotification({
+                type:"error",
+                title:"课程",
+                content:res.base.msg
+            })
+        }
+        
+    }
+    return (
+        <div className="p-6 w-full max-w-2xl bg-primary-container rounded-2xl shadow-xl"
+             onClick={e => e.stopPropagation()}>
+            <div className="text-3xl text-on-primary-container mb-6 font-medium">创建课程域</div>
+            <form className={`space-y-6`}>
+
+                <div className={`space-y-2`}>
+                    <label className="text-sm font-medium text-on-primary-container">
+                        标题
+                        <span className="text-error">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        value={formData.title}
+                        onChange={handleChange('title')}
+                        className={`w-full p-3 rounded-lg border ${
+                            errors.title ? 'border-error' : 'border-outline'
+                        } bg-secondary-container text-on-surface`}
+                        placeholder="请输入课程名"
+                    />
+                    {errors.title && (
+                        <p className="text-error text-sm">{errors.title}</p>
+                    )}
+                </div>
+                <div className={`space-y-2`}>
+                    <label className="text-sm font-medium text-on-primary-container">
+                        所属学院
+                        <span className="text-error">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        value={formData.faculty}
+                        onChange={handleChange('faculty')}
+                        className={`w-full p-3 rounded-lg border ${
+                            errors.faculty ? 'border-error' : 'border-outline'
+                        } bg-secondary-container text-on-surface`}
+                        placeholder="请输入学院名"
+                    />
+                    {errors.faculty && (
+                        <p className="text-error text-sm">{errors.faculty}</p>
+                    )}
+                </div>
+                <div className={`grid grid-cols-2 gap-4`}>
+                    <div className={`space-y-2`}>
+                        <label className="text-sm font-medium text-on-primary-container">
+                            专业名称
+                            <span className="text-error">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.major}
+                            onChange={handleChange('major')}
+                            className={`w-full p-3 rounded-lg border ${
+                                errors.major ? 'border-error' : 'border-outline'
+                            } bg-secondary-container text-on-surface`}
+                            placeholder="输入专业名称"
+                        />
+                        {errors.major && (
+                            <p className="text-error text-sm">{errors.major}</p>
+                        )}
+                    </div>
+                    <div className={`space-y-2`}>
+                        <label className="text-sm font-medium text-on-primary-container">
+                            所属班级
+                            <span className="text-error">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.class}
+                            onChange={handleChange('class')}
+                            className={`w-full p-3 rounded-lg border ${
+                                errors.class ? 'border-error' : 'border-outline'
+                            } bg-secondary-container text-on-surface`}
+                            placeholder="输入或选择班级"
+                        />
+                        {errors.class && (
+                            <p className="text-error text-sm">{errors.class}</p>
+                        )}
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-on-primary-container">
+                        课程简介
+                        <span className="text-xs text-on-primary-container/60 ml-2">（最多100字）</span>
+                    </label>
+                    <textarea
+                        value={formData.description}
+                        onChange={handleChange('description')}
+                        className={`w-full p-3 rounded-lg border ${
+                            errors.description ? 'border-error' : 'border-outline'
+                        } bg-secondary-container text-on-surface resize-none h-32`}
+                        placeholder="展示在课程信息中...."
+                        maxLength={100}
+                    />
+                    <div className="flex justify-between text-sm">
+                        {errors.description && (
+                            <p className="text-error">{errors.description}</p>
+                        )}
+                        <span className="text-on-surface-variant ml-auto">
+                            {formData.description.length}/100
+                        </span>
+                    </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4 z-index-[9999]">
+                    {/* 开始时间 */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-on-primary-container">
+                            开始时间
+                            <span className="text-error">*</span>
+                        </label>
+                        <CustomDatePicker
+                            value={formData.begin_time}
+                            onChange={handleTimeChange('begin_time')}
+                            error={errors.begin_time}
+                            helperText={errors.begin_time}
+                        />
+                    </div>
+
+                    {/* 结束时间 */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-on-primary-container">
+                            结束时间
+                            <span className="text-error">*</span>
+                        </label>
+                        <CustomDatePicker
+                            value={formData.end_time}
+                            onChange={handleTimeChange('end_time')}
+                            minDate={dayjs(formData.begin_time)}
+                            error={errors.end_time}
+                            helperText={errors.end_time}
+                        />
+                    </div>
+                </div>
+                {/* 操作按钮 */}
+                <div className="flex justify-end space-x-4 mt-8 transition-all">
+                    <IconButton
+                        type="button"
+                        onClick={() => toggleShowModal(false)}
+                        className="px-6 py-2 rounded-lg text-on-surface-variant hover:bg-inverse-primary transition-all"
+                        text={"取消"}>
+                    </IconButton>
+                    <IconButton
+                        type="submit"
+                        className="px-6 py-2 rounded-lg bg-primary text-on-primary hover:bg-primary-hover transition-all"
+                        onClick={handleSubmit}
+                        text={"保存修改"}>
+                    </IconButton>
+                </div>
+
+            </form>
+
+        </div>
+    )
+
+}
+

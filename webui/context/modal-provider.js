@@ -23,7 +23,7 @@ export const ModalProvider = ({ children }) => {
 
             {/* 遮罩层 */}
                 <div
-                    className={`fixed inset-0 h-screen w-screen  ${isShow?`z-[9999] opacity-100 `:`-z-10 opacity-0`} transition-all flex items-center justify-center bg-surface/50`}
+                    className={`fixed inset-0 h-screen w-screen  ${isShow?`z-[999] opacity-100 `:`-z-10 opacity-0`} transition-all flex items-center justify-center bg-surface/50`}
                 >
                     <div
                         className={`relative flex w-full h-full transition-all opacity-100 items-center justify-center z-[10000] ${isShow?`translate-x-0`:`translate-x-24 `}`}

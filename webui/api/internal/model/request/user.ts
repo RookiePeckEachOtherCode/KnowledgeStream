@@ -59,7 +59,8 @@ export type TeacherServiceRequest={
     begin_time:string,
     end_time:string,
     major:string,
-    faculty:string
+    faculty:string,
+    class:string
   }
   DELETE_COURSE:{
     cid:string

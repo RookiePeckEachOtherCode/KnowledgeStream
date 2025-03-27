@@ -3,12 +3,14 @@ import { Api } from "./internal/api";
 export const BASE_URL =
   process.env.NEXT_PUBLIC_BASE_API ?? "http://localhost:8888";
 
-export const api = new Api(async ({ uri, method, headers, body }) => {
+export const api = new Api(async ({ uri, method, headers, body,query }) => {
   const isGetRequest = method === 'GET' || method === 'HEAD';
-  const processedUrl = isGetRequest && body
-      ? `${BASE_URL}${uri}?${new URLSearchParams(body).toString()}`
+
+  const urlSearchParams = new URLSearchParams(query).toString();
+  const processedUrl = isGetRequest && query
+      ? `${BASE_URL}${uri}?${urlSearchParams}`
       : `${BASE_URL}${uri}`;
-  
+
   const config: RequestInit = {
     method,
     headers: {
@@ -17,7 +19,8 @@ export const api = new Api(async ({ uri, method, headers, body }) => {
       ...headers,
     }
   };
-  
+
+  // 非 GET 请求才处理 body
   if (!isGetRequest && body !== undefined) {
     config.body = JSON.stringify(body);
   }

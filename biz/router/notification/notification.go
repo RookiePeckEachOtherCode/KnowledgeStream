@@ -22,4 +22,5 @@ func Register(r *server.Hertz) {
 	_notification.GET("/browse", append(_browsenotificationMw(), notification.BrowseNotification)...)
 	_notification.GET("/course", append(_notificationundercourseMw(), notification.NotificationUnderCourse)...)
 	_notification.POST("/create", append(_createnotificationMw(), notification.CreateNotification)...)
+	_notification.POST("/like", append(_favnotificationMw(), notification.FavNotification)...)
 }

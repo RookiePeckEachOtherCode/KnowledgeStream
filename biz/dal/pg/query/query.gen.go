@@ -17,6 +17,7 @@ import (
 
 var (
 	Q            = new(Query)
+	Class        *class
 	Comment      *comment
 	Course       *course
 	Notification *notification
@@ -27,6 +28,7 @@ var (
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
+	Class = &Q.Class
 	Comment = &Q.Comment
 	Course = &Q.Course
 	Notification = &Q.Notification
@@ -38,6 +40,7 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
 		db:           db,
+		Class:        newClass(db, opts...),
 		Comment:      newComment(db, opts...),
 		Course:       newCourse(db, opts...),
 		Notification: newNotification(db, opts...),
@@ -50,6 +53,7 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 type Query struct {
 	db *gorm.DB
 
+	Class        class
 	Comment      comment
 	Course       course
 	Notification notification
@@ -63,6 +67,7 @@ func (q *Query) Available() bool { return q.db != nil }
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
 		db:           db,
+		Class:        q.Class.clone(db),
 		Comment:      q.Comment.clone(db),
 		Course:       q.Course.clone(db),
 		Notification: q.Notification.clone(db),
@@ -83,6 +88,7 @@ func (q *Query) WriteDB() *Query {
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
 		db:           db,
+		Class:        q.Class.replaceDB(db),
 		Comment:      q.Comment.replaceDB(db),
 		Course:       q.Course.replaceDB(db),
 		Notification: q.Notification.replaceDB(db),
@@ -93,6 +99,7 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 }
 
 type queryCtx struct {
+	Class        IClassDo
 	Comment      ICommentDo
 	Course       ICourseDo
 	Notification INotificationDo
@@ -103,6 +110,7 @@ type queryCtx struct {
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
+		Class:        q.Class.WithContext(ctx),
 		Comment:      q.Comment.WithContext(ctx),
 		Course:       q.Course.WithContext(ctx),
 		Notification: q.Notification.WithContext(ctx),

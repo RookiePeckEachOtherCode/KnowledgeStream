@@ -82,4 +82,5 @@ export interface Comment {
    * 上层归属
    */
   parent: string;
+  time:string
 }

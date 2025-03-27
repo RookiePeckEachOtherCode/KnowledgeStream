@@ -40,9 +40,17 @@ struct BrowseNotificationResp{
     2:common.NotificationInfo notification;
 }
 
+struct FavNotificationReq{
+    1:string nid;
+}
+struct FavNotificationResp{
+    1:common.BaseResponse base
+}
+
 service NotificationService{
     QueryNotificationResp  QueryNotification(1:QueryNotificationReq req)(api.get="/notification");
     NotificationUnderCourseResp NotificationUnderCourse(1:NotificationUnderCourseReq req)(api.get="/notification/course");
     CreateNotificationResp CreateNotification(1:CreateNotificationReq req)(api.post="/notification/create");
     BrowseNotificationResp BrowseNotification(1:BrowseNotificationReq req)(api.get="/notification/browse")
+    FavNotificationResp FavNotification(1:FavNotificationReq req)(api.post="/notification/like")
 }

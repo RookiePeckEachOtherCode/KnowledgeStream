@@ -5,6 +5,7 @@ package notification
 import (
 	"context"
 	"errors"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/base"
 	notification "github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/notification"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/srverror"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/service"
@@ -142,5 +143,36 @@ func BrowseNotification(ctx context.Context, c *app.RequestContext) {
 	}
 	resp = browseNotificationResp
 
+	c.JSON(consts.StatusOK, resp)
+}
+
+// FavNotification .
+// @router /notification/like [POST]
+func FavNotification(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req notification.FavNotificationReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+	resp := new(notification.FavNotificationResp)
+	Uid, exists := c.Get("uid")
+	if !exists {
+		resp.Base = srverror.WrapWithCodeMsg(http.StatusUnauthorized, errors.New("未获取到用户信息").Error())
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	uid := Uid.(int64)
+
+	favNotificationResp, err := service.NotificationServ().FavNotification(req.Nid, uid, ctx)
+	if err != nil {
+		resp.Base = &base.BaseResponse{
+			Code: 400,
+			Msg:  "点赞失败:" + err.Error(),
+		}
+	} else {
+		resp = favNotificationResp
+	}
 	c.JSON(consts.StatusOK, resp)
 }

@@ -1,10 +1,21 @@
 "use client"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faChevronDown, faClock, faMagnet, faMinus, faPlay, faTimes} from "@fortawesome/free-solid-svg-icons";
+import {
+    faChevronDown,
+    faClock,
+    faLeaf,
+    faMagnet,
+    faMinus, faPaperPlane,
+    faPlay,
+    faSubway,
+    faTimes
+} from "@fortawesome/free-solid-svg-icons";
 import {faDiscourse} from "@fortawesome/free-brands-svg-icons";
 import {OssImage, OssVideo} from "../../components/oss-midea.tsx";
 import {useEffect, useState} from "react";
 import {Divider} from "../../components/divider.tsx";
+import {CommentStrip} from "../../components/comment-strip.tsx";
+import {IconButton} from "../../components/icon-button.tsx";
 const videoInfo={
     cover:"ks-course-cover/test.jpg",
     chapter:"第一章",
@@ -93,9 +104,19 @@ const videos = [
     }
 ];
 
+const comments=[{
+    id:"1",
+    ascription: "123",
+    avatar:"ks-user-avatar/114514.jpg",
+    name:"麦克*莫顿",
+    content:"这个老师讲的就像我的减速球一样全是屎",
+}]
+
 export default  function PlayPage({params}){
     const vid=params
     const [isExpanded, setIsExpanded] = useState(false);
+    const [focusComment, setFocusComment] = useState(false)
+        
     return(
         <div className={`max-w-screen min-h-screen  overflow-auto bg-background pl-32 pr-32 pt-12 flex flex-col`}>
             <div className={` flex flex-row space-x-6`}>
@@ -120,7 +141,7 @@ export default  function PlayPage({params}){
                     {/* 描述部分 */}
                     <div className={`w-full flex flex-col items-start`}>
                         <div className={`w-full text-wrap overflow-hidden text-on-background
-                        ${isExpanded?`h-full`:`max-h-24`}
+                        ${isExpanded ? `h-full` : `max-h-24`}
                         `}>
                             {videoInfo.description}
                         </div>
@@ -131,7 +152,69 @@ export default  function PlayPage({params}){
                             {isExpanded ? '收起' : '展开详情'}
                         </button>
                     </div>
+                    <Divider vertical={false}></Divider>
+                    <div className={`w-full flex flex-row items-center space-x-3`}>
+                        <div className={`text-3xl`}>评论</div>
+                        <div className={`text-outline text-xl`}>{comments.length}</div>
+                    </div>
+                    <div className="w-full flex flex-col space-y-4">
+                        <div className="w-full p-3 flex items-center gap-4">
+                            <OssImage
+                                url="ks-user-avatar/114514.jpg"
+                                className="w-18 aspect-square shrink-0 rounded-full"
+                            />
+                            <div className="flex-1 relative">
+                                <input
+                                    type="text"
+                                    className={`w-full px-4 py-3 rounded-2xl transition-all duration-200
+                    border-2 ${focusComment ?
+                                        "border-primary bg-secondary-container" :
+                                        "border-outline hover:border-on-surface"}
+                    focus:outline-none focus:ring-2 focus:ring-primary/30
+                    placeholder:text-on-surface/60`}
+                                    onFocus={() => setFocusComment(true)}
+                                    onBlur={() => setFocusComment(false)}
+                                    placeholder="有什么想说的？"
+                                    style={{textIndent: "0.5rem"}}
+                                />
+                                {focusComment && (
+                                    <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                                        <button
+                                            className="px-2 py-1 text-sm text-primary hover:bg-primary/10 rounded-lg"
+                                            onClick={() => setFocusComment(false)}
+                                        >
+                                            取消
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div className={`flex justify-end px-3 ${focusComment?`max-h-96`:`max-h-0`} transition-all duration-300 overflow-hidden`}>
+                            <IconButton
+                                text="提交"
+                                onClick={() => {
+                                }}
+                                className="bg-primary-container text-on-primary-container
+                                hover:bg-primary-container/90 space-x-3"
+                            ><FontAwesomeIcon icon={faPaperPlane}/></IconButton>
+                        </div>
+                    </div>
 
+                    <div className={`w-full flex flex-col`}>
+                        {comments.map((item, index) => {
+                            return <CommentStrip
+                                key={index}
+                                avatar={item.avatar}
+                                content={item.content}
+                                id={item.id}
+                                name={item.name}
+                                ascription={item.ascription}
+                                parent={"no use"}
+                                time={"2077-27-78 11:45"}
+                            >
+                            </CommentStrip>
+                        })}
+                    </div>
 
                 </div>
                 {/*选集，其他课程视频*/}
@@ -149,15 +232,15 @@ export default  function PlayPage({params}){
                     </div>
                     <ChapterList videos={videos} currentVideo={videoInfo}></ChapterList>
                 </div>
-                
+
             </div>
-            
+
         </div>
     )
-    
+
 }
 
-function IconWithText({ children, text, className }) {
+function IconWithText({children, text, className}) {
     return (
         <div className={` flex flex-row p-1 space-x-2`}>
             {children}
@@ -166,7 +249,7 @@ function IconWithText({ children, text, className }) {
     );
 }
 
-function ChapterList({ videos,currentVideo }) {
+function ChapterList({videos, currentVideo}) {
     const [chapter, setChapter] = useState([]);
     const [openChapter, setOpenChapter] = useState(false)
     useEffect(() => {

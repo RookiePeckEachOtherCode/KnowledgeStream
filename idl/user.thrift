@@ -99,13 +99,12 @@ struct OperateMemberResp{
     1:common.BaseResponse base;
 }
 struct UploadVideosReq{//上传视频
-    1:string source;
-    2:string title;
-    3:string description;
-    4:string cover;
-    5:string cid;
-    6:string length;
-    7:string chapter;
+    1:string title;
+    2:string description;
+    3:string cover;
+    4:string cid;
+    5:string length;
+    6:string chapter;
 }
 struct UploadVideosResp{
     1:common.BaseResponse base;

@@ -416,7 +416,7 @@ func UploadVideos(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	err = service.VideoServ().UploadVideoWithCidAndUid(ctx, uid, cid, req.Source, req.Title, req.Description, req.Cover, int(length), timestr, req.Chapter)
+	err = service.VideoServ().UploadVideoWithCidAndUid(ctx, uid, cid, req.Title, req.Description, req.Cover, int(length), timestr, req.Chapter)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		c.JSON(consts.StatusOK, resp)

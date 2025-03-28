@@ -76,12 +76,13 @@ func (s *VideoService) DeleteVideoWithVid(c context.Context, vid int64) error {
 	}
 	return nil
 }
-func (s *VideoService) UploadVideoWithCidAndUid(c context.Context, uid int64, cid int64, source string, title string, description string, cover string, length int, timestr string, chapter string) error {
+func (s *VideoService) UploadVideoWithCidAndUid(c context.Context, uid int64, cid int64, title string, description string, cover string, length int, timestr string, chapter string) error {
 	v := query.Video
 	id, err := utils.NextSnowFlakeId()
 	if err != nil {
 		return err
 	}
+	source := fmt.Sprintf("bucket.video/%d.webm", *id)
 	video := entity.Video{
 		ID:          *id,
 		Uploader:    uid,

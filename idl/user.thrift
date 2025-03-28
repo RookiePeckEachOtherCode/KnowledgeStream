@@ -108,6 +108,7 @@ struct UploadVideosReq{//上传视频
 }
 struct UploadVideosResp{
     1:common.BaseResponse base;
+    2:string newid;
 }
 struct EnquiryMyCoursesReq{
     1:string keyword;

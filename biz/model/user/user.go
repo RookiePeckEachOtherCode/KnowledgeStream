@@ -4556,7 +4556,8 @@ func (p *UploadVideosReq) String() string {
 }
 
 type UploadVideosResp struct {
-	Base *base.BaseResponse `thrift:"base,1" form:"base" json:"base" query:"base"`
+	Base  *base.BaseResponse `thrift:"base,1" form:"base" json:"base" query:"base"`
+	Newid string             `thrift:"newid,2" form:"newid" json:"newid" query:"newid"`
 }
 
 func NewUploadVideosResp() *UploadVideosResp {
@@ -4572,8 +4573,13 @@ func (p *UploadVideosResp) GetBase() (v *base.BaseResponse) {
 	return p.Base
 }
 
+func (p *UploadVideosResp) GetNewid() (v string) {
+	return p.Newid
+}
+
 var fieldIDToName_UploadVideosResp = map[int16]string{
 	1: "base",
+	2: "newid",
 }
 
 func (p *UploadVideosResp) IsSetBase() bool {
@@ -4602,6 +4608,16 @@ func (p *UploadVideosResp) Read(iprot thrift.TProtocol) (err error) {
 		case 1:
 			if fieldTypeId == thrift.STRUCT {
 				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 2:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField2(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else {
@@ -4647,6 +4663,15 @@ func (p *UploadVideosResp) ReadField1(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *UploadVideosResp) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.Newid = v
+	}
+	return nil
+}
+
 func (p *UploadVideosResp) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("UploadVideosResp"); err != nil {
@@ -4655,6 +4680,10 @@ func (p *UploadVideosResp) Write(oprot thrift.TProtocol) (err error) {
 	if p != nil {
 		if err = p.writeField1(oprot); err != nil {
 			fieldId = 1
+			goto WriteFieldError
+		}
+		if err = p.writeField2(oprot); err != nil {
+			fieldId = 2
 			goto WriteFieldError
 		}
 
@@ -4691,6 +4720,23 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
+}
+
+func (p *UploadVideosResp) writeField2(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("newid", thrift.STRING, 2); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Newid); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
 }
 
 func (p *UploadVideosResp) String() string {

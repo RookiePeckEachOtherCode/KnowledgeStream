@@ -416,13 +416,14 @@ func UploadVideos(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	err = service.VideoServ().UploadVideoWithCidAndUid(ctx, uid, cid, req.Title, req.Description, req.Cover, int(length), timestr, req.Chapter)
+	newid, err := service.VideoServ().UploadVideoWithCidAndUid(ctx, uid, cid, req.Title, req.Description, req.Cover, int(length), timestr, req.Chapter)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
 	resp.Base = srverror.WrapWithSuccess("上传视频成功")
+	resp.Newid = fmt.Sprintf("%d", newid)
 	c.JSON(consts.StatusOK, resp)
 }
 

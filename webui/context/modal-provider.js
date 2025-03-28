@@ -27,7 +27,7 @@ export const ModalProvider = ({ children }) => {
                 >
                     <div
                         className={`relative flex w-full h-full transition-all opacity-100 items-center justify-center z-[10000] ${isShow?`translate-x-0`:`translate-x-24 `}`}
-                        onClick={() => {toggleShowModal(false);console.log("1111")}}
+                        onClick={() => {toggleShowModal(false);}}
                     >
                         {formChildren}
                     </div>

@@ -903,7 +903,6 @@ function CreateCourseForm({flashList}) {
     const handleSubmit= async (e)=>{
         e.preventDefault();
         if (!validateForm()) return;
-        console.log(formData)
         var res = await api.teacherService.createCourse({
             title:formData.title,
             description:formData.description,

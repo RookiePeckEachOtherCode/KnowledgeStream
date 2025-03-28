@@ -35,6 +35,12 @@ type Config struct {
 		Port     int    `mapstructure:"port"`
 		Database int    `mapstructure:"database"`
 	} `mapstructure:"redis"`
+
+	OssBuckets struct {
+		VideoSource string `mapstructure:"bucket_video"`
+		CourseCover string `mapstructure:"bucket_course_cover"`
+		UserAvatar  string `mapstructure:"bucket_user_avatar"`
+	}
 }
 
 var configData *Config

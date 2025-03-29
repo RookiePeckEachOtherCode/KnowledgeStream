@@ -8,8 +8,10 @@ import (
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/query"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/base"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/utils"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/config"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"gorm.io/gorm"
+	"strconv"
 	"sync"
 )
 
@@ -76,13 +78,13 @@ func (s *VideoService) DeleteVideoWithVid(c context.Context, vid int64) error {
 	}
 	return nil
 }
-func (s *VideoService) UploadVideoWithCidAndUid(c context.Context, uid int64, cid int64, title string, description string, cover string, length int, timestr string, chapter string) (int64, error) {
+func (s *VideoService) UploadVideoWithCidAndUid(c context.Context, uid int64, cid int64, title string, description string, cover string, length string, timestr string, chapter string) (int64, error) {
 	v := query.Video
 	id, err := utils.NextSnowFlakeId()
 	if err != nil {
 		return 0, err
 	}
-	source := fmt.Sprintf("bucket.video/%d.webm", *id)
+	source := config.Get().OssBuckets.VideoSource + "/" + strconv.FormatInt(*id, 10)
 	video := entity.Video{
 		ID:          *id,
 		Uploader:    uid,

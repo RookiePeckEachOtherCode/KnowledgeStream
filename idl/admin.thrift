@@ -41,6 +41,7 @@ struct UploadVideoReq{
 }
 struct UploadVideoResp{
     1:common.BaseResponse base;
+    2:string newid
 }
 struct CreateCourseReq{
     1:string title;

@@ -14,7 +14,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import {useModal} from "../../context/modal-provider.js";
 import {IconButton} from "../components/icon-button.tsx";
-import {useOss} from "../../context/oss-uploader-provider.tsx";
+import {OssBuckets, useOss} from "../../context/oss-uploader-provider.tsx";
 import {useNotification} from "../../context/notification-provider.tsx";
 import {api} from "../../api/instance.ts";
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -448,7 +448,7 @@ function UpdateAvatar({uid,url,flashUserInfo}) {
             return
         }
         const ossName=uid+"."+parts[1]
-        const upload_success= await ossHandleUploadFile(newFile, ossName, "ks-user-avatar")
+        const upload_success= await ossHandleUploadFile(newFile, ossName,OssBuckets.UserAvatar)
         if (upload_success){
            var res = await api.userService.updateInfo({
                 avatar:"ks-user-avatar/"+ossName

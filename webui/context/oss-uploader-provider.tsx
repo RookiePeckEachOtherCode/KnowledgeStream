@@ -138,3 +138,9 @@ export const useOss = (): OssContextType => {
     }
     return context;
 };
+
+export const OssBuckets={
+    Video:"ks-video",
+    UserAvatar:"ks-user-avatar",
+    CourseCover:"ks-course-cover"
+}

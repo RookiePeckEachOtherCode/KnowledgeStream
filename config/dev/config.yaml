@@ -16,4 +16,8 @@ redis:
   host: "localhost"
   port:  6379
   database: 0
- 
+
+oss_buckets:  
+  bucket_video: "ks-video"
+  bucket_course_cover: "ks-course-cover"
+  bucket_user_avatar: "ks-user-avatar"

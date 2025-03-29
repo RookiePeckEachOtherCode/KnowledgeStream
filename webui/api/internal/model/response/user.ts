@@ -39,7 +39,8 @@ export type TeacherServiceResponse={
     base:BaseResponse
   }
   UPLOAD_VIDEO:{
-    base:BaseResponse
+    base:BaseResponse,
+    newid:string
   }
   CREATE_COURSE: {
     base:BaseResponse

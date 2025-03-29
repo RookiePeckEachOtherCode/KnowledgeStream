@@ -89,13 +89,15 @@ create table videos
     title       text,
     description text,
     uploader    bigint,
-    length      integer,
+    length      text,
     cover       text,
     ascription  bigint
         constraint video_course_id_fk
             references courses,
-    chapter     text
+    chapter     text,
+    upload_time text
 );
+
 
 alter table videos
     owner to root;

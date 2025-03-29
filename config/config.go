@@ -40,7 +40,7 @@ type Config struct {
 		VideoSource string `mapstructure:"bucket_video"`
 		CourseCover string `mapstructure:"bucket_course_cover"`
 		UserAvatar  string `mapstructure:"bucket_user_avatar"`
-	}
+	} `mapstructure:"oss_buckets"` // ← 这里必须与 YAML 的键名一致
 }
 
 var configData *Config

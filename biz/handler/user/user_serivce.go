@@ -402,13 +402,6 @@ func UploadVideos(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	length, err := strconv.ParseInt(req.Length, 10, 64)
-	if err != nil {
-		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
-		hlog.Error("视频长度数据格式转换失败：", err)
-		c.JSON(consts.StatusOK, resp)
-		return
-	}
 	timestr, err := utils.GetNowTime()
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
@@ -416,7 +409,7 @@ func UploadVideos(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	newid, err := service.VideoServ().UploadVideoWithCidAndUid(ctx, uid, cid, req.Title, req.Description, req.Cover, int(length), timestr, req.Chapter)
+	newid, err := service.VideoServ().UploadVideoWithCidAndUid(ctx, uid, cid, req.Title, req.Description, req.Cover, req.Length, timestr, req.Chapter)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		c.JSON(consts.StatusOK, resp)

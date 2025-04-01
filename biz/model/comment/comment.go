@@ -1128,6 +1128,7 @@ func (p *QueryCommentUnderNotificationResp) String() string {
 
 type QueryChildrenCommentReq struct {
 	Parent string `thrift:"parent,1" form:"parent" json:"parent" query:"parent"`
+	Size   int64  `thrift:"size,2" form:"size" json:"size" query:"size"`
 }
 
 func NewQueryChildrenCommentReq() *QueryChildrenCommentReq {
@@ -1141,8 +1142,13 @@ func (p *QueryChildrenCommentReq) GetParent() (v string) {
 	return p.Parent
 }
 
+func (p *QueryChildrenCommentReq) GetSize() (v int64) {
+	return p.Size
+}
+
 var fieldIDToName_QueryChildrenCommentReq = map[int16]string{
 	1: "parent",
+	2: "size",
 }
 
 func (p *QueryChildrenCommentReq) Read(iprot thrift.TProtocol) (err error) {
@@ -1166,6 +1172,14 @@ func (p *QueryChildrenCommentReq) Read(iprot thrift.TProtocol) (err error) {
 		case 1:
 			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 2:
+			if fieldTypeId == thrift.I64 {
+				if err = p.ReadField2(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
@@ -1211,6 +1225,17 @@ func (p *QueryChildrenCommentReq) ReadField1(iprot thrift.TProtocol) error {
 	p.Parent = _field
 	return nil
 }
+func (p *QueryChildrenCommentReq) ReadField2(iprot thrift.TProtocol) error {
+
+	var _field int64
+	if v, err := iprot.ReadI64(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.Size = _field
+	return nil
+}
 
 func (p *QueryChildrenCommentReq) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
@@ -1220,6 +1245,10 @@ func (p *QueryChildrenCommentReq) Write(oprot thrift.TProtocol) (err error) {
 	if p != nil {
 		if err = p.writeField1(oprot); err != nil {
 			fieldId = 1
+			goto WriteFieldError
+		}
+		if err = p.writeField2(oprot); err != nil {
+			fieldId = 2
 			goto WriteFieldError
 		}
 	}
@@ -1255,6 +1284,22 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
+}
+func (p *QueryChildrenCommentReq) writeField2(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("size", thrift.I64, 2); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteI64(p.Size); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
 }
 
 func (p *QueryChildrenCommentReq) String() string {

@@ -8,6 +8,7 @@ interface MDInputProps {
   placeholder?: string;
   type?: HTMLInputTypeAttribute;
   isUnValid?: boolean;
+  onEnter?: () => void;
 }
 
 export default function MDInput({
@@ -17,8 +18,15 @@ export default function MDInput({
   placeholder,
   type,
   isUnValid,
+  onEnter,
 }: MDInputProps) {
   const [isFocused, setIsFocused] = useState(false);
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Enter" && onEnter) {
+      e.preventDefault(); // 阻止默认表单提交行为
+      onEnter();
+    }
+  };
 
   const handleFocus = () => {
     setIsFocused(true);
@@ -46,6 +54,7 @@ export default function MDInput({
         type={type}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
       />
 
       {placeholder && (

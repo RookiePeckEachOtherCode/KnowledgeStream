@@ -38,6 +38,7 @@ export default function LoginPage() {
     localStorage.setItem("token", resp.token);
     localStorage.setItem("username", resp.name);
     localStorage.setItem("uid", resp.id);
+    localStorage.setItem("authority",resp.authority)
 
     router.push("/");
   };

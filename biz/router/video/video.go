@@ -19,6 +19,6 @@ func Register(r *server.Hertz) {
 	root := r.Group("/", rootMw()...)
 	{
 		_video := root.Group("/video", _videoMw()...)
-		_video.POST("/info", append(_videoinfoMw(), video.VideoInfo)...)
+		_video.GET("/info", append(_videoinfoMw(), video.VideoInfo)...)
 	}
 }

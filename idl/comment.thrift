@@ -34,6 +34,7 @@ struct QueryCommentUnderNotificationResp{
 
 struct QueryChildrenCommentReq{
     1:string parent;
+    2:i64   size;
 }
 
 struct QueryChildrenCommentResp{

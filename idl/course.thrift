@@ -18,7 +18,7 @@ struct CourseVideosInfoResp{
     2:list<common.VideoInfo> videosinfo;
 }
 service CourseService{
-    CourseInfoResp CourseInfo(1:CourseInfoReq req)(api.post="/course/info")
-    CourseVideosInfoResp CourseVideosInfo(1:CourseVideosInfoReq req)(api.post="/course/videos")
+    CourseInfoResp CourseInfo(1:CourseInfoReq req)(api.get="/course/info")
+    CourseVideosInfoResp CourseVideosInfo(1:CourseVideosInfoReq req)(api.get="/course/videos")
 
 }

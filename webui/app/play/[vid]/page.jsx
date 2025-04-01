@@ -16,6 +16,8 @@ import {useEffect, useState} from "react";
 import {Divider} from "../../components/divider.tsx";
 import {CommentStrip} from "../../components/comment-strip.tsx";
 import {IconButton} from "../../components/icon-button.tsx";
+import {api} from "../../../api/instance.ts";
+import {useNotification} from "../../../context/notification-provider.tsx";
 const videoInfo={
     cover:"ks-course-cover/test.jpg",
     chapter:"第一章",
@@ -40,69 +42,7 @@ const teacherInfo={
     name:"罗名西",
     signature:"第五人格我真的豪爽!!!就这个第五爽!!"
 }
-
-const videos = [
-    {
-        id: "1",
-        cover: "https://example.com/covers/video1.jpg",
-        chapter: "第一章",
-        title: "趣谈趣谈人工智能背景下拨动指针",
-        source: "https://example.com/videos/video1.mp4",
-        description: "罗西东教授极品讲座解析",
-        length: "12:34",
-        ascription: "cid_123",
-        uploader: "uid_456",
-        upload_time: "2023-10-01T12:00:00Z"
-    },
-    {
-        id: "2",
-        cover: "https://example.com/covers/video2.jpg",
-        chapter: "第一章",
-        title: "Java 编程基础",
-        source: "https://example.com/videos/video2.mp4",
-        description: "Java 编程入门教程",
-        length: "15:20",
-        ascription: "cid_124",
-        uploader: "uid_457",
-        upload_time: "2023-10-02T14:30:00Z"
-    },
-    {
-        id: "3",
-        cover: "https://example.com/covers/video3.jpg",
-        chapter: "第三章",
-        title: "Python 数据分析",
-        source: "https://example.com/videos/video3.mp4",
-        description: "Python 数据分析实战",
-        length: "20:45",
-        ascription: "cid_125",
-        uploader: "uid_458",
-        upload_time: "2023-10-03T09:15:00Z"
-    },
-    {
-        id: "4",
-        cover: "https://example.com/covers/video4.jpg",
-        chapter: "第四章",
-        title: "React 高级教程",
-        source: "https://example.com/videos/video4.mp4",
-        description: "React 高级特性详解",
-        length: "18:10",
-        ascription: "cid_126",
-        uploader: "uid_459",
-        upload_time: "2023-10-04T16:45:00Z"
-    },
-    {
-        id: "5",
-        cover: "https://example.com/covers/video5.jpg",
-        chapter: "第五章",
-        title: "Node.js 后端开发",
-        source: "https://example.com/videos/video5.mp4",
-        description: "Node.js 后端开发实战",
-        length: "22:30",
-        ascription: "cid_127",
-        uploader: "uid_460",
-        upload_time: "2023-10-05T11:00:00Z"
-    }
-];
+import { useParams } from 'next/navigation';
 
 const comments=[{
     id:"1",
@@ -112,10 +52,124 @@ const comments=[{
     content:"这个老师讲的就像我的减速球一样全是屎",
 }]
 
-export default  function PlayPage({params}){
-    const vid=params
+export default  function PlayPage(){
     const [isExpanded, setIsExpanded] = useState(false);
     const [focusComment, setFocusComment] = useState(false)
+    const {showNotification} = useNotification();
+    const params = useParams();
+    const vid = params.vid
+    const [userInfo, setUserInfo] = useState({
+        id:"",
+        avatar:"",
+        name:"",
+        authority:"",
+        signature:"",
+        grade:"",
+        faculty:"",
+        major:"",
+        class:""
+    })
+    const [teacherInfo, setTeacherInfo] = useState({
+        id:"",
+        avatar:"",
+        name:"",
+        authority:"",
+        signature:"",
+        grade:"",
+        faculty:"",
+        major:"",
+        class:""
+    })
+    const [videoInfo, setVideoInfo] = useState({
+        ascription: "",
+        chapter: "",
+        cover: "",
+        description: "",
+        id: "",
+        length: "",
+        source: "",
+        title: "",
+        upload_time:"",
+        uploader: "",
+    })
+    const [courseInfo, setCourseInfo] = useState({
+        ascription: "",
+        begin_time: "",
+        class: "",
+        cover: "",
+        description: "",
+        end_time: "",
+        cid: "",
+        major: "",
+        title: "",
+    })
+    const [videoList, setVideoList] = useState([])
+    useEffect(()=>{
+        async function fetchData(){
+            const userInfoRes = await api.userService.queryInfo({});
+            if(userInfoRes.base.code!==200){
+                showNotification({
+                    title:"获取用户信息失败",
+                    content:userInfoRes.base.msg,
+                    type:"error"
+                })
+            }else{
+                setUserInfo(userInfoRes.userinfo)
+            }
+            const videoInfoRes = await api.videoService.videoInfo({
+                vid:vid
+            });
+            if(videoInfoRes.base.code!==200){
+                showNotification({
+                    type:"error",
+                    title:"获取视频信息失败",
+                    content:"请尝试刷新页面"
+                })
+            }else{
+                setVideoInfo(videoInfoRes.videoinfo)
+                const teacherInfoRes =await  api.userService.uidInfo({
+                    uid:videoInfoRes.videoinfo.uploader
+                });
+                if(teacherInfoRes.base.code!==200){
+                    showNotification({
+                        title:"获取上传者信息失败",
+                        content:teacherInfoRes.base.msg,
+                        type:"error"
+                    })
+                }else{
+                    setTeacherInfo(teacherInfoRes.userinfo)
+                }
+                const courseInfoRes = await api.courseService.info({
+                    cid:videoInfoRes.videoinfo.ascription
+                });
+                if(courseInfoRes.base.code!==200){
+                    showNotification({
+                        title:"获取课程域信息失败",
+                        content:courseInfoRes.base.msg,
+                        type:"error"
+                    })
+                }else{
+                    setCourseInfo(courseInfoRes.courseinfo)
+                }
+                const videosRes = await api.courseService.videos({
+                    cid:videoInfoRes.videoinfo.ascription
+                });
+                if(videosRes.base.code!==200){
+                    showNotification({
+                        title:"获取视频列表失败",
+                        content:videosRes.base.msg,
+                        type:"error"
+                    })
+                }else{
+                    setVideoList(videosRes.videosinfo)
+                }
+                
+                
+            }
+        }
+        fetchData()
+    },[])
+    
         
     return(
         <div className={`max-w-screen min-h-screen  overflow-auto bg-background pl-32 pr-32 pt-12 flex flex-col`}>
@@ -125,7 +179,7 @@ export default  function PlayPage({params}){
                 <div className={`w-2/3 space-y-4 flex-col text-on-background flex `}>
                     <div className={`w-full flex text-3xl `}>{videoInfo.title}</div>
                     <div className={`w-full flex flex-row space-x-3`}>
-                        <IconWithText className={`text-on-background`} text={courseInfo.major}>
+                        <IconWithText className={`text-on-background`} text={courseInfo.major} >
                             <FontAwesomeIcon size={`xl`} icon={faMagnet}/>
                         </IconWithText>
                         <IconWithText className={`text-on-background`} text={courseInfo.title}>
@@ -193,6 +247,7 @@ export default  function PlayPage({params}){
                             <IconButton
                                 text="提交"
                                 onClick={() => {
+                                    console.log()
                                 }}
                                 className="bg-primary-container text-on-primary-container
                                 hover:bg-primary-container/90 space-x-3"
@@ -230,7 +285,7 @@ export default  function PlayPage({params}){
                             <div className={`text-on-secondary-container`}>{teacherInfo.signature}</div>
                         </div>
                     </div>
-                    <ChapterList videos={videos} currentVideo={videoInfo}></ChapterList>
+                    <ChapterList videos={videoList} currentVideo={videoInfo}></ChapterList>
                 </div>
 
             </div>
@@ -314,7 +369,7 @@ function VideoList(props){
                             onMouseOver={()=>setHover(index)}
                             className={`flex flex-row  hover:bg-primary-fixed-dim transition-all duration-200 pl-3 pr-3 justify-between items-center h-auto min-h-10`}>
                             <div className={`text-on-secondary-fixed`}>{item.title}</div>
-                            {currentVideo.title===item.title?<PlayingIcon></PlayingIcon>:
+                            {currentVideo.vid===item.vid?<PlayingIcon></PlayingIcon>:
                                 hover===index&&<FontAwesomeIcon className={`text-on-primary-fixed-variant`} icon={faPlay}></FontAwesomeIcon>
                             }
                         </div>)

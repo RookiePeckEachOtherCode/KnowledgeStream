@@ -5,14 +5,10 @@ import {OssImage} from "./oss-midea.tsx";
 import { useRouter } from "next/navigation";
 export function TopBar(props) {
   const router = useRouter();
-  const tepSrc =
-    "https://tse3-mm.cn.bing.net/th/id/OIP-C.huUG6H4rNQYhb6yiOl9ZugHaHW?rs=1&pid=ImgDetMain";
+
   const [searchKeyword, setSearchKeyword] = useState('')
 
-  const [userInfo, setUserInfo] = useState({
-    avatar:"ks-user-avatar/114514.jpg",
-    name:"未知用户"
-  })
+  const [userInfo, setUserInfo] = useState({})
 
   const [avatarIsHover, setAvatarIsHover] = useState(false)
   

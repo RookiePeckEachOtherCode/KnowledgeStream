@@ -32,6 +32,14 @@ struct userInfoResp{
     1:common.BaseResponse base;
     2:common.UserInfo userinfo
 }
+
+struct uidInfoReq{
+    1:string uid
+}
+struct uidInfoResp{
+    1:common.BaseResponse base;
+    2:common.UserInfo userinfo
+}
 struct userInfoUpdateReq{
     1:string name;
     3:string avatar;
@@ -46,6 +54,8 @@ struct StudentMyCoursesReq{
     1:string keyword;
     2:i32 offset;
     3:i32 size;
+    4:string begin_time
+    5:string end_time
 }
 struct StudentMyCoursesResp{
     1:common.BaseResponse base;
@@ -114,6 +124,8 @@ struct EnquiryMyCoursesReq{
     1:string keyword;
     2:i32 offset;
     3:i32 size;
+    4:string begin_time
+    5:string end_time
 }
 struct EnquiryMyCoursesResp{
     1:common.BaseResponse base;
@@ -142,6 +154,7 @@ service UserSerivce{
     userRegisterResp UserRegister(1:userRegisterReq req)(api.post="/user/register")
     userInfoResp UserInfo(1:userInfoReq req)(api.get="/user/info")
     userInfoUpdateResp UserInfoUpdate(1:userInfoUpdateReq req)(api.post="/user/update")
+    uidInfoResp UidInfo(1:uidInfoReq req)(api.get="/user/uid")
     //------------------------------------------Techer
     CreateCourseResp CreateCourse(1:CreateCourseReq req)(api.post="/user/teacher/createcourse")
     DeleteCourseResp DeleteCourse(1:DeleteCourseReq req)(api.post="/user/teacher/deletecourse")

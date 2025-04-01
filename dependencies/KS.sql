@@ -30,13 +30,18 @@ alter table notifications
 
 create table comments
 (
-    id         bigint,
+    id         bigint not null
+        constraint comments_pk
+            primary key,
     ascription bigint,
     avatar     text,
     name       text,
     content    text,
-    parent     bigint
+    parent     bigint,
+    time       text,
+    children   integer
 );
+
 
 alter table comments
     owner to root;

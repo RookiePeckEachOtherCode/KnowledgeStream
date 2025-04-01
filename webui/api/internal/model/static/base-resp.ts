@@ -3,7 +3,7 @@ export interface BaseResponse {
   msg: string;
 }
 export interface UserInfo{
-  id:string,
+  uid:string,
   avatar:string,
   name:string,
   authority:string,
@@ -20,7 +20,7 @@ export interface VideoInfo{
   chapter: string;
   cover: string;
   description: string;
-  id: string;
+  vid: string;
   length: string;
   source: string;
   title: string;
@@ -34,7 +34,7 @@ export interface CourseInfo {
   cover: string;
   description: string;
   end_time: string;
-  id: string;
+  cid: string;
   major: string;
   title: string;
 }

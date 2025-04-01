@@ -33,6 +33,8 @@ func newComment(db *gorm.DB, opts ...gen.DOOption) comment {
 	_comment.Name = field.NewString(tableName, "name")
 	_comment.Content = field.NewString(tableName, "content")
 	_comment.Parent = field.NewInt64(tableName, "parent")
+	_comment.Time = field.NewString(tableName, "time")
+	_comment.Children = field.NewInt64(tableName, "children")
 
 	_comment.fillFieldMap()
 
@@ -49,6 +51,8 @@ type comment struct {
 	Name       field.String
 	Content    field.String
 	Parent     field.Int64
+	Time       field.String
+	Children   field.Int64
 
 	fieldMap map[string]field.Expr
 }
@@ -71,6 +75,8 @@ func (c *comment) updateTableName(table string) *comment {
 	c.Name = field.NewString(table, "name")
 	c.Content = field.NewString(table, "content")
 	c.Parent = field.NewInt64(table, "parent")
+	c.Time = field.NewString(table, "time")
+	c.Children = field.NewInt64(table, "children")
 
 	c.fillFieldMap()
 
@@ -87,13 +93,15 @@ func (c *comment) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (c *comment) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 6)
+	c.fieldMap = make(map[string]field.Expr, 8)
 	c.fieldMap["id"] = c.ID
 	c.fieldMap["ascription"] = c.Ascription
 	c.fieldMap["avatar"] = c.Avatar
 	c.fieldMap["name"] = c.Name
 	c.fieldMap["content"] = c.Content
 	c.fieldMap["parent"] = c.Parent
+	c.fieldMap["time"] = c.Time
+	c.fieldMap["children"] = c.Children
 }
 
 func (c comment) clone(db *gorm.DB) comment {

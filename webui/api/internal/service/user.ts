@@ -51,6 +51,17 @@ export class UserService {
     }) as Promise<UserServiceResponse["UPDATE_INFO"]>;
   }
 
+  async uidInfo(
+      req: UserServiceRequest["UID_INFO"]
+  ): Promise<UserServiceResponse["UID_INFO"]> {
+    return this.executor({
+      uri: "/user/uid",
+      method: "GET",
+      body: null,
+      query:req,
+    }) as Promise<UserServiceResponse["UID_INFO"]>;
+  }
+
   async searchStudent(
       req: UserServiceRequest["SEARCH_STUDENT"]
   ): Promise<UserServiceResponse["SEARCH_STUDENT"]> {
@@ -165,4 +176,10 @@ export class TeacherService {
       body: req,
     }) as Promise<TeacherServiceResponse["DELETE_VIDEO"]>;
   }
+}
+
+export const UserAuthority={
+  Student:"Student",
+  Teacher:"Teacher",
+  Admin:"Admin"
 }

@@ -482,7 +482,7 @@ func StudentMyCourses(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	result, err := service.CourseServ().StudentQueryCourse(ctx, uid, req.Keyword, req.Size, req.Offset)
+	result, err := service.CourseServ().StudentQueryCourse(ctx, uid, req.Keyword, req.Size, req.Offset, req.BeginTime, req.EndTime)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		c.JSON(consts.StatusOK, resp)
@@ -518,7 +518,7 @@ func EnquiryMyCourses(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	result, err := service.CourseServ().TeacherQueryCourse(ctx, uid, req.Keyword, req.Size, req.Offset)
+	result, err := service.CourseServ().TeacherQueryCourse(ctx, uid, req.Keyword, req.Size, req.Offset, req.BeginTime, req.EndTime)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		c.JSON(consts.StatusOK, resp)
@@ -563,5 +563,45 @@ func EnquiryStudent(ctx context.Context, c *app.RequestContext) {
 	}
 	resp.Usersinfo = result
 	resp.Base = srverror.WrapWithSuccess("查询学生成功")
+	c.JSON(consts.StatusOK, resp)
+}
+
+// UidInfo .
+// @router /user/uid [GET]
+func UidInfo(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req user.UidInfoReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(user.UidInfoResp)
+	uid, err := strconv.ParseInt(req.UID, 10, 64)
+	if err != nil {
+		resp.Base.Code = http.StatusBadRequest
+		resp.Base.Msg = err.Error()
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	resp.Userinfo = &base.UserInfo{}
+	dbuser, err := service.UserServ().GetUserInfoWithId(ctx, uid)
+	if err != nil {
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		c.JSON(consts.StatusOK, resp)
+	} else {
+		resp.Userinfo.UID = fmt.Sprintf("%d", dbuser.ID)
+		resp.Userinfo.Name = dbuser.Name
+		resp.Userinfo.Avatar = dbuser.Avatar
+		resp.Userinfo.Grade = dbuser.Grade
+		resp.Userinfo.Authority = string(dbuser.Authority)
+		resp.Userinfo.Class = dbuser.Class
+		resp.Userinfo.Faculty = dbuser.Faculty
+		resp.Userinfo.Major = dbuser.Major
+		resp.Userinfo.Signature = dbuser.Signature
+		resp.Userinfo.Phone = dbuser.Phone
+	}
+	resp.Base = srverror.WrapWithSuccess("查询用户信息成功")
 	c.JSON(consts.StatusOK, resp)
 }

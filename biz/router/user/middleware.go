@@ -133,3 +133,8 @@ func _enquirymycoursesMw() []app.HandlerFunc {
 		middleware.VerifyToken(),
 	}
 }
+
+func _uidinfoMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

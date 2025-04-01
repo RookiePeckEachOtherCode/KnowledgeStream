@@ -1,3 +1,5 @@
+import {BaseResponse, UserInfo} from "@/api/internal/model/static/base-resp";
+
 export type UserServiceRequest = {
   LOGIN: {
     phone: string;
@@ -23,21 +25,28 @@ export type UserServiceRequest = {
     major:string
     
   }
+  UID_INFO:{
+    uid:string
+  }
   
 };
 export type StudentServiceRequest={
   MY_COURSE:{
    keyword:string,
-   offset:string,
-   size:string 
+   offset:number,
+   size:number,
+   begin_time?:string
+   end_time?:string 
   }
 }
 
 export type TeacherServiceRequest={
   MY_COURSE:{
     keyword:string,
-    offset:string,
-    size:string
+    offset:number,
+    size:number,
+    begin_time?:string
+    end_time?:string
   }
   INVITE_STUDENT:{
     cid:string,

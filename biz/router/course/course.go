@@ -19,7 +19,7 @@ func Register(r *server.Hertz) {
 	root := r.Group("/", rootMw()...)
 	{
 		_course := root.Group("/course", _courseMw()...)
-		_course.POST("/info", append(_courseinfoMw(), course.CourseInfo)...)
-		_course.POST("/videos", append(_coursevideosinfoMw(), course.CourseVideosInfo)...)
+		_course.GET("/info", append(_courseinfoMw(), course.CourseInfo)...)
+		_course.GET("/videos", append(_coursevideosinfoMw(), course.CourseVideosInfo)...)
 	}
 }

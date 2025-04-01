@@ -72,7 +72,7 @@ func (s *CourseService) CourseVideosInfoWithCid(c context.Context, cid int64) ([
 		videoInfo.Description = video.Description
 		videoInfo.UploadTime = video.UploadTime
 		videoInfo.Chapter = video.Chapter
-		videoInfo.Length = fmt.Sprintf("%d", video.Length)
+		videoInfo.Length = video.Length
 		videoInfo.Ascription = fmt.Sprintf("%d", video.Ascription)
 		videoInfo.Uploader = fmt.Sprintf("%d", video.Uploader)
 		result = append(result, videoInfo)
@@ -111,63 +111,91 @@ func (s *CourseService) CourseMembersInfoWithCid(c context.Context, cid int64) (
 	}
 	return result, nil
 }
+
 func (s *CourseService) StudentQueryCourse(
 	c context.Context,
 	uid int64,
 	keyword string,
 	size int32,
 	offset int32,
+	begin_time string,
+	end_time string,
 ) ([]*base.CourseInfo, error) {
 	uc := query.UserInCourse
 	qu := query.User
 	cu := query.Course
 
-	//先查关键字匹配的老师
-	teacher, err := qu.WithContext(c).Where(qu.Authority.In("ADMIN", "SUPER_ADMIN")).Where(qu.Name.Like("%" + keyword + "%")).Find()
+	// 查询匹配关键字的教师
+	teacher, err := qu.WithContext(c).
+		Where(qu.Authority.In("ADMIN", "SUPER_ADMIN")).
+		Where(qu.Name.Like("%" + keyword + "%")).
+		Find()
+	if err != nil {
+		hlog.Error("查询教师失败: ", err)
+		return nil, err
+	}
+
 	var tides []int64
 	for _, user := range teacher {
 		tides = append(tides, user.ID)
 	}
-	userIn, err := uc.WithContext(c).Where(uc.UserID.Eq(uid)).Find()
+
+	// 获取学生课程关联记录
+	userIn, err := uc.WithContext(c).
+		Where(uc.UserID.Eq(uid)).
+		Find()
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			hlog.Error("查询用户课程关联失败: ", err)
 		}
-		hlog.Error("查询所在课程域失败: ", err)
 		return nil, err
 	}
-	//查询用户选的课程
+
+	// 收集课程ID
 	var cides []int64
 	for _, courseRecord := range userIn {
 		cides = append(cides, courseRecord.CourseID)
 	}
 
-	courses, err := cu.WithContext(c).
+	// 构建基础查询
+	queryBuilder := cu.WithContext(c).
 		Where(cu.ID.In(cides...)).
-		Where(cu.Title.Like("%" + keyword + "%")).
-		Or(cu.Ascription.In(tides...)).
+		Where(cu.Title.Like("%" + keyword + "%")).Or(cu.Ascription.In(tides...))
+
+	// 添加时间过滤条件
+	if begin_time != "" {
+		queryBuilder = queryBuilder.Where(cu.BeginTime.Gte(begin_time))
+	}
+	if end_time != "" {
+		queryBuilder = queryBuilder.Where(cu.EndTime.Lte(end_time))
+	}
+
+	// 执行查询
+	courses, err := queryBuilder.
 		Offset(int(offset)).
-		Limit(int(size)).Find()
+		Limit(int(size)).
+		Find()
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			hlog.Error("查询课程失败: ", err)
 		}
-		hlog.Error("查询所在课程域失败: ", err)
 		return nil, err
 	}
+
+	// 转换结果
 	var result []*base.CourseInfo
 	for _, course := range courses {
-		courseInfo := new(base.CourseInfo)
-		courseInfo.Cid = fmt.Sprintf("%d", course.ID)
-		courseInfo.Cover = course.Cover
-		courseInfo.Description = course.Description
-		courseInfo.Title = course.Title
-		courseInfo.Major = course.Major
-		courseInfo.Class = course.Class
-		courseInfo.EndTime = course.EndTime
-		courseInfo.BeginTime = course.BeginTime
-		courseInfo.Ascription = fmt.Sprintf("%d", course.Ascription)
-		result = append(result, courseInfo)
+		result = append(result, &base.CourseInfo{
+			Cid:         fmt.Sprintf("%d", course.ID),
+			Cover:       course.Cover,
+			Description: course.Description,
+			Title:       course.Title,
+			Major:       course.Major,
+			Class:       course.Class,
+			EndTime:     course.EndTime,
+			BeginTime:   course.BeginTime,
+			Ascription:  fmt.Sprintf("%d", course.Ascription),
+		})
 	}
 	return result, nil
 }
@@ -178,18 +206,36 @@ func (s *CourseService) TeacherQueryCourse(
 	keyword string,
 	size int32,
 	offset int32,
+	begin_time string, // 新增开始时间参数
+	end_time string, // 新增结束时间参数
 ) ([]*base.CourseInfo, error) {
 	cu := query.Course
 
-	courses, err := cu.WithContext(c).
+	// 构建基础查询
+	queryBuilder := cu.WithContext(c).
 		Where(cu.Title.Like("%" + keyword + "%")).
-		Where(cu.Ascription.Eq(uid)).
+		Where(cu.Ascription.Eq(uid))
+
+	// 添加时间过滤条件
+	if begin_time != "" {
+		queryBuilder = queryBuilder.Where(cu.BeginTime.Gte(begin_time))
+	}
+	if end_time != "" {
+		queryBuilder = queryBuilder.Where(cu.EndTime.Lte(end_time))
+	}
+
+	// 执行分页查询
+	courses, err := queryBuilder.
 		Offset(int(offset)).
-		Limit(int(size)).Find()
+		Limit(int(size)).
+		Find()
+
 	if err != nil {
 		hlog.Error("查询课程失败: ", err)
 		return nil, fmt.Errorf("查询课程失败: %v", err)
 	}
+
+	// 转换结果集
 	result := make([]*base.CourseInfo, 0, len(courses))
 	for _, course := range courses {
 		result = append(result, &base.CourseInfo{
@@ -205,7 +251,6 @@ func (s *CourseService) TeacherQueryCourse(
 		})
 	}
 	return result, nil
-
 }
 func (s *CourseService) AdminQueryCourse(
 	c context.Context,

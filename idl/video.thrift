@@ -10,5 +10,5 @@ struct VideoInfoResp{
     2:common.VideoInfo videoinfo
 }
 service VideoService{
-    VideoInfoResp VideoInfo(1:VideoInfoReq req)(api.post="/video/info")
+    VideoInfoResp VideoInfo(1:VideoInfoReq req)(api.get="/video/info")
 }

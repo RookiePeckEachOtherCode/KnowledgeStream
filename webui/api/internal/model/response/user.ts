@@ -6,6 +6,7 @@ export type UserServiceResponse = {
     id: string;
     name: string;
     token: string;
+    authority:string
   };
   REGISTER: {
     base: BaseResponse;
@@ -21,12 +22,16 @@ export type UserServiceResponse = {
     base:BaseResponse,
     students:Array<UserInfo>
   }
+  UID_INFO:{
+    base:BaseResponse;
+    userinfo:UserInfo
+  }
 };
 
 export type  StudentServiceResponse={
   MY_COURSE: {
     base:BaseResponse,
-    courses:Array<CourseInfo>
+    coursesinfo:Array<CourseInfo>
   };
 }
 

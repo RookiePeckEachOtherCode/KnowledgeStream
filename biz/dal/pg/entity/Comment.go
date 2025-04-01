@@ -7,4 +7,6 @@ type Comment struct {
 	Name       string `gorm:"column:name" json:"name"`
 	Content    string `gorm:"column:content" json:"content"`
 	Parent     int64  `gorm:"column:parent" json:"parent"`
+	Time       string `gorm:"column:time" json:"time"`
+	Children   int64  `gorm:"column:children" json:"children"`
 }

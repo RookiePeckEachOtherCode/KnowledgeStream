@@ -60,4 +60,7 @@ struct CommentInfo{
     3:string name;
     4:string content;
     5:string parent;
+    6:string avatar;
+    7:string time;
+    8:i64   children;
 }

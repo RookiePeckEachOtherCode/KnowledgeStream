@@ -148,7 +148,7 @@ func QueryChildrenComment(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	commentsWithParentId, err := service.CommentServ().QueryCommentsWithParentId(ctx, parent)
+	commentsWithParentId, err := service.CommentServ().QueryCommentsWithParentId(ctx, parent, req.Size)
 	if err != nil {
 		resp.Base = srverror.WrapWithCodeMsg(http.StatusBadRequest, err.Error())
 		c.JSON(consts.StatusOK, resp)
@@ -196,6 +196,12 @@ func ReplyComment(ctx context.Context, c *app.RequestContext) {
 		parent,
 		uid,
 	)
+	if err != nil {
+		resp.Base = srverror.WrapWithCodeMsg(http.StatusBadRequest, err.Error())
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	response, err = service.CommentServ().AddCommentChildren(ctx, parent)
 	if err != nil {
 		resp.Base = srverror.WrapWithCodeMsg(http.StatusBadRequest, err.Error())
 		c.JSON(consts.StatusOK, resp)

@@ -42,14 +42,14 @@ export class CommentService{
     }
 
     async under_comment(
-        req:CommentServiceRequest["COMMENT_UNDER_NOTIFICATION"]
-    ):Promise<CommentServiceResponse["COMMENT_UNDER_NOTIFICATION"]>{
+        req:CommentServiceRequest["COMMENT_UNDER_COMMENT"]
+    ):Promise<CommentServiceResponse["COMMENT_UNDER_COMMENT"]>{
         return  this.executor({
             uri:"/comment/children",
             method:"GET",
             body:null,
             query:req
-        })as Promise<CommentServiceResponse["COMMENT_UNDER_NOTIFICATION"]>
+        })as Promise<CommentServiceResponse["COMMENT_UNDER_COMMENT"]>
 
     }
 

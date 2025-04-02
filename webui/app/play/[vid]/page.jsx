@@ -44,13 +44,6 @@ const teacherInfo={
 }
 import { useParams } from 'next/navigation';
 
-const comments=[{
-    id:"1",
-    ascription: "123",
-    avatar:"ks-user-avatar/114514.jpg",
-    name:"麦克*莫顿",
-    content:"这个老师讲的就像我的减速球一样全是屎",
-}]
 
 export default  function PlayPage(){
     const [isExpanded, setIsExpanded] = useState(false);
@@ -58,6 +51,78 @@ export default  function PlayPage(){
     const {showNotification} = useNotification();
     const params = useParams();
     const vid = params.vid
+
+    //新评论
+    const [commentContent, setCommentContent] = useState("")
+    const [commentPlaceholder, setCommentPlaceholder] = useState("有什么想说的?")
+    const [commentParent, setCommentParent] = useState(null)
+    
+    const ChangeCommentToReply=(name,cid)=>{
+        console.log(111)
+        setCommentPlaceholder("回复@"+name)
+        setCommentParent(cid)
+    }
+    
+    const SubmitComment=async ()=>{
+       if(commentParent!==null){
+           const commentRes = await api.commentService.add({
+               parent:commentParent,
+               content:commentContent,
+               name:userInfo.name,
+               avatar:userInfo.avatar
+           });
+           if(commentRes.base.code!==200){
+               showNotification({
+                   title:"评论失败",
+                   content:commentRes.base.msg,
+               })
+               return
+           }
+           const commentsRes=await api.commentService.under_video({
+               vid:vid
+           })
+           if(commentsRes.base.code!==200){
+               showNotification({
+                   title:"刷新评论列表失败",
+                   content:commentsRes.base.msg,
+                   type:"error"
+               })
+           }else{
+               setComments(commentsRes.comments)
+           }
+       } else{
+           const replyRes = await api.commentService.add({
+               parent:vid,
+               content:commentContent,
+               name:userInfo.name,
+               avatar:userInfo.avatar
+           });
+           if(replyRes.base.code!==200){
+               showNotification({
+                   title:"添加回复失败",
+                   content:replyRes.base.msg,
+                   type:"error"
+               })
+               return
+           }
+           const commentsRes=await api.commentService.under_video({
+               vid:vid
+           })
+           if(commentsRes.base.code!==200){
+               showNotification({
+                   title:"刷新评论列表失败",
+                   content:commentsRes.base.msg,
+                   type:"error"
+               })
+           }else{
+               setComments(commentsRes.comments)
+           }
+
+       }
+       setCommentContent("")
+    }
+    
+    
     const [userInfo, setUserInfo] = useState({
         id:"",
         avatar:"",
@@ -104,6 +169,8 @@ export default  function PlayPage(){
         title: "",
     })
     const [videoList, setVideoList] = useState([])
+    const [comments, setComments] = useState([])
+    
     useEffect(()=>{
         async function fetchData(){
             const userInfoRes = await api.userService.queryInfo({});
@@ -163,8 +230,18 @@ export default  function PlayPage(){
                 }else{
                     setVideoList(videosRes.videosinfo)
                 }
-                
-                
+                const commentsRes=await api.commentService.under_video({
+                    vid:videoInfoRes.videoinfo.vid
+                })
+                if(commentsRes.base.code!==200){
+                    showNotification({
+                        title:"获取评论列表失败",
+                        content:commentsRes.base.msg,
+                        type:"error"
+                    })
+                }else{
+                    setComments(commentsRes.comments)
+                }
             }
         }
         fetchData()
@@ -172,7 +249,7 @@ export default  function PlayPage(){
     
         
     return(
-        <div className={`max-w-screen min-h-screen  overflow-auto bg-background pl-32 pr-32 pt-12 flex flex-col`}>
+        <div className={`max-w-screen min-h-screen  overflow-auto bg-background pl-32 pr-32 pt-12 flex flex-col`} onClick={()=>setFocusComment(false)}>
             <div className={` flex flex-row space-x-6`}>
                 
                 {/*视频，视频内容，（评论）交互条*/ }
@@ -214,10 +291,10 @@ export default  function PlayPage(){
                     <div className="w-full flex flex-col space-y-4">
                         <div className="w-full p-3 flex items-center gap-4">
                             <OssImage
-                                url="ks-user-avatar/114514.jpg"
+                                url={userInfo.avatar}
                                 className="w-18 aspect-square shrink-0 rounded-full"
                             />
-                            <div className="flex-1 relative">
+                            <div className="flex-1 relative" onClick={e=>e.stopPropagation()}>
                                 <input
                                     type="text"
                                     className={`w-full px-4 py-3 rounded-2xl transition-all duration-200
@@ -227,15 +304,20 @@ export default  function PlayPage(){
                     focus:outline-none focus:ring-2 focus:ring-primary/30
                     placeholder:text-on-surface/60`}
                                     onFocus={() => setFocusComment(true)}
-                                    onBlur={() => setFocusComment(false)}
-                                    placeholder="有什么想说的？"
+                                    // onBlur={() => setFocusComment(false)}
+                                    placeholder={commentPlaceholder}
+                                    value={commentContent}
+                                    onChange={e=>setCommentContent(e.target.value)}
                                     style={{textIndent: "0.5rem"}}
                                 />
                                 {focusComment && (
-                                    <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                                    <div className="absolute right-2 top-1/2 -translate-y-1/2" >
                                         <button
                                             className="px-2 py-1 text-sm text-primary hover:bg-primary/10 rounded-lg"
-                                            onClick={() => setFocusComment(false)}
+                                            onClick={() => {
+                                                setCommentParent(null);
+                                                setCommentPlaceholder("想说些什么?")
+                                            }}
                                         >
                                             取消
                                         </button>
@@ -246,8 +328,8 @@ export default  function PlayPage(){
                         <div className={`flex justify-end px-3 ${focusComment?`max-h-96`:`max-h-0`} transition-all duration-300 overflow-hidden`}>
                             <IconButton
                                 text="提交"
-                                onClick={() => {
-                                    console.log()
+                                onClick={async () => {
+                                    await SubmitComment()
                                 }}
                                 className="bg-primary-container text-on-primary-container
                                 hover:bg-primary-container/90 space-x-3"
@@ -258,14 +340,9 @@ export default  function PlayPage(){
                     <div className={`w-full flex flex-col`}>
                         {comments.map((item, index) => {
                             return <CommentStrip
-                                key={index}
-                                avatar={item.avatar}
-                                content={item.content}
-                                id={item.id}
-                                name={item.name}
-                                ascription={item.ascription}
-                                parent={"no use"}
-                                time={"2077-27-78 11:45"}
+                                key={item.id}  
+                                comment={item}
+                                onReply={ChangeCommentToReply}
                             >
                             </CommentStrip>
                         })}

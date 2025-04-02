@@ -1,39 +1,64 @@
-import {Children, useState} from "react";
+import {Children, useEffect, useState} from "react";
 import {OssImage} from "@/app/components/oss-midea";
 import {Comment} from "@/api/internal/model/static/base-resp";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faArrowAltCircleDown, faArrowAltCircleRight, faArrowAltCircleUp} from "@fortawesome/free-solid-svg-icons";
+import {
+    faArrowAltCircleDown,
+    faArrowAltCircleRight,
+    faArrowAltCircleUp,
+    faReply
+} from "@fortawesome/free-solid-svg-icons";
+import {api} from "@/api/instance";
 
 
-export function CommentStrip(
-    comment: Comment,
-    className?: string
-) {
-    const [childrenComment] = useState<Array<Comment>>([
-        {
-            parent: "123",
-            content: "看完我直接和红球一样红温了",
-            ascription: "123",
-            id: "1",
-            name: comment.name,
-            avatar: comment.avatar,
-            time: "2024-02-20 14:30"
-        },
-        {
-            parent: "123",
-            content: "看完仿佛穿越到了10年前的计算机技术栈",
-            ascription: "123",
-            id: "2",
-            name: "其他用户",
-            avatar: "another_avatar.jpg",
-            time: "2024-02-20 15:00"
-        },
-    ])
+interface CommentStripProps {
+    comment: Comment;
+    className?: string;
+    onReply?: (name: string, cid: string) => void;
+}
+
+export function CommentStrip({
+ comment,
+ className,
+ onReply
+}: CommentStripProps) {
+    const [childrenComment,setChildrenComment] = useState<Array<Comment>>([])
     const [openChildren, setOpenChildren] = useState(false)
 
     const visibleComments = openChildren
         ? childrenComment
         : childrenComment.slice(0, 1)
+
+    useEffect(() => {
+        async  function fetchData(){
+            const childrenCommentRes = await api.commentService.under_comment({
+                parent:comment.id,
+                size:1
+            });
+            if(childrenCommentRes.base.code!==200){
+                setChildrenComment(null)
+            }else{
+                setChildrenComment(childrenCommentRes.comments)
+            }
+        }
+        fetchData()
+    }, []);
+    useEffect(() => {
+        async  function fetchData(){
+            const childrenCommentRes = await api.commentService.under_comment({
+                parent:comment.id,
+                size:comment.children+1
+            });
+            if(childrenCommentRes.base.code!==200){
+                setChildrenComment(null)
+            }else{
+                setChildrenComment(childrenCommentRes.comments)
+            }
+        }
+        fetchData()
+    }, [openChildren]);
+    
+    
 
     return (
         <div className={`w-full flex flex-row ${className || ""}`}>
@@ -59,8 +84,21 @@ export function CommentStrip(
                     <div className="text-on-background text-wrap break-words">
                         {comment.content}
                     </div>
-
+                    <div className="flex justify-between items-center">
                         <div className="text-sm text-outline">{comment.time}</div>
+                        {(
+                            <button
+                                onClick={() => onReply?.(comment.name,comment.id)}
+                                className="text-primary hover:text-primary-dark flex items-center gap-1 px-2 py-1 rounded hover:bg-primary/10 transition-colors"
+                            >
+                                <FontAwesomeIcon
+                                    icon={faReply}
+                                    className="text-sm"
+                                />
+                                <span>回复</span>
+                            </button>
+                        )}
+                    </div>
 
                     <div className="flex flex-col space-y-4">
                         {visibleComments.map((child, index) => (
@@ -76,7 +114,7 @@ export function CommentStrip(
                                 onClick={() => setOpenChildren(true)}
                                 className="text-primary hover:text-primary-dark flex items-center"
                             >
-                                展开全部{childrenComment.length}条回复
+                                展开全部{comment.children}条回复
                                 <FontAwesomeIcon
                                     icon={faArrowAltCircleDown}
                                     className="ml-2 animate-bounce"

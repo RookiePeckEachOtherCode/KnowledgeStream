@@ -13,7 +13,7 @@ export type CommentServiceRequest={
     }
     COMMENT_UNDER_COMMENT:{
         parent:string,
-        siz:number
+        size:number
         
     }
     COMMENT_REPLY:{

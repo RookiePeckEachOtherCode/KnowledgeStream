@@ -17,6 +17,6 @@ export class Api {
     this.teacherService=new TeacherService(executor)
     this.videoService=new VideoService(executor)
     this.courseService=new CourseService(executor)
-    this.commentService-=new CommentService(executor)
+    this.commentService=new CommentService(executor)
   }
 }

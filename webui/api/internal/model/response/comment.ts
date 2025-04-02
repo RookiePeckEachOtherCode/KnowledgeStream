@@ -1,4 +1,4 @@
-import {BaseResponse} from "@/api/internal/model/static/base-resp";
+import {BaseResponse, Comment} from "@/api/internal/model/static/base-resp";
 
 
 export type CommentServiceResponse={

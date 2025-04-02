@@ -58,5 +58,5 @@ service CommentService{
     QueryCommentUnderVideoResp QueryCommentUnderVideo(1:QueryCommentUnderVideoReq req)(api.get="/comment/video");
     QueryCommentUnderNotificationResp QueryCommentUnderNotification(1:QueryCommentUnderNotificationReq req)(api.get="/comment/notification");
     QueryChildrenCommentResp QueryChildrenComment(1:QueryChildrenCommentReq req)(api.get="/comment/children");
-    ReplyCommentResp ReplyComment(1:ReplyCommentReq req)(api.post="/comments/reply");
+    ReplyCommentResp ReplyComment(1:ReplyCommentReq req)(api.post="/comment/reply");
 }

@@ -48,6 +48,7 @@ func (s *VideoService) VideoInfoService(c context.Context, vid int64) (*base.Vid
 		hlog.Error("查询视频信息失败: ", err)
 		return nil, err
 	}
+	video.Plays = video.Plays + 1
 	result := new(base.VideoInfo)
 	result.Vid = fmt.Sprintf("%d", video.ID)
 	result.Title = video.Title
@@ -59,6 +60,12 @@ func (s *VideoService) VideoInfoService(c context.Context, vid int64) (*base.Vid
 	result.Uploader = fmt.Sprintf("%d", video.Uploader)
 	result.Length = fmt.Sprintf("%d", video.Length)
 	result.UploadTime = video.UploadTime
+	result.Plays = fmt.Sprintf("%d", video.Plays)
+	_, err = v.WithContext(c).Where(v.ID.Eq(video.ID)).Updates(video)
+	if err != nil {
+		hlog.Error("更新视频信息失败: ", err)
+		return result, err
+	}
 	return result, nil
 }
 func (s *VideoService) DeleteVideoWithVid(c context.Context, vid int64) error {

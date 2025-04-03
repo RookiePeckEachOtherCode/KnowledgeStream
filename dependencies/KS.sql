@@ -3,6 +3,8 @@ DROP TABLE IF EXISTS user_course CASCADE;
 DROP TABLE IF EXISTS videos CASCADE;
 DROP TABLE IF EXISTS courses CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS comments CASCADE;
+DROP TABLE IF EXISTS notifications CASCADE;
 DROP TYPE IF EXISTS KS.authority_enum CASCADE;
 DROP SCHEMA IF EXISTS KS CASCADE;
 
@@ -24,7 +26,6 @@ create table notifications
     title    text
 );
 
-
 alter table notifications
     owner to root;
 
@@ -41,7 +42,6 @@ create table comments
     time       text,
     children   integer
 );
-
 
 alter table comments
     owner to root;
@@ -100,9 +100,9 @@ create table videos
         constraint video_course_id_fk
             references courses,
     chapter     text,
-    upload_time text
+    upload_time text,
+    plays       bigint
 );
-
 
 alter table videos
     owner to root;
@@ -121,3 +121,4 @@ create table user_course
 
 alter table user_course
     owner to root;
+

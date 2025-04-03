@@ -43,6 +43,7 @@ struct VideoInfo{
     8:string ascription;
     9:string uploader;
     10:string upload_time;
+    11:string plays;
 }
 struct NotificationInfo{
     1:string content;

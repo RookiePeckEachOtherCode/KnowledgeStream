@@ -1,14 +1,13 @@
-import {Children, useEffect, useState} from "react";
-import {OssImage} from "@/app/components/oss-midea";
-import {Comment} from "@/api/internal/model/static/base-resp";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import { useEffect, useState } from "react";
+import { OssImage } from "@/app/components/oss-midea";
+import { Comment } from "@/api/internal/model/static/base-resp";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faArrowAltCircleDown,
     faArrowAltCircleRight,
-    faArrowAltCircleUp,
     faReply
 } from "@fortawesome/free-solid-svg-icons";
-import {api} from "@/api/instance";
+import { api } from "@/api/instance";
 
 
 interface CommentStripProps {
@@ -18,11 +17,11 @@ interface CommentStripProps {
 }
 
 export function CommentStrip({
- comment,
- className,
- onReply
+    comment,
+    className,
+    onReply
 }: CommentStripProps) {
-    const [childrenComment,setChildrenComment] = useState<Array<Comment>>([])
+    const [childrenComment, setChildrenComment] = useState<Array<Comment>>([])
     const [openChildren, setOpenChildren] = useState(false)
 
     const visibleComments = openChildren
@@ -30,35 +29,35 @@ export function CommentStrip({
         : childrenComment.slice(0, 1)
 
     useEffect(() => {
-        async  function fetchData(){
+        async function fetchData() {
             const childrenCommentRes = await api.commentService.under_comment({
-                parent:comment.id,
-                size:1
+                parent: comment.id,
+                size: 1
             });
-            if(childrenCommentRes.base.code!==200){
-                setChildrenComment(null)
-            }else{
+            if (childrenCommentRes.base.code !== 200) {
+                setChildrenComment([])
+            } else {
                 setChildrenComment(childrenCommentRes.comments)
             }
         }
         fetchData()
-    }, []);
+    }, [comment.id]);
     useEffect(() => {
-        async  function fetchData(){
+        async function fetchData() {
             const childrenCommentRes = await api.commentService.under_comment({
-                parent:comment.id,
-                size:comment.children+1
+                parent: comment.id,
+                size: comment.children + 1
             });
-            if(childrenCommentRes.base.code!==200){
-                setChildrenComment(null)
-            }else{
+            if (childrenCommentRes.base.code !== 200) {
+                setChildrenComment([])
+            } else {
                 setChildrenComment(childrenCommentRes.comments)
             }
         }
         fetchData()
-    }, [openChildren]);
-    
-    
+    }, [comment.children, comment.id, openChildren]);
+
+
 
     return (
         <div className={`w-full flex flex-row ${className || ""}`}>
@@ -88,7 +87,7 @@ export function CommentStrip({
                         <div className="text-sm text-outline">{comment.time}</div>
                         {(
                             <button
-                                onClick={() => onReply?.(comment.name,comment.id)}
+                                onClick={() => onReply?.(comment.name, comment.id)}
                                 className="text-primary hover:text-primary-dark flex items-center gap-1 px-2 py-1 rounded hover:bg-primary/10 transition-colors"
                             >
                                 <FontAwesomeIcon
@@ -101,9 +100,9 @@ export function CommentStrip({
                     </div>
 
                     <div className="flex flex-col space-y-4">
-                        {visibleComments.map((child, index) => (
+                        {visibleComments.map((child) => (
                             <div key={child.id} className="group">
-                                <ChildrenList comment={child}/>
+                                <ChildrenList comment={child} />
                             </div>
                         ))}
                     </div>
@@ -130,7 +129,7 @@ export function CommentStrip({
     )
 }
 
-function ChildrenList({comment}: { comment: Comment }) {
+function ChildrenList({ comment }: { comment: Comment }) {
     return (
         <div className={`w-full flex flex-row`}>
             <div className={`w-1/10 h-full justify-center`}>

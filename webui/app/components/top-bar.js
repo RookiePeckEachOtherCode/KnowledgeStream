@@ -58,7 +58,7 @@ export function TopBar(props) {
               className={`absolute top-full hover:cursor-pointer ${
                   avatarIsHover ? `z-[999] opacity-100` : `z-[-1] opacity-0`
               } transition-all duration-200 flex rounded-sm min-w-max bg-error items-center justify-center`}>
-            <text className={`text-on-error px-2 whitespace-nowrap`}>{"退出登录"}</text>
+            <div className={`text-on-error px-2 whitespace-nowrap`}>{"退出登录"}</div>
           </div>
         </div>
 

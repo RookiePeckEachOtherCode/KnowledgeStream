@@ -42,7 +42,7 @@ export default function MDInput({
     <div className="relative">
       <input
         className={clsx(
-          "p-4 bg-surface-container outline-none border-2 focus:border-4 rounded-2xl transition-all ease-in duration-150 w-full",
+          "p-4 bg-surface-container outline-none border-2 focus:border-4 rounded-2xl transition-all ease-in duration-150 w-full text-on-surface",
           isUnValid
             ? "border-error focus:border-error"
             : "border-secondary focus:border-primary",

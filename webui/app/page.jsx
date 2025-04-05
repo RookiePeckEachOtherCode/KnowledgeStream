@@ -33,6 +33,8 @@ export default function Home() {
     switch (currentChildren) {
       case "mainPage":
         return <MainPage />;
+      case "notification":
+        return <NotificationList />;
       case "course":
         return <CourseDetail />;
       case "userHome":
@@ -123,7 +125,6 @@ export default function Home() {
         </LeftNavigation>
 
         <div
-
           className={`absolute duration-200 transition-all ${
             leftNavigationHidden ? `left-0` : `left-1/16`
           } top-1/2 z-10`}
@@ -148,7 +149,6 @@ export default function Home() {
               ></FontAwesomeIcon>
             )}
           </div>
-
         </div>
         <div
           className={`w-full  ${animationClass} relative overflow-auto h-full bg-background text-on-background transition-all`}

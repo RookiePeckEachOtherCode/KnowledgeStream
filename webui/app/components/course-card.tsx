@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { OssImage } from "./oss-midea";
-import {Key} from "node:readline";
 
 interface CourseCardProps {
     className: string
-    url:string,
+    url: string,
     gotoCourse: () => void
     gotoTeacher: () => void
     course: string,
@@ -21,7 +20,6 @@ export default function CourseCard({
     teacher,
 }: CourseCardProps) {
     const [isHover, setIsHover] = useState(false)
-
 
     return (
         <div

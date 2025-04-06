@@ -1,0 +1,29 @@
+import {BaseResponse, CourseInfo, UserInfo, VideoInfo} from "@/api/internal/model/static/base-resp";
+
+export type AdminServiceResponse = {
+
+    OBJECT_DELETE: {
+        base: BaseResponse
+    }
+    UPDATE_USER: {
+        base: BaseResponse
+    }
+    HANDLE_COURSE_MEMBER: {
+        base: BaseResponse
+    }
+    UPDATE_COURSE: {
+        base: BaseResponse
+    }
+    QUERY_COURSE: {
+        base: BaseResponse
+        courses: Array<CourseInfo>
+    }
+    QUERY_USER: {
+        base: BaseResponse
+        usersinfo: Array<UserInfo>
+    }
+    QUERY_VIDEO: {
+        base: BaseResponse
+        videos: Array<VideoInfo>
+    }
+}

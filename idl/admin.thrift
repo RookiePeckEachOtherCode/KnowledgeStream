@@ -115,5 +115,5 @@ service AdminService{
     UpdateCourseInfoResp UpdateCourseInfo(1:UpdateCourseInfoReq req)(api.post="/admin/update/course");
     EnquiryCourseResp EnquirytCourse(1:EnquiryCourseReq req)(api.post="/admin/query/course");
     EnquiryVideoResp EnquiryVideo(1:EnquiryVideoReq req)(api.post="/admin/query/video");
-    EnquiryUserResp EnquiryUser(1:EnquiryUserReq req)(api.post="/admin/query/user");
+    EnquiryUserResp EnquiryUser(1:EnquiryUserReq req)(api.get="/admin/query/user");
 }

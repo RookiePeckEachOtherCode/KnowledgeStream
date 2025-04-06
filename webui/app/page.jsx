@@ -13,7 +13,7 @@ import {
   faCircleUser,
   faHouse,
   faMoon,
-  faSun,
+  faSun, faUserGraduate,
   faVideo,
 } from "@fortawesome/free-solid-svg-icons";
 import { useCallback, useEffect, useState } from "react";
@@ -21,6 +21,7 @@ import { CourseDetail } from "./pageview/course-detail";
 import { UserHome } from "./pageview/user-home";
 import { MainPage } from "./pageview/main-page";
 import { ScreenRecordControlPage } from "./pageview/screen-recorder";
+import {AdminPage} from "./pageview/admin-page.tsx";
 
 export default function Home() {
   const { theme, toggleTheme } = useTheme();
@@ -41,6 +42,8 @@ export default function Home() {
         return <UserHome />;
       case "screenRecord":
         return <ScreenRecordControlPage />;
+      case "admin":
+        return <AdminPage />
     }
   }, [currentChildren]);
 
@@ -109,6 +112,16 @@ export default function Home() {
             }}
           >
             <FontAwesomeIcon icon={faVideo}></FontAwesomeIcon>
+          </NavigationItem>
+          <NavigationItem
+              title={`管理员页面`}
+              isActive={currentChildren === "admin"}
+              onClick={() => {
+                setAnimationClass("hidden");
+                setCurrentChildren("admin");
+              }}
+          >
+            <FontAwesomeIcon icon={faUserGraduate}></FontAwesomeIcon>
           </NavigationItem>
           <NavigationItem
             title={theme === "dark" ? `亮色模式` : `暗色模式`}

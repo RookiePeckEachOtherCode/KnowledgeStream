@@ -10,6 +10,7 @@ import (
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/utils"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"gorm.io/gorm"
+	"strconv"
 	"sync"
 )
 
@@ -343,7 +344,7 @@ func (s *CourseService) DeleteCourseWithCid(c context.Context, cid int64) error 
 	}
 	return nil
 }
-func (s *CourseService) UpdateCourseWithCid(c context.Context, cid int64, title string, description string, cover string, begin_time string, end_time string) error {
+func (s *CourseService) UpdateCourseWithCid(c context.Context, cid int64, title string, description string, cover string, begin_time string, end_time string, ascription string, faculty string, major string) error {
 	cc := query.Course
 	course, err := cc.WithContext(c).Where(cc.ID.Eq(cid)).First()
 	if err != nil {
@@ -364,6 +365,16 @@ func (s *CourseService) UpdateCourseWithCid(c context.Context, cid int64, title 
 	}
 	if end_time != "" {
 		course.EndTime = end_time
+	}
+	if ascription != "" {
+		as, _ := strconv.ParseInt(ascription, 10, 64)
+		course.Ascription = as
+	}
+	if major != "" {
+		course.Major = major
+	}
+	if faculty != "" {
+		course.Faculty = faculty
 	}
 	if err = cc.WithContext(c).Save(course); err != nil {
 		hlog.Error("更新课程域信息失败: ", err)

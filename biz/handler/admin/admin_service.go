@@ -55,6 +55,8 @@ func DeleteTarget(ctx context.Context, c *app.RequestContext) {
 		err = service.VideoServ().DeleteVideoWithVid(ctx, tid)
 	} else if req.Target == "user" {
 		err = service.UserServ().DeleteUserWithUid(ctx, tid)
+	} else if req.Target == "course" {
+		err = service.CourseServ().DeleteCourseWithCid(ctx, tid)
 	}
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
@@ -284,7 +286,7 @@ func UpdateCourseInfo(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	err = service.CourseServ().UpdateCourseWithCid(ctx, cid, req.Title, req.Description, req.Cover, req.BeginTime, req.EndTime)
+	err = service.CourseServ().UpdateCourseWithCid(ctx, cid, req.Title, req.Description, req.Cover, req.BeginTime, req.EndTime, req.Ascription, req.Faculty, req.Major)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		c.JSON(consts.StatusOK, resp)

@@ -1,4 +1,5 @@
 import {BaseResponse, CourseInfo, UserInfo, VideoInfo} from "@/api/internal/model/static/base-resp";
+import {CompleteUserInfo} from "@/app/pageview/admin-page";
 
 export type AdminServiceResponse = {
 
@@ -20,7 +21,7 @@ export type AdminServiceResponse = {
     }
     QUERY_USER: {
         base: BaseResponse
-        usersinfo: Array<UserInfo>
+        usersinfo: Array<CompleteUserInfo>
     }
     QUERY_VIDEO: {
         base: BaseResponse

@@ -87,6 +87,8 @@ func (s *VideoService) DeleteVideoWithVid(c context.Context, vid int64) error {
 }
 func (s *VideoService) UploadVideoWithCidAndUid(c context.Context, uid int64, cid int64, title string, description string, cover string, length string, timestr string, chapter string) (int64, error) {
 	v := query.Video
+	cu:=query.Course
+	course,_:=cu.WithContext(c).Where(cu.ID.Eq(cid)).First()
 	id, err := utils.NextSnowFlakeId()
 	if err != nil {
 		return 0, err
@@ -103,6 +105,7 @@ func (s *VideoService) UploadVideoWithCidAndUid(c context.Context, uid int64, ci
 		Length:      length,
 		UploadTime:  timestr,
 		Chapter:     chapter,
+		Major:       course.Major,
 	}
 
 	err = v.WithContext(c).Save(&video)
@@ -117,11 +120,12 @@ func (s *VideoService) AdminQueryVideo(
 	keyword string,
 	size int32,
 	offset int32,
+	major string,
 ) ([]*base.VideoInfo, error) {
 	v := query.Video
-
 	videos, err := v.WithContext(c).
 		Where(v.Title.Like("%" + keyword + "%")).
+		Where(v.Major.Eq(major)).
 		Offset(int(offset)).
 		Limit(int(size)).Find()
 	if err != nil {

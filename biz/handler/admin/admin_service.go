@@ -399,7 +399,7 @@ func EnquiryVideo(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	result, err := service.VideoServ().AdminQueryVideo(ctx, req.Keyword, req.Size, req.Offset)
+	result, err := service.VideoServ().AdminQueryVideo(ctx, req.Keyword, req.Size, req.Offset, req.Major)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		c.JSON(consts.StatusOK, resp)

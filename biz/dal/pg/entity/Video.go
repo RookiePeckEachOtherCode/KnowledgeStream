@@ -12,4 +12,5 @@ type Video struct {
 	UploadTime  string `gorm:"column:upload_time" json:"upload_time"`
 	Chapter     string `gorm:"column:chapter" json:"chapter"`
 	Plays       int32  `gorm:"column:plays" json:"plays"`
+	Major       string `gorm:"column:major" json:"major"`
 }

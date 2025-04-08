@@ -95,6 +95,7 @@ struct EnquiryVideoReq{
     1:string keyword;
     2:i32 offset;
     3:i32 size;
+    4:string major;
 }
 struct EnquiryVideoResp{
     1:common.BaseResponse base;

@@ -4193,6 +4193,7 @@ type EnquiryVideoReq struct {
 	Keyword string `thrift:"keyword,1" form:"keyword" json:"keyword" query:"keyword"`
 	Offset  int32  `thrift:"offset,2" form:"offset" json:"offset" query:"offset"`
 	Size    int32  `thrift:"size,3" form:"size" json:"size" query:"size"`
+	Major   string `thrift:"major,4" form:"major" json:"major" query:"major"`
 }
 
 func NewEnquiryVideoReq() *EnquiryVideoReq {
@@ -4211,10 +4212,15 @@ func (p *EnquiryVideoReq) GetSize() (v int32) {
 	return p.Size
 }
 
+func (p *EnquiryVideoReq) GetMajor() (v string) {
+	return p.Major
+}
+
 var fieldIDToName_EnquiryVideoReq = map[int16]string{
 	1: "keyword",
 	2: "offset",
 	3: "size",
+	4: "major",
 }
 
 func (p *EnquiryVideoReq) Read(iprot thrift.TProtocol) (err error) {
@@ -4259,6 +4265,16 @@ func (p *EnquiryVideoReq) Read(iprot thrift.TProtocol) (err error) {
 		case 3:
 			if fieldTypeId == thrift.I32 {
 				if err = p.ReadField3(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 4:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField4(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else {
@@ -4323,6 +4339,15 @@ func (p *EnquiryVideoReq) ReadField3(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *EnquiryVideoReq) ReadField4(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.Major = v
+	}
+	return nil
+}
+
 func (p *EnquiryVideoReq) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("EnquiryVideoReq"); err != nil {
@@ -4339,6 +4364,10 @@ func (p *EnquiryVideoReq) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField3(oprot); err != nil {
 			fieldId = 3
+			goto WriteFieldError
+		}
+		if err = p.writeField4(oprot); err != nil {
+			fieldId = 4
 			goto WriteFieldError
 		}
 
@@ -4409,6 +4438,23 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 3 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 3 end error: ", p), err)
+}
+
+func (p *EnquiryVideoReq) writeField4(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("major", thrift.STRING, 4); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Major); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 end error: ", p), err)
 }
 
 func (p *EnquiryVideoReq) String() string {

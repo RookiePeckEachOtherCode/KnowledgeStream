@@ -101,7 +101,8 @@ create table videos
             references courses,
     chapter     text,
     upload_time text,
-    plays       bigint
+    plays       bigint,
+    major       text
 );
 
 alter table videos

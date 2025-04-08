@@ -8,8 +8,8 @@ snowflake_node: 1
 database:
   host: "localhost"
   port: 5432
-  username: "postgres"
-  password: ""
+  username: "root"
+  password: "rookie"
   db_name: "KS"
 
 redis:

@@ -9,7 +9,7 @@ database:
   host: "localhost"
   port: 5432
   username: "postgres"
-  password: "ab147890"
+  password: ""
   db_name: "KS"
 
 redis:

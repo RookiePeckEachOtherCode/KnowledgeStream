@@ -3567,10 +3567,13 @@ func (p *UpdateCourseInfoResp) String() string {
 }
 
 type EnquiryCourseReq struct {
-	Keyword string `thrift:"keyword,1" form:"keyword" json:"keyword" query:"keyword"`
-	Offset  int32  `thrift:"offset,2" form:"offset" json:"offset" query:"offset"`
-	Size    int32  `thrift:"size,3" form:"size" json:"size" query:"size"`
-	Major   string `thrift:"major,4" form:"major" json:"major" query:"major"`
+	Keyword   string `thrift:"keyword,1" form:"keyword" json:"keyword" query:"keyword"`
+	Offset    int32  `thrift:"offset,2" form:"offset" json:"offset" query:"offset"`
+	Size      int32  `thrift:"size,3" form:"size" json:"size" query:"size"`
+	Major     string `thrift:"major,4" form:"major" json:"major" query:"major"`
+	Faculty   string `thrift:"faculty,5" form:"faculty" json:"faculty" query:"faculty"`
+	BeginTime string `thrift:"begin_time,6" form:"begin_time" json:"begin_time" query:"begin_time"`
+	EndTime   string `thrift:"end_time,7" form:"end_time" json:"end_time" query:"end_time"`
 }
 
 func NewEnquiryCourseReq() *EnquiryCourseReq {
@@ -3593,11 +3596,26 @@ func (p *EnquiryCourseReq) GetMajor() (v string) {
 	return p.Major
 }
 
+func (p *EnquiryCourseReq) GetFaculty() (v string) {
+	return p.Faculty
+}
+
+func (p *EnquiryCourseReq) GetBeginTime() (v string) {
+	return p.BeginTime
+}
+
+func (p *EnquiryCourseReq) GetEndTime() (v string) {
+	return p.EndTime
+}
+
 var fieldIDToName_EnquiryCourseReq = map[int16]string{
 	1: "keyword",
 	2: "offset",
 	3: "size",
 	4: "major",
+	5: "faculty",
+	6: "begin_time",
+	7: "end_time",
 }
 
 func (p *EnquiryCourseReq) Read(iprot thrift.TProtocol) (err error) {
@@ -3652,6 +3670,36 @@ func (p *EnquiryCourseReq) Read(iprot thrift.TProtocol) (err error) {
 		case 4:
 			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField4(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 5:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField5(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 6:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField6(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 7:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField7(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else {
@@ -3725,6 +3773,33 @@ func (p *EnquiryCourseReq) ReadField4(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *EnquiryCourseReq) ReadField5(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.Faculty = v
+	}
+	return nil
+}
+
+func (p *EnquiryCourseReq) ReadField6(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.BeginTime = v
+	}
+	return nil
+}
+
+func (p *EnquiryCourseReq) ReadField7(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.EndTime = v
+	}
+	return nil
+}
+
 func (p *EnquiryCourseReq) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("EnquiryCourseReq"); err != nil {
@@ -3745,6 +3820,18 @@ func (p *EnquiryCourseReq) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField4(oprot); err != nil {
 			fieldId = 4
+			goto WriteFieldError
+		}
+		if err = p.writeField5(oprot); err != nil {
+			fieldId = 5
+			goto WriteFieldError
+		}
+		if err = p.writeField6(oprot); err != nil {
+			fieldId = 6
+			goto WriteFieldError
+		}
+		if err = p.writeField7(oprot); err != nil {
+			fieldId = 7
 			goto WriteFieldError
 		}
 
@@ -3832,6 +3919,57 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 4 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 4 end error: ", p), err)
+}
+
+func (p *EnquiryCourseReq) writeField5(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("faculty", thrift.STRING, 5); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Faculty); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 5 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 5 end error: ", p), err)
+}
+
+func (p *EnquiryCourseReq) writeField6(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("begin_time", thrift.STRING, 6); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.BeginTime); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 6 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 6 end error: ", p), err)
+}
+
+func (p *EnquiryCourseReq) writeField7(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("end_time", thrift.STRING, 7); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.EndTime); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 7 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 7 end error: ", p), err)
 }
 
 func (p *EnquiryCourseReq) String() string {
@@ -4491,11 +4629,12 @@ func (p *EnquiryVideoResp) String() string {
 }
 
 type EnquiryUserReq struct {
-	Keyword string `thrift:"keyword,1" form:"keyword" json:"keyword" query:"keyword"`
-	Offset  int32  `thrift:"offset,2" form:"offset" json:"offset" query:"offset"`
-	Size    int32  `thrift:"size,3" form:"size" json:"size" query:"size"`
-	Faculty string `thrift:"faculty,4" form:"faculty" json:"faculty" query:"faculty"`
-	Major   string `thrift:"major,5" form:"major" json:"major" query:"major"`
+	Keyword   string `thrift:"keyword,1" form:"keyword" json:"keyword" query:"keyword"`
+	Offset    int32  `thrift:"offset,2" form:"offset" json:"offset" query:"offset"`
+	Size      int32  `thrift:"size,3" form:"size" json:"size" query:"size"`
+	Faculty   string `thrift:"faculty,4" form:"faculty" json:"faculty" query:"faculty"`
+	Major     string `thrift:"major,5" form:"major" json:"major" query:"major"`
+	Authority string `thrift:"authority,6" form:"authority" json:"authority" query:"authority"`
 }
 
 func NewEnquiryUserReq() *EnquiryUserReq {
@@ -4522,12 +4661,17 @@ func (p *EnquiryUserReq) GetMajor() (v string) {
 	return p.Major
 }
 
+func (p *EnquiryUserReq) GetAuthority() (v string) {
+	return p.Authority
+}
+
 var fieldIDToName_EnquiryUserReq = map[int16]string{
 	1: "keyword",
 	2: "offset",
 	3: "size",
 	4: "faculty",
 	5: "major",
+	6: "authority",
 }
 
 func (p *EnquiryUserReq) Read(iprot thrift.TProtocol) (err error) {
@@ -4592,6 +4736,16 @@ func (p *EnquiryUserReq) Read(iprot thrift.TProtocol) (err error) {
 		case 5:
 			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField5(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 6:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField6(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else {
@@ -4674,6 +4828,15 @@ func (p *EnquiryUserReq) ReadField5(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *EnquiryUserReq) ReadField6(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.Authority = v
+	}
+	return nil
+}
+
 func (p *EnquiryUserReq) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("EnquiryUserReq"); err != nil {
@@ -4698,6 +4861,10 @@ func (p *EnquiryUserReq) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField5(oprot); err != nil {
 			fieldId = 5
+			goto WriteFieldError
+		}
+		if err = p.writeField6(oprot); err != nil {
+			fieldId = 6
 			goto WriteFieldError
 		}
 
@@ -4802,6 +4969,23 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 5 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 5 end error: ", p), err)
+}
+
+func (p *EnquiryUserReq) writeField6(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("authority", thrift.STRING, 6); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Authority); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 6 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 6 end error: ", p), err)
 }
 
 func (p *EnquiryUserReq) String() string {

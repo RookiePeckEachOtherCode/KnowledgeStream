@@ -22,6 +22,7 @@ func Register(r *server.Hertz) {
 		{
 			_query := _teacher.Group("/query", _queryMw()...)
 			_query.POST("/student", append(_enquirystudentMw(), user.EnquiryStudent)...)
+			_query.GET("/video", append(_enquiryvideoMw(), user.EnquiryVideo)...)
 		}
 	}
 	{

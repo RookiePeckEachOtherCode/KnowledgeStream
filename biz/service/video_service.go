@@ -148,3 +148,41 @@ func (s *VideoService) AdminQueryVideo(
 	}
 	return result, nil
 }
+func (s *VideoService) TeacherQueryVideo(
+	c context.Context,
+	keyword string,
+	size int32,
+	offset int32,
+	uid int64,
+) ([]*base.VideoInfo, error) {
+	v := query.Video
+
+	videos, err := v.WithContext(c).
+		Where(v.Title.Like("%" + keyword + "%")).
+		Where(v.Uploader.Eq(uid)).
+		Offset(int(offset)).
+		Limit(int(size)).Find()
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		hlog.Error("查询视频失败: ", err)
+		return nil, err
+	}
+	var result []*base.VideoInfo
+	for _, video := range videos {
+		videoInfo := new(base.VideoInfo)
+		videoInfo.Source = video.Source
+		videoInfo.Cover = video.Cover
+		videoInfo.UploadTime = video.UploadTime
+		videoInfo.Vid = fmt.Sprintf("%d", video.ID)
+		videoInfo.Title = video.Title
+		videoInfo.Ascription = fmt.Sprintf("%d", video.Ascription)
+		videoInfo.Chapter = video.Chapter
+		videoInfo.Length = fmt.Sprintf("%d", video.Length)
+		videoInfo.Uploader = fmt.Sprintf("%d", video.Uploader)
+		videoInfo.Description = video.Description
+		result = append(result, videoInfo)
+	}
+	return result, nil
+}

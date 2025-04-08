@@ -25,9 +25,9 @@ func Register(r *server.Hertz) {
 		_admin.POST("/uploadvideo", append(_uploadvideoMw(), admin.UploadVideo)...)
 		{
 			_query := _admin.Group("/query", _queryMw()...)
-			_query.POST("/course", append(_enquirytcourseMw(), admin.EnquirytCourse)...)
+			_query.GET("/course", append(_enquirytcourseMw(), admin.EnquirytCourse)...)
 			_query.GET("/user", append(_enquiryuserMw(), admin.EnquiryUser)...)
-			_query.POST("/video", append(_enquiryvideoMw(), admin.EnquiryVideo)...)
+			_query.GET("/video", append(_enquiryvideoMw(), admin.EnquiryVideo)...)
 		}
 		{
 			_update := _admin.Group("/update", _updateMw()...)

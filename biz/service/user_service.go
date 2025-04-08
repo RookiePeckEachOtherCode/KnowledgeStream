@@ -175,11 +175,24 @@ func (s *UserService) AdminQueryUser(
 	keyword string,
 	size int32,
 	offset int32,
+	major string,
+	faculty string,
+	authority string,
 ) ([]*base.UserInfo, error) {
+	if authority == "Student" {
+		authority = "USER"
+	} else if authority == "Teacher" {
+		authority = "ADMIN"
+	} else if authority == "Admin" {
+		authority = "SUPER_ADMIN"
+	}
 	u := query.User
 	users, err := u.WithContext(c).
 		Where(u.Name.Like("%" + keyword + "%")).
 		Where(u.Authority.Neq("SUPER_ADMIN")).
+		Where(u.Major.Eq(major)).
+		Where(u.Faculty.Eq(faculty)).
+		Where(u.Authority.Eq(authority)).
 		Offset(int(offset)).
 		Limit(int(size)).Find()
 	if err != nil {

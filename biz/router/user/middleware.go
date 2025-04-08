@@ -138,3 +138,9 @@ func _uidinfoMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _enquiryvideoMw() []app.HandlerFunc {
+	return []app.HandlerFunc{
+		middleware.VerifyToken(),
+	}
+}

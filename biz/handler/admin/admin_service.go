@@ -361,7 +361,7 @@ func EnquirytCourse(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	result, err := service.CourseServ().AdminQueryCourse(ctx, req.Keyword, req.Size, req.Offset)
+	result, err := service.CourseServ().AdminQueryCourse(ctx, req.Keyword, req.Size, req.Offset, req.Major, req.Faculty, req.BeginTime, req.EndTime)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		c.JSON(consts.StatusOK, resp)
@@ -437,7 +437,7 @@ func EnquiryUser(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	result, err := service.UserServ().AdminQueryUser(ctx, req.Keyword, req.Size, req.Offset)
+	result, err := service.UserServ().AdminQueryUser(ctx, req.Keyword, req.Size, req.Offset, req.Major, req.Faculty, req.Authority)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		c.JSON(consts.StatusOK, resp)

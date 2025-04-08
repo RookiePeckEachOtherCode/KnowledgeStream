@@ -605,3 +605,40 @@ func UidInfo(ctx context.Context, c *app.RequestContext) {
 	resp.Base = srverror.WrapWithSuccess("查询用户信息成功")
 	c.JSON(consts.StatusOK, resp)
 }
+
+// EnquiryVideo .
+// @router /teacher/query/video [GET]
+func EnquiryVideo(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req user.EnquiryVideoReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(user.EnquiryVideoResp)
+	resp.Base = new(base.BaseResponse)
+	uid, authority, err := utils.AuthCheck(c)
+	if err != nil {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = err.Error()
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	if authority == entity.AuthorityUser {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "用户权限不够"
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	result, err := service.VideoServ().TeacherQueryVideo(ctx, req.Keyword, req.Size, req.Offset, uid)
+	if err != nil {
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	resp.Videosinfo = result
+	resp.Base = srverror.WrapWithSuccess("查询视频成功")
+	c.JSON(consts.StatusOK, resp)
+}

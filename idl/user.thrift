@@ -149,6 +149,15 @@ struct EnquiryStudentResp{
     1:common.BaseResponse base;
     2:list<common.UserInfo> usersinfo;
 }
+struct EnquiryVideoReq{
+    1:string keyword;
+    2:i32 offset;
+    3:i32 size;
+}
+struct EnquiryVideoResp{
+    1:common.BaseResponse base;
+    2:list<common.VideoInfo> videosinfo;
+}
 service UserSerivce{
     userLoginResp UserLogin(1:userLoginReq req)(api.post="/user/login");
     userRegisterResp UserRegister(1:userRegisterReq req)(api.post="/user/register")
@@ -165,6 +174,7 @@ service UserSerivce{
     EnquiryMyCoursesResp EnquiryMyCourses(1:EnquiryMyCoursesReq req)(api.get="/user/teacher/mycourse")
     DeleteVideoResp DeleteVideo(1:DeleteVideoReq req)(api.post="/user/teacher/deletevideo")
     EnquiryStudentResp EnquiryStudent(1:EnquiryStudentReq req)(api.post="/teacher/query/student")
+    EnquiryVideoResp EnquiryVideo(1:EnquiryVideoReq req)(api.get="/teacher/query/video")
     //------------------------------------------Student
     StudentMyCoursesResp StudentMyCourses(1:StudentMyCoursesReq req)(api.get="/user/student/mycourse")
 }

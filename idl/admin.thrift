@@ -83,6 +83,9 @@ struct EnquiryCourseReq{
     2:i32 offset;
     3:i32 size;
     4:string major;
+    5:string faculty;
+    6:string begin_time;
+    7:string end_time;
 }
 struct EnquiryCourseResp{
     1:common.BaseResponse base;
@@ -103,6 +106,7 @@ struct EnquiryUserReq{
     3:i32 size;
     4:string faculty;
     5:string major;
+    6:string authority;
 }
 struct EnquiryUserResp{
     1:common.BaseResponse base;
@@ -116,7 +120,7 @@ service AdminService{
     CreateCourseResp CreateCourse(1:CreateCourseReq req)(api.post="/admin/createcourse");
     DeleteUserFromCourseResp DeleteUserFromCourse(1:DeleteUserFromCourseReq req)(api.post="/admin/update/course/member");
     UpdateCourseInfoResp UpdateCourseInfo(1:UpdateCourseInfoReq req)(api.post="/admin/update/course");
-    EnquiryCourseResp EnquirytCourse(1:EnquiryCourseReq req)(api.post="/admin/query/course");
-    EnquiryVideoResp EnquiryVideo(1:EnquiryVideoReq req)(api.post="/admin/query/video");
+    EnquiryCourseResp EnquirytCourse(1:EnquiryCourseReq req)(api.get="/admin/query/course");
+    EnquiryVideoResp EnquiryVideo(1:EnquiryVideoReq req)(api.get="/admin/query/video");
     EnquiryUserResp EnquiryUser(1:EnquiryUserReq req)(api.get="/admin/query/user");
 }

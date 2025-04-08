@@ -258,6 +258,10 @@ func (s *CourseService) AdminQueryCourse(
 	keyword string,
 	size int32,
 	offset int32,
+	major string,
+	faculty string,
+	begin_time string,
+	end_time string,
 ) ([]*base.CourseInfo, error) {
 	qu := query.User
 	cu := query.Course
@@ -268,18 +272,29 @@ func (s *CourseService) AdminQueryCourse(
 	for _, user := range teacher {
 		tides = append(tides, user.ID)
 	}
-	courses, err := cu.WithContext(c).
-		Where(cu.Title.Like("%" + keyword + "%")).
-		Or(cu.Ascription.In(tides...)).
+	queryBuilder := cu.WithContext(c).
+		Where(cu.Title.Like("%" + keyword + "%")).Where(cu.Major.Eq(major)).Where(cu.Faculty.Eq(faculty)).Or(cu.Ascription.In(tides...))
+
+	// 添加时间过滤条件
+	if begin_time != "" {
+		queryBuilder = queryBuilder.Where(cu.BeginTime.Gte(begin_time))
+	}
+	if end_time != "" {
+		queryBuilder = queryBuilder.Where(cu.EndTime.Lte(end_time))
+	}
+
+	// 执行查询
+	courses, err := queryBuilder.
 		Offset(int(offset)).
-		Limit(int(size)).Find()
+		Limit(int(size)).
+		Find()
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			hlog.Error("查询课程失败: ", err)
 		}
-		hlog.Error("查询所在课程域失败: ", err)
 		return nil, err
 	}
+
 	var result []*base.CourseInfo
 	for _, course := range courses {
 		courseInfo := new(base.CourseInfo)

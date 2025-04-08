@@ -1,12 +1,12 @@
-import {ReactNode, useState} from "react";
+import {ReactNode, useEffect, useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
     faArrowDown,
-    faBookOpen, faBuilding, faCalendarDays,
+    faBookOpen, faBuilding, faCalendarDays, faCancel,
     faChalkboardUser, faChevronDown, faChevronUp, faCommentDots,
     faEye,
     faFile, faGraduationCap,
-    faKeyboard, faPenSquare, faPenToSquare, faTrash, faUsers,
+    faKeyboard, faPenSquare, faPenToSquare, faSave, faTrash, faUpload, faUsers,
     faUserSecret,
     faUsersViewfinder
 } from "@fortawesome/free-solid-svg-icons";
@@ -26,7 +26,7 @@ import {
     XAxis,
     YAxis
 } from "recharts";
-import {CourseInfo, UserInfo} from "@/api/internal/model/static/base-resp";
+import {CourseInfo, UserInfo, VideoInfo} from "@/api/internal/model/static/base-resp";
 import MDInput from "@/app/components/md-input";
 import {faKeybase} from "@fortawesome/free-brands-svg-icons";
 import {Divider} from "@/app/components/divider";
@@ -35,6 +35,9 @@ import {IconButton} from "@/app/components/icon-button";
 import {OssImage} from "@/app/components/oss-midea";
 import {api} from "@/api/instance";
 import {useNotification} from "@/context/notification-provider";
+import {useModal} from "@/context/modal-provider";
+import {CustomDatePicker} from "@/app/components/custom-date-picker.jsx";
+import dayjs from "dayjs";
 
 export function AdminPage() {
     const [pager, setPager] = useState(0)
@@ -514,10 +517,25 @@ export function ManageCourse() {
     ])
     const [major, setMajor] = useState("")
     const [faculty, setFaculty] = useState("")
+    const {isShow, toggleShowModal, setForm} = useModal()
+
     const SearchCourse = async () => {
 
     }
+    const openEditForm = async (index: number) => {
+        await setForm(<EditCourseInfo
+            ascription={courses[index].ascription}
+            begin_time={courses[index].begin_time}
+            class={courses[index].class}
+            cover={courses[index].cover}
+            description={courses[index].description}
+            end_time={courses[index].end_time}
+            cid={courses[index].cid}
+            major={courses[index].major}
+            title={courses[index].title}/>)
+        toggleShowModal(true)
 
+    }
 
     return (
         <div className={`w-full h-full flex flex-col space-y-6`}>
@@ -558,6 +576,9 @@ export function ManageCourse() {
                             begin_time={item.begin_time}
                             end_time={item.end_time}
                             cover={item.cover}
+                            onEdit={() => {
+                                openEditForm(index)
+                            }}
                             className={item.class}>
 
                         </CourseListItem>
@@ -577,10 +598,11 @@ export function ManageUser() {
     const [faculty, setFaculty] = useState("")
     const [keyword, setKeyword] = useState("")
     const [authority, setAuthority] = useState(Authorities[0])
-    const [users, setUsers] = useState<Array<UserInfo>>([])
+    const [users, setUsers] = useState<Array<CompleteUserInfo>>([])
     const [offset, setOffset] = useState(0)
     const [authorityDrawer, setAuthorityDrawer] = useState(false)
     const {showNotification} = useNotification();
+    const {isShow, toggleShowModal, setForm} = useModal()
 
     const SearchUser = async () => {
         const usersRes = await api.adminService.queryUser({
@@ -603,6 +625,17 @@ export function ManageUser() {
 
     }
 
+    const OpenEditInfoForm = async (index: number) => {
+        await setForm(<EditUserInfo
+            authority={users[index].authority}
+            faculty={users[index].faculty ? users[index].faculty : `未知学院`}
+            name={users[index].name}
+            password={users[index].password}
+            phone={users[index].phone}
+            class={users[index].class} uid={users[index].uid}/>)
+
+        toggleShowModal(true)
+    }
 
     return (
         <div className={`w-full h-full flex flex-col p-3 space-y-6`}>
@@ -665,6 +698,12 @@ export function ManageUser() {
                         </div>
                     </div>
                 </div>
+                <IconButton text={`批量导入用户`} onClick={() => {
+                }} className={`w-auto h-12 space-x-3 bg-inverse-primary`}>
+                    <FontAwesomeIcon icon={faUpload}></FontAwesomeIcon>
+
+                </IconButton>
+
             </div>
             <Divider vertical={false}></Divider>
             <div className={`w-full flex flex-col p-6`}>
@@ -672,17 +711,18 @@ export function ManageUser() {
                     users.map((item, index) => {
                         return <UserListItem
                             uid={item.uid}
-                            avatar={item.avatar}
+                            avatar={item.avatar ? item.avatar : ``}
                             name={item.name}
                             authority={item.authority}
-                            signature={item.signature}
-                            grade={item.grade}
+                            signature={item.signature ? item.signature : ``}
+                            grade={item.grade ? item.grade : `未定义`}
                             faculty={item.faculty}
-                            major={item.major}
-                            class={item.major}>
+                            major={item.major ? item.major : `未定义`}
+                            onEdit={() => {
+                                OpenEditInfoForm(index)
+                            }}
+                            class={item.class}>
                         </UserListItem>
-
-
                     })
                 }
             </div>
@@ -851,7 +891,7 @@ export function UserListItem({
         teacher: "bg-tertiary text-on-tertiary",
         student: "bg-primary-container text-on-primary-container"
     };
-    
+
     const [showSignature, setShowSignature] = useState(false);
     const toggleSignature = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -971,4 +1011,471 @@ export function UserListItem({
             </div>
         </div>
     );
+}
+
+export interface CompleteUserInfo {
+    authority: string;
+    avatar?: string;
+    faculty: string;
+    grade?: string;
+    major?: string;
+    name: string;
+    password: string;
+    phone: string;
+    signature?: string;
+    uid: string,
+    class: string,
+}
+
+export function EditUserInfo({
+                                 authority,
+                                 avatar,
+                                 faculty,
+                                 grade,
+                                 major,
+                                 name,
+                                 password,
+                                 phone,
+                                 signature,
+                                 uid,
+                                 class: userClass // 使用别名避免与class关键字冲突
+                             }: CompleteUserInfo) {
+    // 状态管理
+    const [f_name, setName] = useState(name)
+    const [f_phone, setPhone] = useState(phone)
+    const [f_avatar, setAvatar] = useState(avatar)
+    const [f_authority, setAuthority] = useState(authority)
+    const [f_grade, setGrade] = useState(grade)
+    const [f_faculty, setFaculty] = useState(faculty)
+    const [f_major, setMajor] = useState(major)
+    const [f_password, setPassword] = useState(password)
+    const [f_signature, setSignature] = useState(signature)
+    const [f_class, setClass] = useState(userClass)
+
+    // 头像处理
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                if (reader.result) {
+                    setAvatar(reader.result as string)
+                }
+            }
+            reader.readAsDataURL(file)
+        }
+    }
+
+    const {isShow, toggleShowModal, setForm} = useModal()
+
+    return (
+        <div className="w-full h-full relative flex items-center">
+            <div
+                onClick={e => e.stopPropagation()}
+                className="p-6 absolute transition-all duration-300 w-1/2 space-y-6 right-0 h-full bg-primary-container rounded-l-2xl flex flex-col"
+            >
+                {/* 标题部分 */}
+                <div className="w-full flex flex-row space-x-6 items-center justify-between">
+                    <div className="text-2xl text-on-primary-container">编辑用户信息</div>
+                    <div className="text-outline">用户id：{uid}</div>
+                </div>
+
+                {/* 表单主体 */}
+                <form className="space-y-6 transition-all duration-300">
+                    {/* 第一行：名称 + 电话 */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-on-primary-container">
+                                名称<span className="text-error">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                value={f_name}
+                                onChange={e => setName(e.target.value)}
+                                className="w-full p-3 rounded-lg border bg-secondary-container text-on-surface"
+                                placeholder="请输入用户名"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-on-primary-container">
+                                电话<span className="text-error">*</span>
+                            </label>
+                            <input
+                                type="tel"
+                                value={f_phone}
+                                onChange={e => setPhone(e.target.value)}
+                                className="w-full p-3 rounded-lg border bg-secondary-container text-on-surface"
+                                placeholder="请输入电话"
+                            />
+                        </div>
+                    </div>
+
+                    {/* 第二行：权限 + 学院 */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-on-primary-container">
+                                权限<span className="text-error">*</span>
+                            </label>
+                            <select
+                                value={f_authority}
+                                onChange={e => setAuthority(e.target.value)}
+                                className="w-full p-3 rounded-lg border bg-secondary-container text-on-surface"
+                            >
+                                <option value="admin">管理员</option>
+                                <option value="teacher">教师</option>
+                                <option value="student">学生</option>
+                            </select>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-on-primary-container">
+                                学院<span className="text-error">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                value={f_faculty}
+                                onChange={e => setFaculty(e.target.value)}
+                                className="w-full p-3 rounded-lg border bg-secondary-container text-on-surface"
+                                placeholder="请输入学院"
+                            />
+                        </div>
+                    </div>
+
+                    {/* 第三行：年级 + 专业 */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-on-primary-container">
+                                年级
+                            </label>
+                            <input
+                                type="text"
+                                value={f_grade || ''}
+                                onChange={e => setGrade(e.target.value)}
+                                className="w-full p-3 rounded-lg border bg-secondary-container text-on-surface"
+                                placeholder="请输入年级"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-on-primary-container">
+                                专业
+                            </label>
+                            <input
+                                type="text"
+                                value={f_major || ''}
+                                onChange={e => setMajor(e.target.value)}
+                                className="w-full p-3 rounded-lg border bg-secondary-container text-on-surface"
+                                placeholder="请输入专业"
+                            />
+                        </div>
+                    </div>
+
+                    {/* 单独行：密码 */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-on-primary-container">
+                            密码<span className="text-error">*</span>
+                        </label>
+                        <input
+                            type="password"
+                            value={f_password}
+                            onChange={e => setPassword(e.target.value)}
+                            className="w-full p-3 rounded-lg border bg-secondary-container text-on-surface"
+                            placeholder="请输入密码"
+                        />
+                    </div>
+
+                    {/* 单独行：班级 */}
+                    <div className="space-y-2 ">
+                        <label className="text-sm font-medium text-on-primary-container">
+                            班级<span className="text-error">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            value={f_class}
+                            onChange={e => setClass(e.target.value)}
+                            className="w-full p-3 rounded-lg border bg-secondary-container text-on-surface"
+                            placeholder="请输入班级"
+                        />
+                    </div>
+
+                    {/* 头像上传部分 */}
+                    <div className="space-y-2 transition-all duration-300">
+                        <label className="text-sm font-medium text-on-primary-container">
+                            头像<span className="text-error">*</span>
+                        </label>
+                        <div className="flex gap-4 items-center">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleAvatarChange}
+                                className="hidden"
+                                id="avatarUpload"
+                                required={!f_avatar}
+                            />
+                            <label
+                                htmlFor="avatarUpload"
+                                className="cursor-pointer transition-all duration-300  p-3 rounded-lg border bg-secondary-container text-on-surface hover:bg-secondary-container-hover"
+                            >
+                                选择头像文件
+                            </label>
+                            {f_avatar && (
+                                <div className="relative group">
+                                    <img
+                                        src={f_avatar}
+                                        alt="头像预览"
+                                        className="w-20 h-20 rounded-full object-cover border-2 border-outline"
+                                    />
+                                    <div
+                                        className="absolute inset-0 bg-error/50 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer"
+                                        onClick={() => setAvatar(undefined)}
+                                    >
+                                        <span className="text-on-error">删除</span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* 个性签名 */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-on-primary-container">
+                            个性签名
+                        </label>
+                        <textarea
+                            value={f_signature || ''}
+                            onChange={e => setSignature(e.target.value)}
+                            className="w-full p-3 rounded-lg border bg-secondary-container text-on-surface h-24"
+                            placeholder="请输入个性签名"
+                        />
+                    </div>
+                    <div className={`w-auto flex items-center space-x-6 justify-end `}>
+                        <IconButton text={`保存`} onClick={() => {
+                        }} className={`w-24 h-12 space-x-3 bg-primary-fixed`}>
+                            <FontAwesomeIcon icon={faSave}></FontAwesomeIcon>
+                        </IconButton>
+                        <IconButton text={`取消修改`} onClick={() => {
+                            toggleShowModal(false)
+                        }} className={`w-auto space-x-3 bg-error`}>
+                            <FontAwesomeIcon icon={faCancel}></FontAwesomeIcon>
+                        </IconButton>
+
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    )
+}
+
+export function EditCourseInfo({
+                                   ascription,
+                                   begin_time,
+                                   cover,
+                                   description,
+                                   end_time,
+                                   cid,
+                                   major,
+                                   title,
+                                   class: courseClass
+                               }: CourseInfo) {
+    // 状态管理
+    const [f_title, setTitle] = useState(title)
+    const [f_major, setMajor] = useState(major)
+    const [f_beginTime, setBeginTime] = useState(begin_time)
+    const [f_endTime, setEndTime] = useState(end_time)
+    const [f_description, setDescription] = useState(description)
+    const [f_class, setClass] = useState(courseClass)
+    const [f_cover, setCover] = useState(cover)
+    const [videoFile, setVideoFile] = useState<File | null>(null)
+    const {isShow, toggleShowModal, setForm} = useModal()
+    // 处理封面上传
+    const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                if (reader.result) {
+                    setCover(reader.result as string)
+                }
+            }
+            reader.readAsDataURL(file)
+        }
+    }
+
+    // 处理视频上传
+    const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setVideoFile(e.target.files?.[0] || null)
+    }
+
+    return (
+        <div className="w-full h-full relative flex items-center">
+            <div
+                onClick={e => e.stopPropagation()}
+                className="p-6 absolute w-1/2 space-y-6 right-0 h-full bg-primary-container rounded-l-2xl flex flex-col"
+            >
+                {/* 标题部分 */}
+                <div className="w-full flex flex-row space-x-6 items-center justify-between">
+                    <div className="text-2xl text-on-primary-container">编辑课程信息</div>
+                    <div className="space-y-1">
+                        <div className="text-outline">课程ID：{cid}</div>
+                        <div className="text-outline">负责教师：{ascription}</div>
+                    </div>
+                </div>
+
+                {/* 表单主体 */}
+                <form className="space-y-6">
+                    {/* 第一行：课程名称 + 所属专业 */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-on-primary-container">
+                                课程名称<span className="text-error">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                value={f_title}
+                                onChange={e => setTitle(e.target.value)}
+                                className="w-full p-3 rounded-lg border bg-secondary-container text-on-surface"
+                                placeholder="请输入课程名称"
+                                required
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-on-primary-container">
+                                所属专业<span className="text-error">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                value={f_major}
+                                onChange={e => setMajor(e.target.value)}
+                                className="w-full p-3 rounded-lg border bg-secondary-container text-on-surface"
+                                placeholder="请输入所属专业"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    {/* 第二行：开课时间 + 结课时间 */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-on-primary-container">
+                                开课时间<span className="text-error">*</span>
+                            </label>
+                            <CustomDatePicker
+                                value={begin_time}
+                                onChange={value => setEndTime(dayjs(value).format('YYYY-MM-DD'))}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-on-primary-container">
+                                结课时间<span className="text-error">*</span>
+                            </label>
+                            <CustomDatePicker
+                                value={end_time}
+                                onChange={value => setEndTime(dayjs(value).format('YYYY-MM-DD'))}
+                                minDate={dayjs(begin_time)}
+                            />
+                        </div>
+                    </div>
+
+                    {/* 第三行：课程班级 + 文件上传 */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-on-primary-container">
+                                课程班级
+                            </label>
+                            <input
+                                type="text"
+                                value={f_class}
+                                onChange={e => setClass(e.target.value)}
+                                className="w-full p-3 rounded-lg border bg-secondary-container text-on-surface"
+                                placeholder="请输入课程班级"
+                            />
+                        </div>
+
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        {/* 封面上传 */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-on-primary-container">
+                                课程封面<span className="text-error">*</span>
+                            </label>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleCoverChange}
+                                    className="hidden"
+                                    id="coverUpload"
+                                    required={!f_cover}
+                                />
+                                <label
+                                    htmlFor="coverUpload"
+                                    className="cursor-pointer p-2 rounded-lg border bg-secondary-container text-on-surface hover:bg-secondary-container-hover"
+                                >
+                                    上传封面
+                                </label>
+                                {f_cover && (
+                                    <img
+                                        src={f_cover}
+                                        alt="封面预览"
+                                        className="w-12 h-12 rounded object-cover border"
+                                    />
+                                )}
+                            </div>
+                        </div>
+
+                        {/* 视频上传 */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-on-primary-container">
+                                课程视频
+                            </label>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="file"
+                                    accept="video/*"
+                                    onChange={handleVideoChange}
+                                    className="hidden"
+                                    id="videoUpload"
+                                />
+                                <label
+                                    htmlFor="videoUpload"
+                                    className="cursor-pointer p-2 rounded-lg border bg-secondary-container text-on-surface hover:bg-secondary-container-hover"
+                                >
+                                    上传视频
+                                </label>
+                                {videoFile && (
+                                    <div className="text-sm text-on-surface">
+                                        {videoFile.name} ({Math.round(videoFile.size / 1024)}KB)
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                    {/* 课程描述 */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-on-primary-container">
+                            课程描述<span className="text-error">*</span>
+                        </label>
+                        <textarea
+                            value={f_description}
+                            onChange={e => setDescription(e.target.value)}
+                            className="w-full p-3 rounded-lg border bg-secondary-container text-on-surface h-32"
+                            placeholder="请输入课程描述"
+                            required
+                        />
+                    </div>
+                    <div className={`w-auto flex items-center space-x-6 justify-end `}>
+                        <IconButton text={`保存`} onClick={() => {
+                        }} className={`w-24 h-12 space-x-3 bg-primary-fixed`}>
+                            <FontAwesomeIcon icon={faSave}></FontAwesomeIcon>
+                        </IconButton>
+                        <IconButton text={`取消修改`} onClick={() => {
+                            toggleShowModal(false)
+                        }} className={`w-auto space-x-3 bg-error`}>
+                            <FontAwesomeIcon icon={faCancel}></FontAwesomeIcon>
+                        </IconButton>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    )
 }

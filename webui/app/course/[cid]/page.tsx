@@ -5,6 +5,8 @@ import { useEffect, useState } from "react"
 import { faPlayCircle, faChevronDown, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/navigation";
 import AnimatedContent from "@/app/components/animated-content";
+import { api } from "@/api/instance";
+import { NotifyType } from "@/api/internal/model/response/notify";
 
 
 export default function CoursePage({
@@ -17,7 +19,8 @@ export default function CoursePage({
     const { showNotification } = useNotification()
     const [courseData, setCourseData] = useState<MockCourseDataType | null>(null)
     const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set())
-    const [courseNotify, setCourseNotify] = useState<Array<MockNotifacitionType>>([])
+    const [courseNotify, setCourseNotify] = useState<Array<NotifyType>>([])
+    const [isNotifyLoading, setIsNotifyLoading] = useState(true)
 
     const gotoPlay = (id: string) => {
         router.push(`/play/${id}`)
@@ -78,17 +81,22 @@ export default function CoursePage({
     }, [params, showNotification])
     useEffect(() => {
         const fetchCourseNotify = async () => {
-            const cid = (await params).cid
-            const res = await mockNotifacition(cid)
-            if (res.base.code !== 200) {
-                showNotification({
-                    title: "获取课程通知失败",
-                    content: res.base.msg,
-                    type: "error"
-                })
-                return
+            setIsNotifyLoading(true)
+            try {
+                const cid = (await params).cid
+                const res = await api.notifyService.courseNotifyList({ cid })
+                if (res.base.code !== 200) {
+                    showNotification({
+                        title: "获取课程通知失败",
+                        content: res.base.msg,
+                        type: "error"
+                    })
+                    return
+                }
+                setCourseNotify(res.notifacitons)
+            } finally {
+                setIsNotifyLoading(false)
             }
-            setCourseNotify(res.notifacitons)
         }
 
         fetchCourseNotify()
@@ -182,26 +190,31 @@ export default function CoursePage({
                         >
                             <div className="bg-surface-container rounded-3xl p-6 shadow-md sticky top-6">
                                 <h2 className="text-xl font-semibold text-on-surface mb-4">课程通知</h2>
-                                <div className="space-y-4 max-h-[calc(100vh-12rem)] overflow-scroll  pr-2 scrollbar-thin scrollbar-thumb-primary/50 scrollbar-track-surface-container-highest hover:scrollbar-thumb-primary">
-                                    {courseNotify.map((notify, index) => (
-                                        <div
-                                            key={index}
-                                            className="p-4 bg-surface-container-low rounded-2xl hover:bg-surface-container-high transition-colors relative group cursor-pointer mt-2"
-                                            onClick={() => gotoNotification(index, notify.id)}
-                                        >
-                                            {!notify.read && (
-                                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full"></div>
-                                            )}
-                                            <h3 className="font-medium text-on-surface flex items-center justify-between">
-                                                <span>{notify.title}</span>
-                                                <span className="text-xs text-on-surface-variant">
-                                                    {notify.read ? "已读" : "未读"}
-                                                </span>
-                                            </h3>
-                                            <p className="text-sm text-on-surface-variant mt-2">{notify.content}</p>
+                                <div className="space-y-4 max-h-[calc(100vh-12rem)] overflow-scroll pr-2 scrollbar-thin scrollbar-thumb-primary/50 scrollbar-track-surface-container-highest hover:scrollbar-thumb-primary">
+                                    {isNotifyLoading ? (
+                                        <div className="text-center text-on-surface-variant py-4">
+                                            Loading notifications...
                                         </div>
-                                    ))}
-                                    {courseNotify.length === 0 && (
+                                    ) : courseNotify && courseNotify.length > 0 ? (
+                                        courseNotify.map((notify, index) => (
+                                            <div
+                                                key={index}
+                                                className="p-4 bg-surface-container-low rounded-2xl hover:bg-surface-container-high transition-colors relative group cursor-pointer mt-2"
+                                                onClick={() => gotoNotification(index, notify.id)}
+                                            >
+                                                {!notify.read && (
+                                                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full"></div>
+                                                )}
+                                                <h3 className="font-medium text-on-surface flex items-center justify-between">
+                                                    <span>{notify.title}</span>
+                                                    <span className="text-xs text-on-surface-variant">
+                                                        {notify.read ? "已读" : "未读"}
+                                                    </span>
+                                                </h3>
+                                                <p className="text-sm text-on-surface-variant mt-2">{notify.content}</p>
+                                            </div>
+                                        ))
+                                    ) : (
                                         <div className="text-center text-on-surface-variant py-4">
                                             暂无通知
                                         </div>
@@ -331,134 +344,6 @@ async function mockData(cid: string): Promise<MockRequestType> {
                 section_name: "韭菜可持续发展的路径",
                 video_id: "6"
             }
-        ]
-    }
-}
-
-interface MockNotifacitionDataType {
-    base: {
-        code: number,
-        msg: string
-    },
-    notifacitons: Array<MockNotifacitionType>
-}
-
-interface MockNotifacitionType {
-    content: string,
-    file: string,
-    cid: string,
-    favorite: number,
-    read: boolean,
-    id: string,
-    title: string
-}
-async function mockNotifacition(cid: string): Promise<MockNotifacitionDataType> {
-    console.log(cid)
-    return {
-        base: {
-            code: 200,
-            msg: "success"
-        },
-        notifacitons: [
-            {
-                content: "老师发布了新的课程内容",
-                file: "http://mock.file.com/韭菜动力学第七章.pdf",
-                cid: "114514",
-                favorite: 233,
-                read: false,
-                id: "1",
-                title: "课程更新通知"
-            },
-            {
-                content: "请同学们及时完成作业",
-                file: "http://mock.file.com/韭菜动力学作业.pdf",
-                cid: "114514",
-                favorite: 114,
-                read: true,
-                id: "2",
-                title: "作业提醒"
-            },
-            {
-                content: "下周二进行线上答疑",
-                file: "",
-                cid: "114514",
-                favorite: 514,
-                read: false,
-                id: "3",
-                title: "答疑通知"
-            },
-            {
-                content: "期中考试安排已发布",
-                file: "http://mock.file.com/期中考试大纲.pdf",
-                cid: "114514",
-                favorite: 999,
-                read: false,
-                id: "4",
-                title: "考试通知"
-            },
-            {
-                content: "关于韭菜动力学实验课程的安排",
-                file: "http://mock.file.com/实验指导书.pdf",
-                cid: "114514",
-                favorite: 456,
-                read: true,
-                id: "5",
-                title: "实验课通知"
-            },
-            {
-                content: "请查看最新的课程参考资料",
-                file: "http://mock.file.com/韭菜动力学进阶读物.pdf",
-                cid: "114514",
-                favorite: 789,
-                read: false,
-                id: "6",
-                title: "学习资料更新"
-            },
-            {
-                content: "课程大纲有重要更新",
-                file: "http://mock.file.com/韭菜动力学大纲V2.pdf",
-                cid: "114514",
-                favorite: 321,
-                read: true,
-                id: "7",
-                title: "课程大纲更新"
-            },
-            {
-                content: "关于期末项目展示的具体安排",
-                file: "http://mock.file.com/项目展示要求.pdf",
-                cid: "114514",
-                favorite: 567,
-                read: false,
-                id: "8",
-                title: "项目展示通知"
-            },
-            {
-                content: "韭菜动力学竞赛报名开始",
-                file: "http://mock.file.com/竞赛规则.pdf",
-                cid: "114514",
-                favorite: 888,
-                read: false,
-                id: "9",
-                title: "竞赛通知"
-            },
-            {
-                content: "课程教材勘误表发布",
-                file: "http://mock.file.com/勘误说明.pdf",
-                cid: "114514",
-                favorite: 234,
-                read: true,
-                id: "10",
-                title: "教材勘误"
-            },
-            {
-                content: "期末复习重点指南",
-                file: "http://mock.file.com/复习指南.pdf",
-                cid: "114514",
-                favorite: 777,
-                read: false,
-                id: "11",
-                title: "复习指导"
-            },
         ]
     }
 }

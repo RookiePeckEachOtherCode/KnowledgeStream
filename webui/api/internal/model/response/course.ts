@@ -11,5 +11,4 @@ export type CourseServiceResponse={
         base:BaseResponse;
         videosinfo:Array<VideoInfo>
     }
-    
 }

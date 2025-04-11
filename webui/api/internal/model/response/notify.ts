@@ -9,6 +9,9 @@ export type NotifyServiceResponse={
         base: BaseResponse;
         notification: NotifyType
     }
+    NOTIFY_ACTION:{
+        base: BaseResponse;
+    }
 }
 
 export interface NotifyType{

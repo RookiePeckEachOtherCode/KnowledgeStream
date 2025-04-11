@@ -30,7 +30,15 @@ export default function NotifyPage() {
 
     const likeAction = async () => {
         if (!notify) return
-        //TODO impl api
+        const res = await api.notifyService.action({ id: notify.id })
+        if (res.base.code !== 200) {
+            showNotification({
+                title: "点赞失败",
+                content: res.base.msg,
+                type: "error"
+            })
+            return
+        }
         setIsLike(!isLike)
         setNotify(prev => ({
             ...prev!,
@@ -59,11 +67,14 @@ export default function NotifyPage() {
 
     useEffect(() => {
         const fetchComments = async () => {
-            const res = await mockComments()
+            if (!notify) return
+            const res = await api.commentService.under_notification({
+                nid: notify?.id
+            })
             setComments(res.comments)
         }
         fetchComments()
-    }, [])
+    }, [notify])
 
 
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
@@ -102,11 +113,9 @@ export default function NotifyPage() {
                 });
                 return;
             }
-            //TODO impl api
-            // const commentsRes = await api.commentService.under_notify({
-            //     nid: notify.id
-            // });
-            const commentsRes = await mockComments()
+            const commentsRes = await api.commentService.under_notification({
+                nid: notify.id
+            })
             if (commentsRes.base.code !== 200) {
                 showNotification({
                     title: "刷新评论列表失败",
@@ -131,11 +140,9 @@ export default function NotifyPage() {
                 });
                 return;
             }
-            //TODO impl api
-            // const commentsRes = await api.commentService.under_notify({
-            //     nid: notify.id
-            // });
-            const commentsRes = await mockComments()
+            const commentsRes = await api.commentService.under_notification({
+                nid: notify.id
+            })
             if (commentsRes.base.code !== 200) {
                 showNotification({
                     title: "刷新评论列表失败",
@@ -278,36 +285,4 @@ export default function NotifyPage() {
             )}
         </div>
     )
-}
-
-
-async function mockComments() {
-    return {
-        base: {
-            code: 200,
-            msg: "success"
-        },
-        comments: [
-            {
-                id: "1",
-                ascription: "user1",
-                avatar: "ks-user-avatar/beriholic.jpg",
-                content: "这是一条测试评论",
-                name: "用户1",
-                parent: "0",
-                time: "2024-01-01 12:00:00",
-                children: 2
-            },
-            {
-                id: "2",
-                ascription: "user2",
-                avatar: "ks-user-avatar/beriholic.jpg",
-                content: "这是另一条测试评论",
-                name: "用户2",
-                parent: "0",
-                time: "2024-01-01 13:00:00",
-                children: 0
-            }
-        ]
-    }
 }

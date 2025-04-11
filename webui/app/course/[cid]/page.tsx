@@ -20,6 +20,7 @@ export default function CoursePage({
     const [courseData, setCourseData] = useState<MockCourseDataType | null>(null)
     const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set())
     const [courseNotify, setCourseNotify] = useState<Array<NotifyType>>([])
+    const [isNotifyLoading, setIsNotifyLoading] = useState(true)
 
     const gotoPlay = (id: string) => {
         router.push(`/play/${id}`)
@@ -80,17 +81,22 @@ export default function CoursePage({
     }, [params, showNotification])
     useEffect(() => {
         const fetchCourseNotify = async () => {
-            const cid = (await params).cid
-            const res = await api.notifyService.courseNotifyList({ cid })
-            if (res.base.code !== 200) {
-                showNotification({
-                    title: "获取课程通知失败",
-                    content: res.base.msg,
-                    type: "error"
-                })
-                return
+            setIsNotifyLoading(true)
+            try {
+                const cid = (await params).cid
+                const res = await api.notifyService.courseNotifyList({ cid })
+                if (res.base.code !== 200) {
+                    showNotification({
+                        title: "获取课程通知失败",
+                        content: res.base.msg,
+                        type: "error"
+                    })
+                    return
+                }
+                setCourseNotify(res.notifacitons)
+            } finally {
+                setIsNotifyLoading(false)
             }
-            setCourseNotify(res.notifacitons)
         }
 
         fetchCourseNotify()
@@ -184,26 +190,31 @@ export default function CoursePage({
                         >
                             <div className="bg-surface-container rounded-3xl p-6 shadow-md sticky top-6">
                                 <h2 className="text-xl font-semibold text-on-surface mb-4">课程通知</h2>
-                                <div className="space-y-4 max-h-[calc(100vh-12rem)] overflow-scroll  pr-2 scrollbar-thin scrollbar-thumb-primary/50 scrollbar-track-surface-container-highest hover:scrollbar-thumb-primary">
-                                    {courseNotify.map((notify, index) => (
-                                        <div
-                                            key={index}
-                                            className="p-4 bg-surface-container-low rounded-2xl hover:bg-surface-container-high transition-colors relative group cursor-pointer mt-2"
-                                            onClick={() => gotoNotification(index, notify.id)}
-                                        >
-                                            {!notify.read && (
-                                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full"></div>
-                                            )}
-                                            <h3 className="font-medium text-on-surface flex items-center justify-between">
-                                                <span>{notify.title}</span>
-                                                <span className="text-xs text-on-surface-variant">
-                                                    {notify.read ? "已读" : "未读"}
-                                                </span>
-                                            </h3>
-                                            <p className="text-sm text-on-surface-variant mt-2">{notify.content}</p>
+                                <div className="space-y-4 max-h-[calc(100vh-12rem)] overflow-scroll pr-2 scrollbar-thin scrollbar-thumb-primary/50 scrollbar-track-surface-container-highest hover:scrollbar-thumb-primary">
+                                    {isNotifyLoading ? (
+                                        <div className="text-center text-on-surface-variant py-4">
+                                            Loading notifications...
                                         </div>
-                                    ))}
-                                    {courseNotify.length === 0 && (
+                                    ) : courseNotify && courseNotify.length > 0 ? (
+                                        courseNotify.map((notify, index) => (
+                                            <div
+                                                key={index}
+                                                className="p-4 bg-surface-container-low rounded-2xl hover:bg-surface-container-high transition-colors relative group cursor-pointer mt-2"
+                                                onClick={() => gotoNotification(index, notify.id)}
+                                            >
+                                                {!notify.read && (
+                                                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full"></div>
+                                                )}
+                                                <h3 className="font-medium text-on-surface flex items-center justify-between">
+                                                    <span>{notify.title}</span>
+                                                    <span className="text-xs text-on-surface-variant">
+                                                        {notify.read ? "已读" : "未读"}
+                                                    </span>
+                                                </h3>
+                                                <p className="text-sm text-on-surface-variant mt-2">{notify.content}</p>
+                                            </div>
+                                        ))
+                                    ) : (
                                         <div className="text-center text-on-surface-variant py-4">
                                             暂无通知
                                         </div>

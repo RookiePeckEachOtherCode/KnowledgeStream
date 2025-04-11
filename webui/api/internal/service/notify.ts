@@ -37,4 +37,12 @@ export class NotifyService{
             query: req,
         }) as Promise<NotifyServiceResponse['NOTIFY_ACTION']>;
     }
+
+    async all():Promise<NotifyServiceResponse['COURSE_NOTIFY']>{
+        return this.executor({
+            uri: "/notification",
+            method: "GET",
+            body: null,
+        }) as Promise<NotifyServiceResponse['COURSE_NOTIFY']>;
+    }
 }

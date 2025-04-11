@@ -23,5 +23,5 @@ export interface NotifyType{
     favorite: number;
     read: boolean
     time: string;
-    isLike: boolean;
+    faved: boolean;
 }

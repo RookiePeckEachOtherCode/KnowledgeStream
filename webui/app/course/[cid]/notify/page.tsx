@@ -60,10 +60,10 @@ export default function NotifyPage() {
                 return
             }
             setNotify(res.notification)
-            setIsLike(res.notification.isLike ?? false)
+            setIsLike(res.notification.faved ?? false)
         }
         fetchNotifyData()
-    }, [searchParams, showNotification])
+    }, [searchParams])
 
     useEffect(() => {
         const fetchComments = async () => {

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { faPlayCircle, faChevronDown, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/navigation";
 import AnimatedContent from "@/app/components/animated-content";
+import { api } from "@/api/instance";
 
 
 export default function CoursePage({
@@ -79,7 +80,7 @@ export default function CoursePage({
     useEffect(() => {
         const fetchCourseNotify = async () => {
             const cid = (await params).cid
-            const res = await mockNotifacition(cid)
+            const res = await api.notifyService.courseNotifyList({ cid })
             if (res.base.code !== 200) {
                 showNotification({
                     title: "获取课程通知失败",

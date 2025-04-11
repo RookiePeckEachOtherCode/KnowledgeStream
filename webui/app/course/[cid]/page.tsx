@@ -6,6 +6,7 @@ import { faPlayCircle, faChevronDown, faChevronRight } from "@fortawesome/free-s
 import { useRouter } from "next/navigation";
 import AnimatedContent from "@/app/components/animated-content";
 import { api } from "@/api/instance";
+import { NotifyType } from "@/api/internal/model/response/notify";
 
 
 export default function CoursePage({
@@ -18,7 +19,7 @@ export default function CoursePage({
     const { showNotification } = useNotification()
     const [courseData, setCourseData] = useState<MockCourseDataType | null>(null)
     const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set())
-    const [courseNotify, setCourseNotify] = useState<Array<MockNotifacitionType>>([])
+    const [courseNotify, setCourseNotify] = useState<Array<NotifyType>>([])
 
     const gotoPlay = (id: string) => {
         router.push(`/play/${id}`)
@@ -332,134 +333,6 @@ async function mockData(cid: string): Promise<MockRequestType> {
                 section_name: "韭菜可持续发展的路径",
                 video_id: "6"
             }
-        ]
-    }
-}
-
-interface MockNotifacitionDataType {
-    base: {
-        code: number,
-        msg: string
-    },
-    notifacitons: Array<MockNotifacitionType>
-}
-
-interface MockNotifacitionType {
-    content: string,
-    file: string,
-    cid: string,
-    favorite: number,
-    read: boolean,
-    id: string,
-    title: string
-}
-async function mockNotifacition(cid: string): Promise<MockNotifacitionDataType> {
-    console.log(cid)
-    return {
-        base: {
-            code: 200,
-            msg: "success"
-        },
-        notifacitons: [
-            {
-                content: "老师发布了新的课程内容",
-                file: "http://mock.file.com/韭菜动力学第七章.pdf",
-                cid: "114514",
-                favorite: 233,
-                read: false,
-                id: "1",
-                title: "课程更新通知"
-            },
-            {
-                content: "请同学们及时完成作业",
-                file: "http://mock.file.com/韭菜动力学作业.pdf",
-                cid: "114514",
-                favorite: 114,
-                read: true,
-                id: "2",
-                title: "作业提醒"
-            },
-            {
-                content: "下周二进行线上答疑",
-                file: "",
-                cid: "114514",
-                favorite: 514,
-                read: false,
-                id: "3",
-                title: "答疑通知"
-            },
-            {
-                content: "期中考试安排已发布",
-                file: "http://mock.file.com/期中考试大纲.pdf",
-                cid: "114514",
-                favorite: 999,
-                read: false,
-                id: "4",
-                title: "考试通知"
-            },
-            {
-                content: "关于韭菜动力学实验课程的安排",
-                file: "http://mock.file.com/实验指导书.pdf",
-                cid: "114514",
-                favorite: 456,
-                read: true,
-                id: "5",
-                title: "实验课通知"
-            },
-            {
-                content: "请查看最新的课程参考资料",
-                file: "http://mock.file.com/韭菜动力学进阶读物.pdf",
-                cid: "114514",
-                favorite: 789,
-                read: false,
-                id: "6",
-                title: "学习资料更新"
-            },
-            {
-                content: "课程大纲有重要更新",
-                file: "http://mock.file.com/韭菜动力学大纲V2.pdf",
-                cid: "114514",
-                favorite: 321,
-                read: true,
-                id: "7",
-                title: "课程大纲更新"
-            },
-            {
-                content: "关于期末项目展示的具体安排",
-                file: "http://mock.file.com/项目展示要求.pdf",
-                cid: "114514",
-                favorite: 567,
-                read: false,
-                id: "8",
-                title: "项目展示通知"
-            },
-            {
-                content: "韭菜动力学竞赛报名开始",
-                file: "http://mock.file.com/竞赛规则.pdf",
-                cid: "114514",
-                favorite: 888,
-                read: false,
-                id: "9",
-                title: "竞赛通知"
-            },
-            {
-                content: "课程教材勘误表发布",
-                file: "http://mock.file.com/勘误说明.pdf",
-                cid: "114514",
-                favorite: 234,
-                read: true,
-                id: "10",
-                title: "教材勘误"
-            },
-            {
-                content: "期末复习重点指南",
-                file: "http://mock.file.com/复习指南.pdf",
-                cid: "114514",
-                favorite: 777,
-                read: false,
-                id: "11",
-                title: "复习指导"
-            },
         ]
     }
 }

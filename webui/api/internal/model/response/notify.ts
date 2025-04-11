@@ -3,11 +3,15 @@ import { BaseResponse } from "../static/base-resp";
 export type NotifyServiceResponse={
     COURSE_NOTIFY:{
         base: BaseResponse;
-        notifacitons: Array<CourseNotifyType> 
+        notifacitons: Array<NotifyType> 
+    }
+    NOTIFY_INFO:{
+        base: BaseResponse;
+        notification: NotifyType
     }
 }
 
-export interface CourseNotifyType{
+export interface NotifyType{
     id:string
     cid:string
     title: string;
@@ -16,4 +20,5 @@ export interface CourseNotifyType{
     favorite: number;
     read: boolean
     time: string;
+    isLike: boolean;
 }

@@ -16,4 +16,15 @@ export class NotifyService{
             query: req,
         }) as Promise<NotifyServiceResponse['COURSE_NOTIFY']>;
     }
+
+    async notifyInfo(
+        req: {id:string}
+    ):Promise<NotifyServiceResponse['NOTIFY_INFO']>{
+        return this.executor({
+            uri: "/notification/browse",
+            method: "GET",
+            body:null,
+            query: req,
+        }) as Promise<NotifyServiceResponse['NOTIFY_INFO']>;
+    }
 }

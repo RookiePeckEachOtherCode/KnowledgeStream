@@ -14,10 +14,11 @@ import { OssImage } from "@/app/components/oss-midea"
 import { api } from "@/api/instance"
 import { IconButton } from "@/app/components/icon-button"
 import { faPaperPlane, } from "@fortawesome/free-solid-svg-icons";
+import { NotifyType } from "@/api/internal/model/response/notify"
 
 export default function NotifyPage() {
     const searchParams = useSearchParams()
-    const [notify, setNotify] = useState<MockNotifacitionType | null>(null)
+    const [notify, setNotify] = useState<NotifyType | null>(null)
     const { showNotification } = useNotification()
     const [isLike, setIsLike] = useState<boolean>(false)
     const [comments, setComments] = useState<Array<Comment>>([])
@@ -40,7 +41,8 @@ export default function NotifyPage() {
     useEffect(() => {
         const fetchNotifyData = async () => {
             const id = searchParams.get('id')
-            const res = await mockNotifacition(id ?? "")
+            if (!id) return
+            const res = await api.notifyService.notifyInfo({ id })
             if (res.base.code !== 200) {
                 showNotification({
                     title: "获取课程数据失败",
@@ -49,11 +51,10 @@ export default function NotifyPage() {
                 })
                 return
             }
-            setNotify(res.notifaciton)
-            setIsLike(res.notifaciton.isLike)
+            setNotify(res.notification)
+            setIsLike(res.notification.isLike ?? false)
         }
         fetchNotifyData()
-
     }, [searchParams, showNotification])
 
     useEffect(() => {
@@ -279,45 +280,6 @@ export default function NotifyPage() {
     )
 }
 
-
-interface MockNotifacitionDataType {
-    base: {
-        code: number,
-        msg: string
-    },
-    notifaciton: MockNotifacitionType
-}
-
-interface MockNotifacitionType {
-    content: string,
-    file: string,
-    cid: string,
-    favorite: number,
-    read: boolean,
-    id: string,
-    title: string,
-    isLike: boolean
-}
-
-async function mockNotifacition(cid: string): Promise<MockNotifacitionDataType> {
-    console.log(cid)
-    return {
-        base: {
-            code: 200,
-            msg: "success"
-        },
-        notifaciton: {
-            content: "老师发布了新的课程内容",
-            file: "http://mock.file.com/韭菜动力学第七章.pdf",
-            cid: "114514",
-            favorite: 233,
-            read: false,
-            id: "1",
-            title: "课程更新通知",
-            isLike: false
-        }
-    }
-}
 
 async function mockComments() {
     return {

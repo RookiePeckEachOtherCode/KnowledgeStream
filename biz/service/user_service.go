@@ -117,13 +117,29 @@ func (s *UserService) GetUserInfoWithId(c context.Context, id int64) (*entity.Us
 	return user, err
 }
 
-func (s *UserService) UpdateUserInfoWithId(c context.Context, id int64, name string, avatar string, phone string, signature string) error {
-
-	_, err := query.User.WithContext(c).Where(query.User.ID.Eq(id)).Updates(entity.User{
+func (s *UserService) UpdateUserInfoWithId(c context.Context, id int64, name string, avatar string, phone string, signature string, major string, faculty string, grade string) error {
+	u := query.User
+	user, err := u.WithContext(c).Where(u.ID.Eq(id)).First()
+	if err != nil {
+		return err
+	}
+	if major == "" {
+		major = user.Major
+	}
+	if faculty == "" {
+		faculty = user.Faculty
+	}
+	if grade == "" {
+		grade = user.Grade
+	}
+	_, err = u.WithContext(c).Where(u.ID.Eq(id)).Updates(entity.User{
 		Name:      name,
 		Avatar:    avatar,
 		Phone:     phone,
 		Signature: signature,
+		Major:     major,
+		Faculty:   faculty,
+		Grade:     grade,
 	})
 	if err != nil {
 		hlog.Error("更新用户信息失败: ", err)
@@ -265,8 +281,10 @@ func (s *UserService) StudentsStatistics(c context.Context, offset int32, size i
 	u := query.User
 	users, err := u.WithContext(c).
 		Where(u.Authority.Eq("USER")).
-		Offset(int(offset)).
-		Limit(int(size)).Find()
+		Order(u.Faculty).    // 根据 Faculty 排序，默认为升序，如果需要降序，使用 Order(u.Faculty.Desc())
+		Offset(int(offset)). // 设置分页偏移量
+		Limit(int(size)).    // 设置每页的大小
+		Find()
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -291,6 +309,7 @@ func (s *UserService) TeachersStatistics(c context.Context, offset int32, size i
 	u := query.User
 	users, err := u.WithContext(c).
 		Where(u.Authority.Eq("ADMIN")).
+		Order(u.Faculty).
 		Offset(int(offset)).
 		Limit(int(size)).Find()
 	if err != nil {

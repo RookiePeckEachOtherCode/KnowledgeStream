@@ -11,6 +11,7 @@ import (
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/config"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"gorm.io/gorm"
+	"sort"
 	"strconv"
 	"sync"
 )
@@ -214,6 +215,9 @@ func (s *VideoService) VideosStatistics(c context.Context, offset int32, size in
 		vs.Videos = count
 		result = append(result, vs)
 	}
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].Videos > result[j].Videos
+	})
 	return result, nil
 }
 func (s *VideoService) VideoPlaysStatistics(c context.Context, offset int32, size int32) ([]*base.VideosPlaysStatistics, error) {
@@ -236,5 +240,8 @@ func (s *VideoService) VideoPlaysStatistics(c context.Context, offset int32, siz
 		vps.Video = video.Title
 		result = append(result, vps)
 	}
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].Plays > result[j].Plays
+	})
 	return result, nil
 }

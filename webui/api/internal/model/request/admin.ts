@@ -28,12 +28,19 @@ export  type AdminServiceRequest = {
         description?: string;
         id?: string;
         title?: string;
+        faculty?: string;
+        major?: string;
+        begin_time?: string,
+        end_time?: string
     }
     QUERY_COURSE: {
         keyword?: string;
         major?: string;
         offset?: number;
         size?: number;
+        begin_time?: string;
+        end_time?: string;
+        faculty?: string;
     }
     QUERY_USER: {
         authority?: string;

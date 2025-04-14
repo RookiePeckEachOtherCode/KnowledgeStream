@@ -517,13 +517,34 @@ export function ManageCourse() {
     ])
     const [major, setMajor] = useState("")
     const [faculty, setFaculty] = useState("")
+    const [endTime, setEndTime] = useState("")
+    const [beginTime, setBeginTime] = useState("")
     const {isShow, toggleShowModal, setForm} = useModal()
-
+    const {showNotification} = useNotification();
     const SearchCourse = async () => {
+        const queryRes = await api.adminService.queryCourse({
+            keyword: keyword,
+            major: major,
+            offset: 0,
+            size: size,
+            begin_time: beginTime,
+            end_time: endTime,
+            faculty: faculty
+        });
+        if (queryRes.base.code !== 200) {
+            showNotification({
+                title: "查询课程信息失败",
+                content: queryRes.base.msg,
+                type: "error"
+            })
+            return
+        }
+        setCourses(queryRes.coursesinfo)
 
     }
     const openEditForm = async (index: number) => {
         await setForm(<EditCourseInfo
+            key={Date.now()}
             ascription={courses[index].ascription}
             begin_time={courses[index].begin_time}
             class={courses[index].class}
@@ -538,7 +559,7 @@ export function ManageCourse() {
     }
 
     return (
-        <div className={`w-full h-full flex flex-col space-y-6`}>
+        <div className={`w-full h-full flex flex-col p-3 space-y-6`}>
             <div className={`text-3xl`}>管理课程</div>
             <div className={`w-full flex flex-row items-center   justify-start space-x-6`}>
                 <FontAwesomeIcon icon={faKeyboard} size={`lg`}></FontAwesomeIcon>
@@ -565,10 +586,33 @@ export function ManageCourse() {
                     placeholder="所属学院"
                 />
             </div>
+            <div className={`w-full flex`}>
+                <div className={`grid grid-cols-2 gap-4 z-index-[100] `}>
+                    <div className={`space-y-2 ml-12`}>
+                        <label className={`text-sm font-medium text-on-surface`}>
+                            起始时间
+                        </label>
+                        <CustomDatePicker
+                            value={beginTime}
+                            onChange={(value) => setBeginTime(value ? dayjs(value).format('YYYY-MM-DD') : '')}>
+                        </CustomDatePicker>
+                    </div>
+                    <div className={`space-y-2`}>
+                        <label className={`text-sm font-medium text-on-surface`}>
+                            结束时间
+                        </label>
+                        <CustomDatePicker
+                            value={endTime}
+                            onChange={(value) => setEndTime(value ? dayjs(value).format('YYYY-MM-DD') : '')}>
+                        </CustomDatePicker>
+                    </div>
+
+                </div>
+            </div>
             <Divider vertical={false}></Divider>
             <div className={`w-full flex flex-col p-6`}>
                 {
-                    courses.map((item, index) => {
+                    courses?.map((item, index) => {
                         return <CourseListItem
                             title={item.title}
                             id={item.cid}
@@ -627,6 +671,7 @@ export function ManageUser() {
 
     const OpenEditInfoForm = async (index: number) => {
         await setForm(<EditUserInfo
+            key={Date.now()}
             authority={users[index].authority}
             faculty={users[index].faculty ? users[index].faculty : `未知学院`}
             name={users[index].name}
@@ -708,7 +753,7 @@ export function ManageUser() {
             <Divider vertical={false}></Divider>
             <div className={`w-full flex flex-col p-6`}>
                 {
-                    users.map((item, index) => {
+                    users?.map((item, index) => {
                         return <UserListItem
                             uid={item.uid}
                             avatar={item.avatar ? item.avatar : ``}
@@ -1067,6 +1112,36 @@ export function EditUserInfo({
     }
 
     const {isShow, toggleShowModal, setForm} = useModal()
+    const {showNotification} = useNotification();
+
+    const SaveEdit = async () => {
+        const saveRes = await api.adminService.updateUser({
+            authority: f_authority,
+            avatar: f_avatar,
+            faculty: f_faculty,
+            grade: f_grade,
+            major: f_major,
+            name: f_name,
+            password: f_password,
+            phone: f_phone,
+            signature: f_signature,
+            uid: uid
+        });
+        if (saveRes.base.code !== 200) {
+            showNotification({
+                title: "保存信息失败",
+                content: saveRes.base.msg,
+                type: "error"
+            })
+            return
+        }
+        showNotification({
+            title: "保存成功",
+            content: "",
+            type: "success"
+        })
+        toggleShowModal(false)
+    }
 
     return (
         <div className="w-full h-full relative flex items-center">
@@ -1081,7 +1156,7 @@ export function EditUserInfo({
                 </div>
 
                 {/* 表单主体 */}
-                <form className="space-y-6 transition-all duration-300">
+                <div className="space-y-6 transition-all duration-300">
                     {/* 第一行：名称 + 电话 */}
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -1248,6 +1323,7 @@ export function EditUserInfo({
                     </div>
                     <div className={`w-auto flex items-center space-x-6 justify-end `}>
                         <IconButton text={`保存`} onClick={() => {
+                            SaveEdit()
                         }} className={`w-24 h-12 space-x-3 bg-primary-fixed`}>
                             <FontAwesomeIcon icon={faSave}></FontAwesomeIcon>
                         </IconButton>
@@ -1259,7 +1335,7 @@ export function EditUserInfo({
 
                     </div>
 
-                </form>
+                </div>
             </div>
         </div>
     )
@@ -1285,6 +1361,7 @@ export function EditCourseInfo({
     const [f_class, setClass] = useState(courseClass)
     const [f_cover, setCover] = useState(cover)
     const [videoFile, setVideoFile] = useState<File | null>(null)
+    const {showNotification} = useNotification();
     const {isShow, toggleShowModal, setForm} = useModal()
     // 处理封面上传
     const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1305,6 +1382,34 @@ export function EditCourseInfo({
         setVideoFile(e.target.files?.[0] || null)
     }
 
+    const SaveEditInfo = async () => {
+        const saveRes = await api.adminService.updateCourse({
+            ascription: ascription,
+            cid: cid,
+            cover: f_cover,
+            title: f_title,
+            description: f_description,
+            id: cid,
+            major: f_major,
+            begin_time: f_beginTime,
+            end_time: f_endTime
+        });
+        if (saveRes.base.code !== 200) {
+            showNotification({
+                title: "保存信息失败",
+                content: saveRes.base.msg,
+                type: "error"
+            })
+            return
+        }
+        toggleShowModal(false)
+        showNotification({
+            title: "修改成功",
+            content: "",
+            type: "success",
+        })
+    }
+
     return (
         <div className="w-full h-full relative flex items-center">
             <div
@@ -1321,7 +1426,7 @@ export function EditCourseInfo({
                 </div>
 
                 {/* 表单主体 */}
-                <form className="space-y-6">
+                <div className="space-y-6">
                     {/* 第一行：课程名称 + 所属专业 */}
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -1359,8 +1464,8 @@ export function EditCourseInfo({
                                 开课时间<span className="text-error">*</span>
                             </label>
                             <CustomDatePicker
-                                value={begin_time}
-                                onChange={value => setEndTime(dayjs(value).format('YYYY-MM-DD'))}
+                                value={f_beginTime}
+                                onChange={value => setBeginTime(dayjs(value).format('YYYY-MM-DD'))}
                             />
                         </div>
                         <div className="space-y-2">
@@ -1368,7 +1473,7 @@ export function EditCourseInfo({
                                 结课时间<span className="text-error">*</span>
                             </label>
                             <CustomDatePicker
-                                value={end_time}
+                                value={f_endTime}
                                 onChange={value => setEndTime(dayjs(value).format('YYYY-MM-DD'))}
                                 minDate={dayjs(begin_time)}
                             />
@@ -1422,32 +1527,6 @@ export function EditCourseInfo({
                             </div>
                         </div>
 
-                        {/* 视频上传 */}
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-on-primary-container">
-                                课程视频
-                            </label>
-                            <div className="flex items-center gap-2">
-                                <input
-                                    type="file"
-                                    accept="video/*"
-                                    onChange={handleVideoChange}
-                                    className="hidden"
-                                    id="videoUpload"
-                                />
-                                <label
-                                    htmlFor="videoUpload"
-                                    className="cursor-pointer p-2 rounded-lg border bg-secondary-container text-on-surface hover:bg-secondary-container-hover"
-                                >
-                                    上传视频
-                                </label>
-                                {videoFile && (
-                                    <div className="text-sm text-on-surface">
-                                        {videoFile.name} ({Math.round(videoFile.size / 1024)}KB)
-                                    </div>
-                                )}
-                            </div>
-                        </div>
                     </div>
                     {/* 课程描述 */}
                     <div className="space-y-2">
@@ -1464,6 +1543,7 @@ export function EditCourseInfo({
                     </div>
                     <div className={`w-auto flex items-center space-x-6 justify-end `}>
                         <IconButton text={`保存`} onClick={() => {
+                            SaveEditInfo()
                         }} className={`w-24 h-12 space-x-3 bg-primary-fixed`}>
                             <FontAwesomeIcon icon={faSave}></FontAwesomeIcon>
                         </IconButton>
@@ -1474,7 +1554,7 @@ export function EditCourseInfo({
                         </IconButton>
 
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     )

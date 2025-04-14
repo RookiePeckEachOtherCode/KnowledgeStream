@@ -274,7 +274,7 @@ func (s *UserService) StudentsStatistics(c context.Context, offset int32, size i
 		hlog.Error("查询学生失败: ", err)
 		return nil, err
 	}
-	var mp map[string]int64
+	mp := make(map[string]int64)
 	for _, user := range users {
 		mp[user.Faculty]++
 	}
@@ -300,7 +300,7 @@ func (s *UserService) TeachersStatistics(c context.Context, offset int32, size i
 		hlog.Error("查询教师失败: ", err)
 		return nil, err
 	}
-	var mp map[string]int64
+	mp := make(map[string]int64)
 	for _, user := range users {
 		mp[user.Faculty]++
 	}

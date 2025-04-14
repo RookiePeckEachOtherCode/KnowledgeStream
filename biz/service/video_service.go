@@ -203,7 +203,7 @@ func (s *VideoService) VideosStatistics(c context.Context, offset int32, size in
 		hlog.Error("查询视频失败: ", err)
 		return nil, err
 	}
-	var mp map[string]int64
+	mp := make(map[string]int64)
 	for _, video := range videos {
 		mp[video.Major]++
 	}

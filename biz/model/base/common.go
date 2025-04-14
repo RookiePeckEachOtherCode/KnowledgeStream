@@ -2924,6 +2924,9 @@ func NewStudentsStatistics() *StudentsStatistics {
 	return &StudentsStatistics{}
 }
 
+func (p *StudentsStatistics) InitDefault() {
+}
+
 func (p *StudentsStatistics) GetFaculty() (v string) {
 	return p.Faculty
 }
@@ -2938,7 +2941,6 @@ var fieldIDToName_StudentsStatistics = map[int16]string{
 }
 
 func (p *StudentsStatistics) Read(iprot thrift.TProtocol) (err error) {
-
 	var fieldTypeId thrift.TType
 	var fieldId int16
 
@@ -2961,27 +2963,22 @@ func (p *StudentsStatistics) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
-			} else {
-				if err = iprot.Skip(fieldTypeId); err != nil {
-					goto SkipFieldError
-				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
 			}
 		case 2:
 			if fieldTypeId == thrift.I64 {
 				if err = p.ReadField2(iprot); err != nil {
 					goto ReadFieldError
 				}
-			} else {
-				if err = iprot.Skip(fieldTypeId); err != nil {
-					goto SkipFieldError
-				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
 			}
 		default:
 			if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
 		}
-
 		if err = iprot.ReadFieldEnd(); err != nil {
 			goto ReadFieldEndError
 		}
@@ -3007,20 +3004,25 @@ ReadStructEndError:
 }
 
 func (p *StudentsStatistics) ReadField1(iprot thrift.TProtocol) error {
+
+	var _field string
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
-		p.Faculty = v
+		_field = v
 	}
+	p.Faculty = _field
 	return nil
 }
-
 func (p *StudentsStatistics) ReadField2(iprot thrift.TProtocol) error {
+
+	var _field int64
 	if v, err := iprot.ReadI64(); err != nil {
 		return err
 	} else {
-		p.Students = v
+		_field = v
 	}
+	p.Students = _field
 	return nil
 }
 
@@ -3038,7 +3040,6 @@ func (p *StudentsStatistics) Write(oprot thrift.TProtocol) (err error) {
 			fieldId = 2
 			goto WriteFieldError
 		}
-
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
 		goto WriteFieldStopError
@@ -3073,7 +3074,6 @@ WriteFieldBeginError:
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
-
 func (p *StudentsStatistics) writeField2(oprot thrift.TProtocol) (err error) {
 	if err = oprot.WriteFieldBegin("students", thrift.I64, 2); err != nil {
 		goto WriteFieldBeginError
@@ -3096,6 +3096,7 @@ func (p *StudentsStatistics) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("StudentsStatistics(%+v)", *p)
+
 }
 
 type TeachersStatistics struct {
@@ -3105,6 +3106,9 @@ type TeachersStatistics struct {
 
 func NewTeachersStatistics() *TeachersStatistics {
 	return &TeachersStatistics{}
+}
+
+func (p *TeachersStatistics) InitDefault() {
 }
 
 func (p *TeachersStatistics) GetFaculty() (v string) {
@@ -3121,7 +3125,6 @@ var fieldIDToName_TeachersStatistics = map[int16]string{
 }
 
 func (p *TeachersStatistics) Read(iprot thrift.TProtocol) (err error) {
-
 	var fieldTypeId thrift.TType
 	var fieldId int16
 
@@ -3144,27 +3147,22 @@ func (p *TeachersStatistics) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
-			} else {
-				if err = iprot.Skip(fieldTypeId); err != nil {
-					goto SkipFieldError
-				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
 			}
 		case 2:
 			if fieldTypeId == thrift.I64 {
 				if err = p.ReadField2(iprot); err != nil {
 					goto ReadFieldError
 				}
-			} else {
-				if err = iprot.Skip(fieldTypeId); err != nil {
-					goto SkipFieldError
-				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
 			}
 		default:
 			if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
 		}
-
 		if err = iprot.ReadFieldEnd(); err != nil {
 			goto ReadFieldEndError
 		}
@@ -3190,20 +3188,25 @@ ReadStructEndError:
 }
 
 func (p *TeachersStatistics) ReadField1(iprot thrift.TProtocol) error {
+
+	var _field string
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
-		p.Faculty = v
+		_field = v
 	}
+	p.Faculty = _field
 	return nil
 }
-
 func (p *TeachersStatistics) ReadField2(iprot thrift.TProtocol) error {
+
+	var _field int64
 	if v, err := iprot.ReadI64(); err != nil {
 		return err
 	} else {
-		p.Teachers = v
+		_field = v
 	}
+	p.Teachers = _field
 	return nil
 }
 
@@ -3221,7 +3224,6 @@ func (p *TeachersStatistics) Write(oprot thrift.TProtocol) (err error) {
 			fieldId = 2
 			goto WriteFieldError
 		}
-
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
 		goto WriteFieldStopError
@@ -3256,7 +3258,6 @@ WriteFieldBeginError:
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
-
 func (p *TeachersStatistics) writeField2(oprot thrift.TProtocol) (err error) {
 	if err = oprot.WriteFieldBegin("teachers", thrift.I64, 2); err != nil {
 		goto WriteFieldBeginError
@@ -3279,6 +3280,7 @@ func (p *TeachersStatistics) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("TeachersStatistics(%+v)", *p)
+
 }
 
 type VideosStatistics struct {
@@ -3288,6 +3290,9 @@ type VideosStatistics struct {
 
 func NewVideosStatistics() *VideosStatistics {
 	return &VideosStatistics{}
+}
+
+func (p *VideosStatistics) InitDefault() {
 }
 
 func (p *VideosStatistics) GetMajor() (v string) {
@@ -3304,7 +3309,6 @@ var fieldIDToName_VideosStatistics = map[int16]string{
 }
 
 func (p *VideosStatistics) Read(iprot thrift.TProtocol) (err error) {
-
 	var fieldTypeId thrift.TType
 	var fieldId int16
 
@@ -3327,27 +3331,22 @@ func (p *VideosStatistics) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
-			} else {
-				if err = iprot.Skip(fieldTypeId); err != nil {
-					goto SkipFieldError
-				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
 			}
 		case 2:
 			if fieldTypeId == thrift.I64 {
 				if err = p.ReadField2(iprot); err != nil {
 					goto ReadFieldError
 				}
-			} else {
-				if err = iprot.Skip(fieldTypeId); err != nil {
-					goto SkipFieldError
-				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
 			}
 		default:
 			if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
 		}
-
 		if err = iprot.ReadFieldEnd(); err != nil {
 			goto ReadFieldEndError
 		}
@@ -3373,20 +3372,25 @@ ReadStructEndError:
 }
 
 func (p *VideosStatistics) ReadField1(iprot thrift.TProtocol) error {
+
+	var _field string
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
-		p.Major = v
+		_field = v
 	}
+	p.Major = _field
 	return nil
 }
-
 func (p *VideosStatistics) ReadField2(iprot thrift.TProtocol) error {
+
+	var _field int64
 	if v, err := iprot.ReadI64(); err != nil {
 		return err
 	} else {
-		p.Videos = v
+		_field = v
 	}
+	p.Videos = _field
 	return nil
 }
 
@@ -3404,7 +3408,6 @@ func (p *VideosStatistics) Write(oprot thrift.TProtocol) (err error) {
 			fieldId = 2
 			goto WriteFieldError
 		}
-
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
 		goto WriteFieldStopError
@@ -3439,7 +3442,6 @@ WriteFieldBeginError:
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
-
 func (p *VideosStatistics) writeField2(oprot thrift.TProtocol) (err error) {
 	if err = oprot.WriteFieldBegin("videos", thrift.I64, 2); err != nil {
 		goto WriteFieldBeginError
@@ -3462,6 +3464,7 @@ func (p *VideosStatistics) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("VideosStatistics(%+v)", *p)
+
 }
 
 type VideosPlaysStatistics struct {
@@ -3471,6 +3474,9 @@ type VideosPlaysStatistics struct {
 
 func NewVideosPlaysStatistics() *VideosPlaysStatistics {
 	return &VideosPlaysStatistics{}
+}
+
+func (p *VideosPlaysStatistics) InitDefault() {
 }
 
 func (p *VideosPlaysStatistics) GetVideo() (v string) {
@@ -3487,7 +3493,6 @@ var fieldIDToName_VideosPlaysStatistics = map[int16]string{
 }
 
 func (p *VideosPlaysStatistics) Read(iprot thrift.TProtocol) (err error) {
-
 	var fieldTypeId thrift.TType
 	var fieldId int16
 
@@ -3510,27 +3515,22 @@ func (p *VideosPlaysStatistics) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
-			} else {
-				if err = iprot.Skip(fieldTypeId); err != nil {
-					goto SkipFieldError
-				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
 			}
 		case 2:
 			if fieldTypeId == thrift.I64 {
 				if err = p.ReadField2(iprot); err != nil {
 					goto ReadFieldError
 				}
-			} else {
-				if err = iprot.Skip(fieldTypeId); err != nil {
-					goto SkipFieldError
-				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
 			}
 		default:
 			if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
 		}
-
 		if err = iprot.ReadFieldEnd(); err != nil {
 			goto ReadFieldEndError
 		}
@@ -3556,20 +3556,25 @@ ReadStructEndError:
 }
 
 func (p *VideosPlaysStatistics) ReadField1(iprot thrift.TProtocol) error {
+
+	var _field string
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
-		p.Video = v
+		_field = v
 	}
+	p.Video = _field
 	return nil
 }
-
 func (p *VideosPlaysStatistics) ReadField2(iprot thrift.TProtocol) error {
+
+	var _field int64
 	if v, err := iprot.ReadI64(); err != nil {
 		return err
 	} else {
-		p.Plays = v
+		_field = v
 	}
+	p.Plays = _field
 	return nil
 }
 
@@ -3587,7 +3592,6 @@ func (p *VideosPlaysStatistics) Write(oprot thrift.TProtocol) (err error) {
 			fieldId = 2
 			goto WriteFieldError
 		}
-
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
 		goto WriteFieldStopError
@@ -3622,7 +3626,6 @@ WriteFieldBeginError:
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
-
 func (p *VideosPlaysStatistics) writeField2(oprot thrift.TProtocol) (err error) {
 	if err = oprot.WriteFieldBegin("plays", thrift.I64, 2); err != nil {
 		goto WriteFieldBeginError
@@ -3645,4 +3648,5 @@ func (p *VideosPlaysStatistics) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("VideosPlaysStatistics(%+v)", *p)
+
 }

@@ -4066,8 +4066,8 @@ func (p *EnquiryCourseResp) ReadField2(iprot thrift.TProtocol) error {
 	if err != nil {
 		return err
 	}
-
-	p.Courses = make([]*base.CourseInfo, 0, size)
+	_field := make([]*base.CourseInfo, 0, size)
+	values := make([]base.CourseInfo, size)
 	for i := 0; i < size; i++ {
 		_elem := &values[i]
 		_elem.InitDefault()
@@ -4076,13 +4076,12 @@ func (p *EnquiryCourseResp) ReadField2(iprot thrift.TProtocol) error {
 			return err
 		}
 
-
-		p.Courses = append(p.Courses, _elem)
+		_field = append(_field, _elem)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return err
 	}
-	p.Coursesinfo = _field
+	p.Courses = _field
 	return nil
 }
 
@@ -4551,8 +4550,8 @@ func (p *EnquiryVideoResp) ReadField2(iprot thrift.TProtocol) error {
 	if err != nil {
 		return err
 	}
-
-	p.Videos = make([]*base.VideoInfo, 0, size)
+	_field := make([]*base.VideoInfo, 0, size)
+	values := make([]base.VideoInfo, size)
 	for i := 0; i < size; i++ {
 		_elem := &values[i]
 		_elem.InitDefault()
@@ -4561,12 +4560,12 @@ func (p *EnquiryVideoResp) ReadField2(iprot thrift.TProtocol) error {
 			return err
 		}
 
-		p.Videos = append(p.Videos, _elem)
+		_field = append(_field, _elem)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return err
 	}
-	p.Videosinfo = _field
+	p.Videos = _field
 	return nil
 }
 
@@ -5125,8 +5124,8 @@ func (p *EnquiryUserResp) ReadField2(iprot thrift.TProtocol) error {
 	if err != nil {
 		return err
 	}
-
-	p.Users = make([]*base.UserInfo, 0, size)
+	_field := make([]*base.UserInfo, 0, size)
+	values := make([]base.UserInfo, size)
 	for i := 0; i < size; i++ {
 		_elem := &values[i]
 		_elem.InitDefault()
@@ -5135,13 +5134,12 @@ func (p *EnquiryUserResp) ReadField2(iprot thrift.TProtocol) error {
 			return err
 		}
 
-
-		p.Users = append(p.Users, _elem)
+		_field = append(_field, _elem)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return err
 	}
-	p.Usersinfo = _field
+	p.Users = _field
 	return nil
 }
 

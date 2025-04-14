@@ -8,7 +8,7 @@ struct StudentStatisticsReq{
 }
 struct StudentStatisticsResp{
     1:common.BaseResponse base;
-    2:list<common.StudentsStatistics> statistics;
+    2:list<common.StudentsStatistics> datas;
 }
 struct TeacherStatisticsReq{
     1:i32 offset;
@@ -16,7 +16,7 @@ struct TeacherStatisticsReq{
 }
 struct TeacherStatisticsResp{
     1:common.BaseResponse base;
-    2:list<common.TeachersStatistics> statistics;
+    2:list<common.TeachersStatistics> datas;
 }
 struct VideoStatisticsReq{
     1:i32 offset;
@@ -24,7 +24,7 @@ struct VideoStatisticsReq{
 }
 struct VideoStatisticsResp{
     1:common.BaseResponse base;
-    2:list<common.VideosStatistics> statistics;
+    2:list<common.VideosStatistics> datas;
 }
 struct VideoPlaysStatisticsReq{
     1:i32 offset;
@@ -32,7 +32,7 @@ struct VideoPlaysStatisticsReq{
 }
 struct VideoPlaysStatisticsResp{
     1:common.BaseResponse base;
-    2:list<common.VideosPlaysStatistics> statistics;
+    2:list<common.VideosPlaysStatistics> datas;
 }
 service StatisticsService{
     StudentStatisticsResp StudentStatistics(1:StudentStatisticsReq req)(api.get="/statistics/faculty-student")

@@ -4,10 +4,13 @@ package statistics
 
 import (
 	"context"
-
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/base"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/srverror"
 	statistics "github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/statistics"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/service"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
+	"net/http"
 )
 
 // StudentStatistics .
@@ -22,7 +25,28 @@ func StudentStatistics(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(statistics.StudentStatisticsResp)
-
+	resp.Base = new(base.BaseResponse)
+	/*_, authority, err := utils.AuthCheck(c)
+	if err != nil {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = err.Error()
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	if authority != entity.AuthoritySuperAdmin {
+		resp.Base.Code = http.StatusUnauthorized
+		resp.Base.Msg = "用户权限不够"
+		c.JSON(consts.StatusOK, resp)
+		return
+	}*/
+	result, err := service.UserServ().StudentsStatistics(ctx, req.Offset, req.Size)
+	if err != nil {
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	resp.Datas = result
+	resp.Base = srverror.WrapWithSuccess("查询学生统计成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -38,7 +62,16 @@ func TeacherStatistics(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(statistics.TeacherStatisticsResp)
+	resp.Base = new(base.BaseResponse)
 
+	result, err := service.UserServ().TeachersStatistics(ctx, req.Offset, req.Size)
+	if err != nil {
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	resp.Datas = result
+	resp.Base = srverror.WrapWithSuccess("查询教师统计成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -54,7 +87,15 @@ func VideoStatistics(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(statistics.VideoStatisticsResp)
-
+	resp.Base = new(base.BaseResponse)
+	result, err := service.VideoServ().VideosStatistics(ctx, req.Offset, req.Size)
+	if err != nil {
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	resp.Datas = result
+	resp.Base = srverror.WrapWithSuccess("查询视频统计成功")
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -70,6 +111,14 @@ func VideoPlaysStatistics(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(statistics.VideoPlaysStatisticsResp)
-
+	resp.Base = new(base.BaseResponse)
+	result, err := service.VideoServ().VideoPlaysStatistics(ctx, req.Offset, req.Size)
+	if err != nil {
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	resp.Datas = result
+	resp.Base = srverror.WrapWithSuccess("查询视频播放量统计成功")
 	c.JSON(consts.StatusOK, resp)
 }

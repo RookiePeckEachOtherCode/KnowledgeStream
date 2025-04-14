@@ -261,3 +261,55 @@ func (s *UserService) TeacherQueryStudent(
 	}
 	return result, nil
 }
+func (s *UserService) StudentsStatistics(c context.Context, offset int32, size int32) ([]*base.StudentsStatistics, error) {
+	u := query.User
+	users, err := u.WithContext(c).
+		Where(u.Authority.Eq("USER")).
+		Offset(int(offset)).
+		Limit(int(size)).Find()
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		hlog.Error("查询学生失败: ", err)
+		return nil, err
+	}
+	var mp map[string]int64
+	for _, user := range users {
+		mp[user.Faculty]++
+	}
+	var result []*base.StudentsStatistics
+	for faculty, count := range mp {
+		ss := new(base.StudentsStatistics)
+		ss.Faculty = faculty
+		ss.Students = count
+		result = append(result, ss)
+	}
+	return result, nil
+}
+func (s *UserService) TeachersStatistics(c context.Context, offset int32, size int32) ([]*base.TeachersStatistics, error) {
+	u := query.User
+	users, err := u.WithContext(c).
+		Where(u.Authority.Eq("ADMIN")).
+		Offset(int(offset)).
+		Limit(int(size)).Find()
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		hlog.Error("查询教师失败: ", err)
+		return nil, err
+	}
+	var mp map[string]int64
+	for _, user := range users {
+		mp[user.Faculty]++
+	}
+	var result []*base.TeachersStatistics
+	for faculty, count := range mp {
+		ss := new(base.TeachersStatistics)
+		ss.Faculty = faculty
+		ss.Teachers = count
+		result = append(result, ss)
+	}
+	return result, nil
+}

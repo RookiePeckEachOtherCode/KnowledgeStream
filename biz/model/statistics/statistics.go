@@ -193,8 +193,8 @@ func (p *StudentStatisticsReq) String() string {
 }
 
 type StudentStatisticsResp struct {
-	Base       *base.BaseResponse         `thrift:"base,1" form:"base" json:"base" query:"base"`
-	Statistics []*base.StudentsStatistics `thrift:"statistics,2" form:"statistics" json:"statistics" query:"statistics"`
+	Base  *base.BaseResponse         `thrift:"base,1" form:"base" json:"base" query:"base"`
+	Datas []*base.StudentsStatistics `thrift:"datas,2" form:"datas" json:"datas" query:"datas"`
 }
 
 func NewStudentStatisticsResp() *StudentStatisticsResp {
@@ -210,13 +210,13 @@ func (p *StudentStatisticsResp) GetBase() (v *base.BaseResponse) {
 	return p.Base
 }
 
-func (p *StudentStatisticsResp) GetStatistics() (v []*base.StudentsStatistics) {
-	return p.Statistics
+func (p *StudentStatisticsResp) GetDatas() (v []*base.StudentsStatistics) {
+	return p.Datas
 }
 
 var fieldIDToName_StudentStatisticsResp = map[int16]string{
 	1: "base",
-	2: "statistics",
+	2: "datas",
 }
 
 func (p *StudentStatisticsResp) IsSetBase() bool {
@@ -305,14 +305,14 @@ func (p *StudentStatisticsResp) ReadField2(iprot thrift.TProtocol) error {
 	if err != nil {
 		return err
 	}
-	p.Statistics = make([]*base.StudentsStatistics, 0, size)
+	p.Datas = make([]*base.StudentsStatistics, 0, size)
 	for i := 0; i < size; i++ {
 		_elem := base.NewStudentsStatistics()
 		if err := _elem.Read(iprot); err != nil {
 			return err
 		}
 
-		p.Statistics = append(p.Statistics, _elem)
+		p.Datas = append(p.Datas, _elem)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return err
@@ -371,13 +371,13 @@ WriteFieldEndError:
 }
 
 func (p *StudentStatisticsResp) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("statistics", thrift.LIST, 2); err != nil {
+	if err = oprot.WriteFieldBegin("datas", thrift.LIST, 2); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Statistics)); err != nil {
+	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Datas)); err != nil {
 		return err
 	}
-	for _, v := range p.Statistics {
+	for _, v := range p.Datas {
 		if err := v.Write(oprot); err != nil {
 			return err
 		}
@@ -586,8 +586,8 @@ func (p *TeacherStatisticsReq) String() string {
 }
 
 type TeacherStatisticsResp struct {
-	Base       *base.BaseResponse         `thrift:"base,1" form:"base" json:"base" query:"base"`
-	Statistics []*base.TeachersStatistics `thrift:"statistics,2" form:"statistics" json:"statistics" query:"statistics"`
+	Base  *base.BaseResponse         `thrift:"base,1" form:"base" json:"base" query:"base"`
+	Datas []*base.TeachersStatistics `thrift:"datas,2" form:"datas" json:"datas" query:"datas"`
 }
 
 func NewTeacherStatisticsResp() *TeacherStatisticsResp {
@@ -603,13 +603,13 @@ func (p *TeacherStatisticsResp) GetBase() (v *base.BaseResponse) {
 	return p.Base
 }
 
-func (p *TeacherStatisticsResp) GetStatistics() (v []*base.TeachersStatistics) {
-	return p.Statistics
+func (p *TeacherStatisticsResp) GetDatas() (v []*base.TeachersStatistics) {
+	return p.Datas
 }
 
 var fieldIDToName_TeacherStatisticsResp = map[int16]string{
 	1: "base",
-	2: "statistics",
+	2: "datas",
 }
 
 func (p *TeacherStatisticsResp) IsSetBase() bool {
@@ -698,14 +698,14 @@ func (p *TeacherStatisticsResp) ReadField2(iprot thrift.TProtocol) error {
 	if err != nil {
 		return err
 	}
-	p.Statistics = make([]*base.TeachersStatistics, 0, size)
+	p.Datas = make([]*base.TeachersStatistics, 0, size)
 	for i := 0; i < size; i++ {
 		_elem := base.NewTeachersStatistics()
 		if err := _elem.Read(iprot); err != nil {
 			return err
 		}
 
-		p.Statistics = append(p.Statistics, _elem)
+		p.Datas = append(p.Datas, _elem)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return err
@@ -764,13 +764,13 @@ WriteFieldEndError:
 }
 
 func (p *TeacherStatisticsResp) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("statistics", thrift.LIST, 2); err != nil {
+	if err = oprot.WriteFieldBegin("datas", thrift.LIST, 2); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Statistics)); err != nil {
+	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Datas)); err != nil {
 		return err
 	}
-	for _, v := range p.Statistics {
+	for _, v := range p.Datas {
 		if err := v.Write(oprot); err != nil {
 			return err
 		}
@@ -979,8 +979,8 @@ func (p *VideoStatisticsReq) String() string {
 }
 
 type VideoStatisticsResp struct {
-	Base       *base.BaseResponse       `thrift:"base,1" form:"base" json:"base" query:"base"`
-	Statistics []*base.VideosStatistics `thrift:"statistics,2" form:"statistics" json:"statistics" query:"statistics"`
+	Base  *base.BaseResponse       `thrift:"base,1" form:"base" json:"base" query:"base"`
+	Datas []*base.VideosStatistics `thrift:"datas,2" form:"datas" json:"datas" query:"datas"`
 }
 
 func NewVideoStatisticsResp() *VideoStatisticsResp {
@@ -996,13 +996,13 @@ func (p *VideoStatisticsResp) GetBase() (v *base.BaseResponse) {
 	return p.Base
 }
 
-func (p *VideoStatisticsResp) GetStatistics() (v []*base.VideosStatistics) {
-	return p.Statistics
+func (p *VideoStatisticsResp) GetDatas() (v []*base.VideosStatistics) {
+	return p.Datas
 }
 
 var fieldIDToName_VideoStatisticsResp = map[int16]string{
 	1: "base",
-	2: "statistics",
+	2: "datas",
 }
 
 func (p *VideoStatisticsResp) IsSetBase() bool {
@@ -1091,14 +1091,14 @@ func (p *VideoStatisticsResp) ReadField2(iprot thrift.TProtocol) error {
 	if err != nil {
 		return err
 	}
-	p.Statistics = make([]*base.VideosStatistics, 0, size)
+	p.Datas = make([]*base.VideosStatistics, 0, size)
 	for i := 0; i < size; i++ {
 		_elem := base.NewVideosStatistics()
 		if err := _elem.Read(iprot); err != nil {
 			return err
 		}
 
-		p.Statistics = append(p.Statistics, _elem)
+		p.Datas = append(p.Datas, _elem)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return err
@@ -1157,13 +1157,13 @@ WriteFieldEndError:
 }
 
 func (p *VideoStatisticsResp) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("statistics", thrift.LIST, 2); err != nil {
+	if err = oprot.WriteFieldBegin("datas", thrift.LIST, 2); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Statistics)); err != nil {
+	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Datas)); err != nil {
 		return err
 	}
-	for _, v := range p.Statistics {
+	for _, v := range p.Datas {
 		if err := v.Write(oprot); err != nil {
 			return err
 		}
@@ -1372,8 +1372,8 @@ func (p *VideoPlaysStatisticsReq) String() string {
 }
 
 type VideoPlaysStatisticsResp struct {
-	Base       *base.BaseResponse            `thrift:"base,1" form:"base" json:"base" query:"base"`
-	Statistics []*base.VideosPlaysStatistics `thrift:"statistics,2" form:"statistics" json:"statistics" query:"statistics"`
+	Base  *base.BaseResponse            `thrift:"base,1" form:"base" json:"base" query:"base"`
+	Datas []*base.VideosPlaysStatistics `thrift:"datas,2" form:"datas" json:"datas" query:"datas"`
 }
 
 func NewVideoPlaysStatisticsResp() *VideoPlaysStatisticsResp {
@@ -1389,13 +1389,13 @@ func (p *VideoPlaysStatisticsResp) GetBase() (v *base.BaseResponse) {
 	return p.Base
 }
 
-func (p *VideoPlaysStatisticsResp) GetStatistics() (v []*base.VideosPlaysStatistics) {
-	return p.Statistics
+func (p *VideoPlaysStatisticsResp) GetDatas() (v []*base.VideosPlaysStatistics) {
+	return p.Datas
 }
 
 var fieldIDToName_VideoPlaysStatisticsResp = map[int16]string{
 	1: "base",
-	2: "statistics",
+	2: "datas",
 }
 
 func (p *VideoPlaysStatisticsResp) IsSetBase() bool {
@@ -1484,14 +1484,14 @@ func (p *VideoPlaysStatisticsResp) ReadField2(iprot thrift.TProtocol) error {
 	if err != nil {
 		return err
 	}
-	p.Statistics = make([]*base.VideosPlaysStatistics, 0, size)
+	p.Datas = make([]*base.VideosPlaysStatistics, 0, size)
 	for i := 0; i < size; i++ {
 		_elem := base.NewVideosPlaysStatistics()
 		if err := _elem.Read(iprot); err != nil {
 			return err
 		}
 
-		p.Statistics = append(p.Statistics, _elem)
+		p.Datas = append(p.Datas, _elem)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return err
@@ -1550,13 +1550,13 @@ WriteFieldEndError:
 }
 
 func (p *VideoPlaysStatisticsResp) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("statistics", thrift.LIST, 2); err != nil {
+	if err = oprot.WriteFieldBegin("datas", thrift.LIST, 2); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Statistics)); err != nil {
+	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Datas)); err != nil {
 		return err
 	}
-	for _, v := range p.Statistics {
+	for _, v := range p.Datas {
 		if err := v.Write(oprot); err != nil {
 			return err
 		}

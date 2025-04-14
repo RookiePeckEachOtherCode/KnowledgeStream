@@ -8,10 +8,10 @@ import {faTruckLoading} from "@fortawesome/free-solid-svg-icons";
 
 
 const parseOssUrl = (url?: string | null): { bucket?: string; fileName?: string } => {
-    if (!url) return { bucket: undefined, fileName: undefined };
+    if (!url) return {bucket: undefined, fileName: undefined};
 
     const parts = url.split('/').filter(Boolean); // 过滤空字符串
-    if (parts.length < 2) return { bucket: undefined, fileName: undefined };
+    if (parts.length < 2) return {bucket: undefined, fileName: undefined};
 
     return {
         bucket: parts[0],
@@ -21,16 +21,16 @@ const parseOssUrl = (url?: string | null): { bucket?: string; fileName?: string 
 
 interface OssVideoProps {
     url: string;
-    className:string
+    className: string
 }
 
 export function OssVideo(props: OssVideoProps) {
-    const { className = "", url } = props;
+    const {className = "", url} = props;
     const [blobUrl, setBlobUrl] = useState<string | null>(null);
     const {showNotification} = useNotification();
-    const { generateSignedUrl } = useOss();
+    const {generateSignedUrl} = useOss();
 
-    const { bucket, fileName } = parseOssUrl(url);
+    const {bucket, fileName} = parseOssUrl(url);
 
     useEffect(() => {
         const fetchVideo = async () => {
@@ -110,17 +110,17 @@ interface OssImageProps {
 }
 
 export function OssImage({
-    className = "",
-    url,
-    alt = "OSS存储图片",
-}: OssImageProps) {
+                             className = "",
+                             url,
+                             alt = "OSS存储图片",
+                         }: OssImageProps) {
     const [blobUrl, setBlobUrl] = useState<string | null>(null);
     const {showNotification} = useNotification();
-    const { generateSignedUrl } = useOss();
-    const { bucket, fileName } = parseOssUrl(url);
+    const {generateSignedUrl} = useOss();
+    const {bucket, fileName} = parseOssUrl(url);
 
     useEffect(() => {
-        
+
         if (!url) {
             showNotification({
                 title: "参数缺失",
@@ -138,7 +138,7 @@ export function OssImage({
             });
             return;
         }
-        
+
         const fetchImage = async () => {
             try {
                 const url = await generateSignedUrl(fileName, bucket);
@@ -158,7 +158,7 @@ export function OssImage({
                     content: errorMessage,
                     type: "error",
                 });
-                console.error("图片加载错误:", error);
+                
             }
         };
 
@@ -177,17 +177,19 @@ export function OssImage({
         });
         console.error("图片加载错误", e);
     };
-    
+
     return blobUrl ? (
         <img
             src={blobUrl}
             alt={alt || "OssImage"}
-            className={`${className?className:``}  object-cover`} // 直接使用传入的 className
+            className={`${className ? className : ``}  object-cover`} // 直接使用传入的 className
             onError={handleImageError}
         />
     ) : (
-        <div className={` ${className?className:``}  flex flex-col min-w-max  transition-all duration-300 space-x-6 items-center justify-center`}>
-            <FontAwesomeIcon className={`w-full animate-spin transition-all duration-300`} icon={faTruckLoading}></FontAwesomeIcon>
+        <div
+            className={` ${className ? className : ``}  flex flex-col min-w-max  transition-all duration-300 space-x-6 items-center justify-center`}>
+            <FontAwesomeIcon className={`w-full animate-spin transition-all duration-300`}
+                             icon={faTruckLoading}></FontAwesomeIcon>
             <div className={`w-full`}>Loading...</div>
         </div>
     );

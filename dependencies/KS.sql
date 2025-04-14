@@ -79,7 +79,8 @@ create table courses
     begin_time  text,
     end_time    text,
     major       text,
-    class       text
+    class       text,
+    faculty     text
 );
 
 alter table courses

@@ -17,7 +17,7 @@ export type AdminServiceResponse = {
     }
     QUERY_COURSE: {
         base: BaseResponse
-        courses: Array<CourseInfo>
+        coursesinfo: Array<CourseInfo>
     }
     QUERY_USER: {
         base: BaseResponse

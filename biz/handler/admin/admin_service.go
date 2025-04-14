@@ -367,7 +367,7 @@ func EnquirytCourse(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	resp.Coursesinfo = result
+	resp.Courses = result
 	resp.Base = srverror.WrapWithSuccess("查询课程域成功")
 	c.JSON(consts.StatusOK, resp)
 }
@@ -405,7 +405,7 @@ func EnquiryVideo(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	resp.Videosinfo = result
+	resp.Videos = result
 	resp.Base = srverror.WrapWithSuccess("查询视频成功")
 	c.JSON(consts.StatusOK, resp)
 }
@@ -443,7 +443,7 @@ func EnquiryUser(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	resp.Usersinfo = result
+	resp.Users = result
 	resp.Base = srverror.WrapWithSuccess("查询用户成功")
 	c.JSON(consts.StatusOK, resp)
 }

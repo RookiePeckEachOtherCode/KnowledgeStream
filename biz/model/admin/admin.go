@@ -3980,8 +3980,8 @@ func (p *EnquiryCourseReq) String() string {
 }
 
 type EnquiryCourseResp struct {
-	Base        *base.BaseResponse `thrift:"base,1" form:"base" json:"base" query:"base"`
-	Coursesinfo []*base.CourseInfo `thrift:"coursesinfo,2" form:"coursesinfo" json:"coursesinfo" query:"coursesinfo"`
+	Base    *base.BaseResponse `thrift:"base,1" form:"base" json:"base" query:"base"`
+	Courses []*base.CourseInfo `thrift:"courses,2" form:"courses" json:"courses" query:"courses"`
 }
 
 func NewEnquiryCourseResp() *EnquiryCourseResp {
@@ -3997,13 +3997,13 @@ func (p *EnquiryCourseResp) GetBase() (v *base.BaseResponse) {
 	return p.Base
 }
 
-func (p *EnquiryCourseResp) GetCoursesinfo() (v []*base.CourseInfo) {
-	return p.Coursesinfo
+func (p *EnquiryCourseResp) GetCourses() (v []*base.CourseInfo) {
+	return p.Courses
 }
 
 var fieldIDToName_EnquiryCourseResp = map[int16]string{
 	1: "base",
-	2: "coursesinfo",
+	2: "courses",
 }
 
 func (p *EnquiryCourseResp) IsSetBase() bool {
@@ -4092,14 +4092,14 @@ func (p *EnquiryCourseResp) ReadField2(iprot thrift.TProtocol) error {
 	if err != nil {
 		return err
 	}
-	p.Coursesinfo = make([]*base.CourseInfo, 0, size)
+	p.Courses = make([]*base.CourseInfo, 0, size)
 	for i := 0; i < size; i++ {
 		_elem := base.NewCourseInfo()
 		if err := _elem.Read(iprot); err != nil {
 			return err
 		}
 
-		p.Coursesinfo = append(p.Coursesinfo, _elem)
+		p.Courses = append(p.Courses, _elem)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return err
@@ -4158,13 +4158,13 @@ WriteFieldEndError:
 }
 
 func (p *EnquiryCourseResp) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("coursesinfo", thrift.LIST, 2); err != nil {
+	if err = oprot.WriteFieldBegin("courses", thrift.LIST, 2); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Coursesinfo)); err != nil {
+	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Courses)); err != nil {
 		return err
 	}
-	for _, v := range p.Coursesinfo {
+	for _, v := range p.Courses {
 		if err := v.Write(oprot); err != nil {
 			return err
 		}
@@ -4465,8 +4465,8 @@ func (p *EnquiryVideoReq) String() string {
 }
 
 type EnquiryVideoResp struct {
-	Base       *base.BaseResponse `thrift:"base,1" form:"base" json:"base" query:"base"`
-	Videosinfo []*base.VideoInfo  `thrift:"videosinfo,2" form:"videosinfo" json:"videosinfo" query:"videosinfo"`
+	Base   *base.BaseResponse `thrift:"base,1" form:"base" json:"base" query:"base"`
+	Videos []*base.VideoInfo  `thrift:"videos,2" form:"videos" json:"videos" query:"videos"`
 }
 
 func NewEnquiryVideoResp() *EnquiryVideoResp {
@@ -4482,13 +4482,13 @@ func (p *EnquiryVideoResp) GetBase() (v *base.BaseResponse) {
 	return p.Base
 }
 
-func (p *EnquiryVideoResp) GetVideosinfo() (v []*base.VideoInfo) {
-	return p.Videosinfo
+func (p *EnquiryVideoResp) GetVideos() (v []*base.VideoInfo) {
+	return p.Videos
 }
 
 var fieldIDToName_EnquiryVideoResp = map[int16]string{
 	1: "base",
-	2: "videosinfo",
+	2: "videos",
 }
 
 func (p *EnquiryVideoResp) IsSetBase() bool {
@@ -4577,14 +4577,14 @@ func (p *EnquiryVideoResp) ReadField2(iprot thrift.TProtocol) error {
 	if err != nil {
 		return err
 	}
-	p.Videosinfo = make([]*base.VideoInfo, 0, size)
+	p.Videos = make([]*base.VideoInfo, 0, size)
 	for i := 0; i < size; i++ {
 		_elem := base.NewVideoInfo()
 		if err := _elem.Read(iprot); err != nil {
 			return err
 		}
 
-		p.Videosinfo = append(p.Videosinfo, _elem)
+		p.Videos = append(p.Videos, _elem)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return err
@@ -4643,13 +4643,13 @@ WriteFieldEndError:
 }
 
 func (p *EnquiryVideoResp) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("videosinfo", thrift.LIST, 2); err != nil {
+	if err = oprot.WriteFieldBegin("videos", thrift.LIST, 2); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Videosinfo)); err != nil {
+	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Videos)); err != nil {
 		return err
 	}
-	for _, v := range p.Videosinfo {
+	for _, v := range p.Videos {
 		if err := v.Write(oprot); err != nil {
 			return err
 		}
@@ -5042,8 +5042,8 @@ func (p *EnquiryUserReq) String() string {
 }
 
 type EnquiryUserResp struct {
-	Base      *base.BaseResponse `thrift:"base,1" form:"base" json:"base" query:"base"`
-	Usersinfo []*base.UserInfo   `thrift:"usersinfo,2" form:"usersinfo" json:"usersinfo" query:"usersinfo"`
+	Base  *base.BaseResponse `thrift:"base,1" form:"base" json:"base" query:"base"`
+	Users []*base.UserInfo   `thrift:"users,2" form:"users" json:"users" query:"users"`
 }
 
 func NewEnquiryUserResp() *EnquiryUserResp {
@@ -5059,13 +5059,13 @@ func (p *EnquiryUserResp) GetBase() (v *base.BaseResponse) {
 	return p.Base
 }
 
-func (p *EnquiryUserResp) GetUsersinfo() (v []*base.UserInfo) {
-	return p.Usersinfo
+func (p *EnquiryUserResp) GetUsers() (v []*base.UserInfo) {
+	return p.Users
 }
 
 var fieldIDToName_EnquiryUserResp = map[int16]string{
 	1: "base",
-	2: "usersinfo",
+	2: "users",
 }
 
 func (p *EnquiryUserResp) IsSetBase() bool {
@@ -5154,14 +5154,14 @@ func (p *EnquiryUserResp) ReadField2(iprot thrift.TProtocol) error {
 	if err != nil {
 		return err
 	}
-	p.Usersinfo = make([]*base.UserInfo, 0, size)
+	p.Users = make([]*base.UserInfo, 0, size)
 	for i := 0; i < size; i++ {
 		_elem := base.NewUserInfo()
 		if err := _elem.Read(iprot); err != nil {
 			return err
 		}
 
-		p.Usersinfo = append(p.Usersinfo, _elem)
+		p.Users = append(p.Users, _elem)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return err
@@ -5220,13 +5220,13 @@ WriteFieldEndError:
 }
 
 func (p *EnquiryUserResp) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("usersinfo", thrift.LIST, 2); err != nil {
+	if err = oprot.WriteFieldBegin("users", thrift.LIST, 2); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Usersinfo)); err != nil {
+	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Users)); err != nil {
 		return err
 	}
-	for _, v := range p.Usersinfo {
+	for _, v := range p.Users {
 		if err := v.Write(oprot); err != nil {
 			return err
 		}

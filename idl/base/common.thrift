@@ -65,3 +65,19 @@ struct CommentInfo{
     7:string time;
     8:i64   children;
 }
+struct StudentsStatistics{
+    1:string faculty;
+    2:i64 students;
+}
+struct TeachersStatistics{
+    1:string faculty;
+    2:i64 teachers;
+}
+struct VideosStatistics{
+    1:string major;
+    2:i64 videos;
+}
+struct VideosPlaysStatistics{
+    1:string video;
+    2:i64 plays;
+}

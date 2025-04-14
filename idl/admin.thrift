@@ -89,7 +89,7 @@ struct EnquiryCourseReq{
 }
 struct EnquiryCourseResp{
     1:common.BaseResponse base;
-    2:list<common.CourseInfo> coursesinfo
+    2:list<common.CourseInfo> courses
 }
 struct EnquiryVideoReq{
     1:string keyword;
@@ -99,7 +99,7 @@ struct EnquiryVideoReq{
 }
 struct EnquiryVideoResp{
     1:common.BaseResponse base;
-    2:list<common.VideoInfo> videosinfo
+    2:list<common.VideoInfo> videos
 }
 struct EnquiryUserReq{
     1:string keyword;
@@ -111,7 +111,7 @@ struct EnquiryUserReq{
 }
 struct EnquiryUserResp{
     1:common.BaseResponse base;
-    2:list<common.UserInfo> usersinfo
+    2:list<common.UserInfo> users
 }
 service AdminService{
     ImportStudentsResp ImportStudents(1:ImportStudentsReq req)(api.post="/admin/import");

@@ -87,8 +87,8 @@ func (s *VideoService) DeleteVideoWithVid(c context.Context, vid int64) error {
 }
 func (s *VideoService) UploadVideoWithCidAndUid(c context.Context, uid int64, cid int64, title string, description string, cover string, length string, timestr string, chapter string) (int64, error) {
 	v := query.Video
-	cu:=query.Course
-	course,_:=cu.WithContext(c).Where(cu.ID.Eq(cid)).First()
+	cu := query.Course
+	course, _ := cu.WithContext(c).Where(cu.ID.Eq(cid)).First()
 	id, err := utils.NextSnowFlakeId()
 	if err != nil {
 		return 0, err
@@ -187,6 +187,54 @@ func (s *VideoService) TeacherQueryVideo(
 		videoInfo.Uploader = fmt.Sprintf("%d", video.Uploader)
 		videoInfo.Description = video.Description
 		result = append(result, videoInfo)
+	}
+	return result, nil
+}
+func (s *VideoService) VideosStatistics(c context.Context, offset int32, size int32) ([]*base.VideosStatistics, error) {
+	v := query.Video
+
+	videos, err := v.WithContext(c).
+		Offset(int(offset)).
+		Limit(int(size)).Find()
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		hlog.Error("查询视频失败: ", err)
+		return nil, err
+	}
+	var mp map[string]int64
+	for _, video := range videos {
+		mp[video.Major]++
+	}
+	var result []*base.VideosStatistics
+	for major, count := range mp {
+		vs := new(base.VideosStatistics)
+		vs.Major = major
+		vs.Videos = count
+		result = append(result, vs)
+	}
+	return result, nil
+}
+func (s *VideoService) VideoPlaysStatistics(c context.Context, offset int32, size int32) ([]*base.VideosPlaysStatistics, error) {
+	v := query.Video
+
+	videos, err := v.WithContext(c).
+		Offset(int(offset)).
+		Limit(int(size)).Find()
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		hlog.Error("查询视频失败: ", err)
+		return nil, err
+	}
+	var result []*base.VideosPlaysStatistics
+	for _, video := range videos {
+		vps := new(base.VideosPlaysStatistics)
+		vps.Plays = int64(video.Plays)
+		vps.Video = video.Title
+		result = append(result, vps)
 	}
 	return result, nil
 }

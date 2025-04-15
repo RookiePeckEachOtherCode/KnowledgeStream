@@ -17,11 +17,11 @@ export type AdminServiceResponse = {
     }
     QUERY_COURSE: {
         base: BaseResponse
-        coursesinfo: Array<CourseInfo>
+        courses: Array<CourseInfo>
     }
     QUERY_USER: {
         base: BaseResponse
-        usersinfo: Array<CompleteUserInfo>
+        users: Array<CompleteUserInfo>
     }
     QUERY_VIDEO: {
         base: BaseResponse

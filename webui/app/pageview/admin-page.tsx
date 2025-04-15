@@ -237,6 +237,83 @@ export function GlanceData() {
         },
 
     ])
+    const [offset, setOffset] = useState(0)
+    const [size, setSize] = useState(10)
+    const [currentTarget, setCurrentTarget] = useState()
+    const {showNotification} = useNotification();
+
+    const GetStudentFacultyData = async () => {
+        const sfRes = await api.statisticService.studentFaculty({
+            offset: offset,
+            size: size
+        });
+        if (sfRes.base.code !== 200) {
+            showNotification({
+                title: "暂时无法获取学生学院信息",
+                content: "",
+                type: "info"
+            })
+        } else {
+            setStudentFaculty(sfRes.datas)
+        }
+    }
+
+    const GetTeacherFacultyData = async () => {
+        const tfRes = await api.statisticService.teacherFaculty({
+            offset: offset,
+            size: size
+        });
+        if (tfRes.base.code !== 200) {
+            showNotification({
+                title: "暂时无法获取学生学院信息",
+                content: "",
+                type: "info"
+            })
+        } else {
+            setTeacherFaculty(tfRes.datas)
+        }
+    }
+    const GetPlayCntData = async () => {
+        const pcRes = await api.statisticService.videoPlays({
+            offset: offset,
+            size: size
+        })
+        if (pcRes.base.code !== 200) {
+            showNotification({
+                title: "暂时无法获取视频播放数据",
+                content: "",
+                type: "info"
+            })
+        } else {
+            setVideoPlays(pcRes.datas)
+        }
+    }
+    const GetMajorVideosData = async () => {
+        const mvRes = await api.statisticService.videoMajor({
+            offset: offset,
+            size: size
+        });
+        if (mvRes.base.code !== 200) {
+            showNotification({
+                title: "暂时无法获取视频数量数据",
+                content: "",
+                type: "info"
+            })
+        } else {
+            setVideoMajor(mvRes.datas)
+        }
+
+    }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            await GetStudentFacultyData()
+            await GetTeacherFacultyData()
+            await GetPlayCntData()
+            await GetMajorVideosData()
+        }
+        fetchData()
+    }, []);
 
     // noinspection TypeScriptValidateTypes
     return (
@@ -539,7 +616,7 @@ export function ManageCourse() {
             })
             return
         }
-        setCourses(queryRes.coursesinfo)
+        setCourses(queryRes.courses)
 
     }
     const openEditForm = async (index: number) => {
@@ -553,6 +630,9 @@ export function ManageCourse() {
             end_time={courses[index].end_time}
             cid={courses[index].cid}
             major={courses[index].major}
+            reload={() => {
+                SearchCourse()
+            }} r
             title={courses[index].title}/>)
         toggleShowModal(true)
 
@@ -637,7 +717,7 @@ export function ManageCourse() {
 }
 
 export function ManageUser() {
-    const Authorities = ["USER", "ADMIN", "SUPER_ADMIN"]
+    const Authorities = ["Student", "Teacher", "Admin"]
     const [major, setMajor] = useState("")
     const [faculty, setFaculty] = useState("")
     const [keyword, setKeyword] = useState("")
@@ -665,7 +745,7 @@ export function ManageUser() {
             })
             return
         }
-        setUsers(usersRes.usersinfo)
+        setUsers(usersRes.users)
 
     }
 
@@ -677,6 +757,9 @@ export function ManageUser() {
             name={users[index].name}
             password={users[index].password}
             phone={users[index].phone}
+            reload={() => {
+                SearchUser()
+            }}
             class={users[index].class} uid={users[index].uid}/>)
 
         toggleShowModal(true)
@@ -1070,6 +1153,7 @@ export interface CompleteUserInfo {
     signature?: string;
     uid: string,
     class: string,
+    reload: () => void
 }
 
 export function EditUserInfo({
@@ -1083,7 +1167,8 @@ export function EditUserInfo({
                                  phone,
                                  signature,
                                  uid,
-                                 class: userClass // 使用别名避免与class关键字冲突
+                                 class: userClass, // 使用别名避免与class关键字冲突,
+                                 reload
                              }: CompleteUserInfo) {
     // 状态管理
     const [f_name, setName] = useState(name)
@@ -1140,6 +1225,7 @@ export function EditUserInfo({
             content: "",
             type: "success"
         })
+        reload()
         toggleShowModal(false)
     }
 
@@ -1341,6 +1427,19 @@ export function EditUserInfo({
     )
 }
 
+interface EditCourseInfoProps {
+    ascription: string;
+    begin_time: string;
+    class: string;
+    cover: string;
+    description: string;
+    end_time: string;
+    cid: string;
+    major: string;
+    title: string;
+    reload: () => void
+}
+
 export function EditCourseInfo({
                                    ascription,
                                    begin_time,
@@ -1350,8 +1449,9 @@ export function EditCourseInfo({
                                    cid,
                                    major,
                                    title,
-                                   class: courseClass
-                               }: CourseInfo) {
+                                   class: courseClass,
+                                   reload
+                               }: EditCourseInfoProps) {
     // 状态管理
     const [f_title, setTitle] = useState(title)
     const [f_major, setMajor] = useState(major)
@@ -1402,6 +1502,7 @@ export function EditCourseInfo({
             })
             return
         }
+        reload()
         toggleShowModal(false)
         showNotification({
             title: "修改成功",

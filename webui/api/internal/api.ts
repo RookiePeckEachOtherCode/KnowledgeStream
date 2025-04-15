@@ -4,7 +4,8 @@ import {VideoService} from "@/api/internal/service/videoService";
 import {CourseService} from "@/api/internal/service/courseService";
 import {CommentService} from "@/api/internal/service/commentService";
 import {AdminService} from "@/api/internal/service/adminService";
-import { NotifyService } from "./service/notify";
+import {NotifyService} from "./service/notify";
+import {StatisticService} from "@/api/internal/service/statisticService";
 
 export class Api {
     readonly userService: UserService;
@@ -15,6 +16,7 @@ export class Api {
     readonly commentService: CommentService
     readonly adminService: AdminService
     readonly notifyService: NotifyService
+    readonly statisticService: StatisticService
 
     constructor(executor: Executor) {
         this.userService = new UserService(executor);
@@ -25,5 +27,6 @@ export class Api {
         this.commentService = new CommentService(executor)
         this.adminService = new AdminService(executor)
         this.notifyService = new NotifyService(executor)
+        this.statisticService = new StatisticService(executor)
     }
 }

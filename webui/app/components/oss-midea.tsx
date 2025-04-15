@@ -74,8 +74,6 @@ export function OssVideo(props: OssVideoProps) {
                     content: errorMessage,
                     type: "error"
                 });
-
-                console.error("视频加载错误:", error);
             }
         };
 
@@ -158,7 +156,7 @@ export function OssImage({
                     content: errorMessage,
                     type: "error",
                 });
-                
+
             }
         };
 
@@ -175,7 +173,6 @@ export function OssImage({
             content: "无法加载图片资源",
             type: "error",
         });
-        console.error("图片加载错误", e);
     };
 
     return blobUrl ? (

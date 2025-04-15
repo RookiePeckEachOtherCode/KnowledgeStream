@@ -49,7 +49,18 @@ func (s *CommentService) CrateComment(c context.Context, name string, avatar str
 			Time:       timestr,
 		},
 	)
-
+	count, err := query.Comment.WithContext(c).Where(query.Comment.ID.Eq(parent)).Count()
+	if err != nil {
+		hlog.Error("查询父级评论失败: ", err)
+		return nil, err
+	}
+	if count > 0 {
+		_, err := query.Comment.WithContext(c).Where(query.Comment.ID.Eq(parent)).UpdateSimple(query.Comment.Children.Add(1))
+		if err != nil {
+			hlog.Error("子评论数自增失败: ", err)
+			return nil, err
+		}
+	}
 	if err != nil {
 		hlog.Error("保存评论到数据库失败: ", err)
 		return nil, err
@@ -70,7 +81,7 @@ func (s *CommentService) QueryCommentsWithParentId(
 	// 初始化查询构造器
 	queryBuilder := query.Comment.
 		WithContext(c).
-		Where(query.Comment.Parent.Eq(parent))
+		Where(query.Comment.Parent.Eq(parent)).Order(query.Comment.Time)
 
 	// 处理 size 参数
 	if len(size) > 0 && size[0] > 0 {

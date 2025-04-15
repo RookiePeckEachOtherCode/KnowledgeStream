@@ -223,6 +223,7 @@ func (s *UserService) AdminQueryUser(
 		userInfo := new(base.UserInfo)
 		userInfo.Name = user.Name
 		userInfo.Avatar = user.Avatar
+		userInfo.Phone = user.Phone
 		userInfo.UID = fmt.Sprintf("%d", user.ID)
 		userInfo.Signature = user.Signature
 		userInfo.Faculty = user.Faculty
@@ -282,9 +283,9 @@ func (s *UserService) StudentsStatistics(c context.Context, offset int32, size i
 	u := query.User
 	users, err := u.WithContext(c).
 		Where(u.Authority.Eq("USER")).
-		Order(u.Faculty). // 根据 Faculty 排序，默认为升序，如果需要降序，使用 Order(u.Faculty.Desc())
+		Order(u.Faculty).    // 根据 Faculty 排序，默认为升序，如果需要降序，使用 Order(u.Faculty.Desc())
 		Offset(int(offset)). // 设置分页偏移量
-		Limit(int(size)). // 设置每页的大小
+		Limit(int(size)).    // 设置每页的大小
 		Find()
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

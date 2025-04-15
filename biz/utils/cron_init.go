@@ -8,6 +8,7 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
+// 同步任务
 func CronInit() {
 	VideoPlaysTask()
 }
@@ -29,7 +30,7 @@ func VideoPlaysTask() {
 				return
 			}
 			if exists > 0 {
-				record := redis.VideoPlaysRecord{}
+				record := &redis.VideoPlaysRecord{}
 				err = redis.Client.GetValue(ctx, recordKey, record)
 				if err != nil {
 					hlog.Error("VideoPlaysRecord redis的记录查询存在爆了: ", err)

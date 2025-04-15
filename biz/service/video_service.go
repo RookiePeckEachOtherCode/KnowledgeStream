@@ -68,7 +68,7 @@ func (s *VideoService) VideoInfoService(c context.Context, vid int64) (*base.Vid
 		return nil, err
 	}
 	if exists > 0 {
-		record := redis.VideoPlaysRecord{}
+		record := &redis.VideoPlaysRecord{}
 		err = redis.Client.GetValue(c, recordKey, record)
 		if err != nil {
 			hlog.Error("VideoPlays redis的记录查询爆了:: ", err)

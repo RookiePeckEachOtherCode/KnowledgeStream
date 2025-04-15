@@ -2,7 +2,6 @@ package utils
 
 import (
 	"context"
-	"fmt"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/query"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/redis"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
@@ -10,9 +9,12 @@ import (
 )
 
 func CronInit() {
+	VideoPlaysTask()
+}
+func VideoPlaysTask() {
 	c := cron.New()
 	ctx := context.Background()
-	_, err := c.AddFunc("@every 5s", func() {
+	_, err := c.AddFunc("@hourly", func() {
 		v := query.Video
 		videos, err := v.WithContext(ctx).Find()
 		if err != nil {
@@ -25,9 +27,6 @@ func CronInit() {
 			if err != nil {
 				hlog.Error("VideoPlaysRecord redis的记录查询存在爆了: ", err)
 				return
-			}
-			if exists == 0 {
-				fmt.Println("不存在")
 			}
 			if exists > 0 {
 				record := redis.VideoPlaysRecord{}

@@ -68,7 +68,7 @@ func (s *VideoService) VideoInfoService(c context.Context, vid int64) (*base.Vid
 		return nil, err
 	}
 	if exists > 0 {
-		record := redis.VideoPlaysRecord{}
+		record := &redis.VideoPlaysRecord{}
 		err = redis.Client.GetValue(c, recordKey, record)
 		if err != nil {
 			hlog.Error("VideoPlays redis的记录查询爆了:: ", err)
@@ -147,7 +147,7 @@ func (s *VideoService) AdminQueryVideo(
 	v := query.Video
 	videos, err := v.WithContext(c).
 		Where(v.Title.Like("%" + keyword + "%")).
-		Where(v.Major.Eq(major)).
+		Where(v.Major.Like("%" + major + "%")).
 		Offset(int(offset)).
 		Limit(int(size)).Find()
 	if err != nil {

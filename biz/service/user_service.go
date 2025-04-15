@@ -207,6 +207,7 @@ func (s *UserService) AdminQueryUser(
 		Where(u.Name.Like("%" + keyword + "%")).
 		Where(u.Major.Like("%" + major + "%")).
 		Where(u.Faculty.Like("%" + faculty + "%")).
+
 		Where(u.Authority.Eq(authority)).
 		Offset(int(offset)).
 		Limit(int(size)).Find()

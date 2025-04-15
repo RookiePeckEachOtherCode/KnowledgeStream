@@ -557,41 +557,7 @@ export function ManageCourse() {
 
     const [keyword, setKeyword] = useState("")
     const [size, setSize] = useState(10)
-    const [courses, setCourses] = useState<Array<CourseInfo>>([
-        {
-            ascription: "计算机学院",
-            begin_time: "2023-09-01",
-            class: "2023级1班",
-            cover: "ks-user-avatar/114514.jpg",
-            description: "数据结构与算法基础课程，涵盖链表、树、图等核心内容",
-            end_time: "2024-01-15",
-            cid: "CS101-2023",
-            major: "计算机科学与技术",
-            title: "数据结构导论"
-        },
-        {
-            ascription: "数学系",
-            begin_time: "2023-08-28",
-            class: "数学实验班",
-            cover: "ks-user-avatar/114514.jpg",
-            description: "高等数学进阶课程，重点讲解微积分与线性代数应用",
-            end_time: "2024-01-10",
-            cid: "MATH201-2023",
-            major: "应用数学",
-            title: "高等数学精讲"
-        },
-        {
-            ascription: "外国语学院",
-            begin_time: "2023-09-10",
-            class: "英语强化班",
-            cover: "ks-user-avatar/114514.jpg",
-            description: "商务英语实战训练，提升专业写作与口语交流能力",
-            end_time: "2023-12-20",
-            cid: "ENG301-2023",
-            major: "英语",
-            title: "商务英语实践"
-        }
-    ])
+    const [courses, setCourses] = useState<Array<CourseInfo>>([])
     const [major, setMajor] = useState("")
     const [faculty, setFaculty] = useState("")
     const [endTime, setEndTime] = useState("")
@@ -632,7 +598,7 @@ export function ManageCourse() {
             major={courses[index].major}
             reload={() => {
                 SearchCourse()
-            }} r
+            }}
             title={courses[index].title}/>)
         toggleShowModal(true)
 
@@ -757,6 +723,8 @@ export function ManageUser() {
             name={users[index].name}
             password={users[index].password}
             phone={users[index].phone}
+            grade={users[index].grade}
+            signature={users[index].signature}
             reload={() => {
                 SearchUser()
             }}
@@ -1210,6 +1178,7 @@ export function EditUserInfo({
             password: f_password,
             phone: f_phone,
             signature: f_signature,
+            class: f_class,
             uid: uid
         });
         if (saveRes.base.code !== 200) {

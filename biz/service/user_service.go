@@ -205,9 +205,9 @@ func (s *UserService) AdminQueryUser(
 	u := query.User
 	users, err := u.WithContext(c).
 		Where(u.Name.Like("%" + keyword + "%")).
+		Where(u.Authority.Neq("SUPER_ADMIN")).
 		Where(u.Major.Like("%" + major + "%")).
 		Where(u.Faculty.Like("%" + faculty + "%")).
-
 		Where(u.Authority.Eq(authority)).
 		Offset(int(offset)).
 		Limit(int(size)).Find()
@@ -234,6 +234,7 @@ func (s *UserService) AdminQueryUser(
 		} else if user.Authority == entity.AuthorityAdmin {
 			userInfo.Authority = "Teacher"
 		}
+
 		result = append(result, userInfo)
 	}
 	return result, nil
@@ -281,9 +282,9 @@ func (s *UserService) StudentsStatistics(c context.Context, offset int32, size i
 	u := query.User
 	users, err := u.WithContext(c).
 		Where(u.Authority.Eq("USER")).
-		Order(u.Faculty).    // 根据 Faculty 排序，默认为升序，如果需要降序，使用 Order(u.Faculty.Desc())
+		Order(u.Faculty). // 根据 Faculty 排序，默认为升序，如果需要降序，使用 Order(u.Faculty.Desc())
 		Offset(int(offset)). // 设置分页偏移量
-		Limit(int(size)).    // 设置每页的大小
+		Limit(int(size)). // 设置每页的大小
 		Find()
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

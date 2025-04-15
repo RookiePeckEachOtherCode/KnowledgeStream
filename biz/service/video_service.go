@@ -147,7 +147,7 @@ func (s *VideoService) AdminQueryVideo(
 	v := query.Video
 	videos, err := v.WithContext(c).
 		Where(v.Title.Like("%" + keyword + "%")).
-		Where(v.Major.Eq(major)).
+		Where(v.Major.Like("%" + major + "%")).
 		Offset(int(offset)).
 		Limit(int(size)).Find()
 	if err != nil {

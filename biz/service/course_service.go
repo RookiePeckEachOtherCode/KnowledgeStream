@@ -273,7 +273,7 @@ func (s *CourseService) AdminQueryCourse(
 		tides = append(tides, user.ID)
 	}
 	queryBuilder := cu.WithContext(c).
-		Where(cu.Title.Like("%" + keyword + "%")).Where(cu.Major.Eq(major)).Where(cu.Faculty.Eq(faculty)).Or(cu.Ascription.In(tides...))
+		Where(cu.Title.Like("%" + keyword + "%")).Where(cu.Major.Like("%" + major + "%")).Where(cu.Faculty.Like("%" + faculty + "%")).Or(cu.Ascription.In(tides...))
 
 	// 添加时间过滤条件
 	if begin_time != "" {

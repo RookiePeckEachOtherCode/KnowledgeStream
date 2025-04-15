@@ -206,8 +206,8 @@ func (s *UserService) AdminQueryUser(
 	users, err := u.WithContext(c).
 		Where(u.Name.Like("%" + keyword + "%")).
 		Where(u.Authority.Neq("SUPER_ADMIN")).
-		Where(u.Major.Eq(major)).
-		Where(u.Faculty.Eq(faculty)).
+		Where(u.Major.Like("%" + major + "%")).
+		Where(u.Faculty.Eq("%" + faculty + "%")).
 		Where(u.Authority.Eq(authority)).
 		Offset(int(offset)).
 		Limit(int(size)).Find()

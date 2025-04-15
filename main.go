@@ -14,10 +14,10 @@ func main() {
 	pg.InitDB()
 	redis.InitRedis()
 	utils.LogoPrint()
-
+	utils.CronInit()
 	h := server.Default()
 	h.Use(config.Cors())
-
 	register(h)
+
 	h.Spin()
 }

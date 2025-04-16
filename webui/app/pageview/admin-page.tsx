@@ -6,7 +6,7 @@ import {
     faChalkboardUser, faChevronDown, faChevronUp, faCommentDots,
     faEye,
     faFile, faGraduationCap,
-    faKeyboard, faPenSquare, faPenToSquare, faSave, faTrash, faUpload, faUsers,
+    faKeyboard, faPenSquare, faPenToSquare, faSave, faSchoolFlag, faTrash, faUpload, faUsers,
     faUserSecret,
     faUsersViewfinder
 } from "@fortawesome/free-solid-svg-icons";
@@ -595,6 +595,7 @@ export function ManageCourse() {
             description={courses[index].description}
             end_time={courses[index].end_time}
             cid={courses[index].cid}
+            faculty={courses[index].faculty}
             major={courses[index].major}
             reload={() => {
                 SearchCourse()
@@ -663,6 +664,7 @@ export function ManageCourse() {
                             title={item.title}
                             id={item.cid}
                             major={item.major}
+                            faculty={item.faculty}
                             begin_time={item.begin_time}
                             end_time={item.end_time}
                             cover={item.cover}
@@ -854,6 +856,7 @@ interface CourseListItemProps {
     className: string;
     cover: string;
     onEdit?: () => void;
+    faculty: string;
     onDelete?: () => void
 }
 
@@ -866,6 +869,7 @@ export function CourseListItem({
                                    className,
                                    cover,
                                    onEdit,
+                                   faculty,
                                    onDelete
                                }: CourseListItemProps) {
     return (
@@ -908,6 +912,7 @@ export function CourseListItem({
                         </span>
                     </div>
 
+
                     <div className="flex items-center">
                         <FontAwesomeIcon
                             icon={faUsers}
@@ -915,6 +920,15 @@ export function CourseListItem({
                         />
                         <span className="text-body-medium text-on-surface-variant">
                             {className}
+                        </span>
+                    </div>
+                    <div className="flex items-center">
+                        <FontAwesomeIcon
+                            icon={faSchoolFlag}
+                            className="text-primary mr-2"
+                        />
+                        <span className="text-body-medium text-on-surface-variant">
+                            {faculty}
                         </span>
                     </div>
                 </div>
@@ -1406,6 +1420,7 @@ interface EditCourseInfoProps {
     cid: string;
     major: string;
     title: string;
+    faculty: string;
     reload: () => void
 }
 
@@ -1419,7 +1434,8 @@ export function EditCourseInfo({
                                    major,
                                    title,
                                    class: courseClass,
-                                   reload
+                                   reload,
+                                   faculty,
                                }: EditCourseInfoProps) {
     // 状态管理
     const [f_title, setTitle] = useState(title)
@@ -1429,6 +1445,7 @@ export function EditCourseInfo({
     const [f_description, setDescription] = useState(description)
     const [f_class, setClass] = useState(courseClass)
     const [f_cover, setCover] = useState(cover)
+    const [f_faculty, setF_faculty] = useState(faculty)
     const [videoFile, setVideoFile] = useState<File | null>(null)
     const {showNotification} = useNotification();
     const {isShow, toggleShowModal, setForm} = useModal()
@@ -1459,6 +1476,8 @@ export function EditCourseInfo({
             title: f_title,
             description: f_description,
             id: cid,
+            class: f_class,
+            faculty: f_faculty,
             major: f_major,
             begin_time: f_beginTime,
             end_time: f_endTime
@@ -1562,6 +1581,18 @@ export function EditCourseInfo({
                                 onChange={e => setClass(e.target.value)}
                                 className="w-full p-3 rounded-lg border bg-secondary-container text-on-surface"
                                 placeholder="请输入课程班级"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-on-primary-container">
+                                所属学院
+                            </label>
+                            <input
+                                type="text"
+                                value={f_faculty}
+                                onChange={e => setF_faculty(e.target.value)}
+                                className="w-full p-3 rounded-lg border bg-secondary-container text-on-surface"
+                                placeholder="请输入学院信息"
                             />
                         </div>
 

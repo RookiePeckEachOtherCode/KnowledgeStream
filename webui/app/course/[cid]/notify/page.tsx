@@ -1,25 +1,25 @@
 "use client"
 
-import { useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
-import { useNotification } from "@/context/notification-provider"
+import {useSearchParams} from "next/navigation"
+import {useEffect, useState} from "react"
+import {useNotification} from "@/context/notification-provider"
 import AnimatedContent from "@/app/components/animated-content"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faFile } from "@fortawesome/free-solid-svg-icons"
-import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons"
-import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons"
-import { CommentStrip } from "@/app/components/comment-strip"
-import { Comment, UserInfo } from "@/api/internal/model/static/base-resp"
-import { OssImage } from "@/app/components/oss-midea"
-import { api } from "@/api/instance"
-import { IconButton } from "@/app/components/icon-button"
-import { faPaperPlane, } from "@fortawesome/free-solid-svg-icons";
-import { NotifyType } from "@/api/internal/model/response/notify"
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
+import {faFile} from "@fortawesome/free-solid-svg-icons"
+import {faHeart as faHeartRegular} from "@fortawesome/free-regular-svg-icons"
+import {faHeart as faHeartSolid} from "@fortawesome/free-solid-svg-icons"
+import {CommentStrip} from "@/app/components/comment-strip"
+import {Comment, UserInfo} from "@/api/internal/model/static/base-resp"
+import {OssImage} from "@/app/components/oss-midea"
+import {api} from "@/api/instance"
+import {IconButton} from "@/app/components/icon-button"
+import {faPaperPlane,} from "@fortawesome/free-solid-svg-icons";
+import {NotifyType} from "@/api/internal/model/response/notify"
 
 export default function NotifyPage() {
     const searchParams = useSearchParams()
     const [notify, setNotify] = useState<NotifyType | null>(null)
-    const { showNotification } = useNotification()
+    const {showNotification} = useNotification()
     const [isLike, setIsLike] = useState<boolean>(false)
     const [comments, setComments] = useState<Array<Comment>>([])
     const [focusComment, setFocusComment] = useState(false)
@@ -30,7 +30,7 @@ export default function NotifyPage() {
 
     const likeAction = async () => {
         if (!notify) return
-        const res = await api.notifyService.action({ id: notify.id })
+        const res = await api.notifyService.action({id: notify.id})
         if (res.base.code !== 200) {
             showNotification({
                 title: "点赞失败",
@@ -50,7 +50,7 @@ export default function NotifyPage() {
         const fetchNotifyData = async () => {
             const id = searchParams.get('id')
             if (!id) return
-            const res = await api.notifyService.notifyInfo({ id })
+            const res = await api.notifyService.notifyInfo({id})
             if (res.base.code !== 200) {
                 showNotification({
                     title: "获取课程数据失败",
@@ -92,6 +92,7 @@ export default function NotifyPage() {
             }
             setUserInfo(resp.userinfo)
         }
+
         fetchData()
     }, [showNotification])
 
@@ -163,21 +164,6 @@ export default function NotifyPage() {
         setFocusComment(true);
     };
 
-    useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
-            const target = e.target as HTMLElement;
-            if (!target.closest('.comment-input-container')) {
-                setFocusComment(false);
-                setCommentParent(null);
-                setCommentPlaceholder("想说些什么?");
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
 
     return (
         <div className="p-6 min-h-screen bg-surface text-on-surface">
@@ -186,7 +172,7 @@ export default function NotifyPage() {
                     <AnimatedContent
                         distance={100}
                         reverse={true}
-                        config={{ tension: 80, friction: 20 }}
+                        config={{tension: 80, friction: 20}}
                     >
                         <div className="bg-surface-container rounded-3xl p-6 shadow-md">
                             <div className="flex justify-between items-center mb-4">
@@ -195,7 +181,7 @@ export default function NotifyPage() {
                                     onClick={likeAction}
                                     className={`flex items-center gap-2 px-4 py-2 rounded-full transition-colors ${isLike ? 'bg-primary text-on-primary' : 'bg-primary/10 text-primary hover:bg-primary/20'}`}
                                 >
-                                    <FontAwesomeIcon icon={isLike ? faHeartSolid : faHeartRegular} />
+                                    <FontAwesomeIcon icon={isLike ? faHeartSolid : faHeartRegular}/>
                                     <span>{notify.favorite}</span>
                                 </button>
                             </div>
@@ -203,10 +189,12 @@ export default function NotifyPage() {
                                 {notify.content}
                             </div>
                             {notify.file && (
-                                <div className="mt-6 p-4 bg-surface-container-high rounded-2xl flex items-center gap-4 hover:bg-surface-container-highest transition-colors cursor-pointer">
-                                    <FontAwesomeIcon icon={faFile} className="text-2xl text-primary" />
+                                <div
+                                    className="mt-6 p-4 bg-surface-container-high rounded-2xl flex items-center gap-4 hover:bg-surface-container-highest transition-colors cursor-pointer">
+                                    <FontAwesomeIcon icon={faFile} className="text-2xl text-primary"/>
                                     <div className="flex-1">
-                                        <a href={notify.file} target="_blank" rel="noopener noreferrer" className="text-on-surface hover:underline">
+                                        <a href={notify.file} target="_blank" rel="noopener noreferrer"
+                                           className="text-on-surface hover:underline">
                                             附件下载
                                         </a>
                                     </div>
@@ -230,22 +218,22 @@ export default function NotifyPage() {
                                     type="text"
                                     className={`w-full px-4 py-3 rounded-2xl transition-all duration-200
                     border-2 ${focusComment ?
-                                            "border-primary bg-secondary-container" :
-                                            "border-outline hover:border-on-surface"}
+                                        "border-primary bg-secondary-container" :
+                                        "border-outline hover:border-on-surface"}
                     focus:outline-none focus:ring-2 focus:ring-primary/30
                     placeholder:text-on-surface/60`}
                                     onFocus={() => setFocusComment(true)}
-                                    // onBlur={() => setFocusComment(false)}
+                                    onBlur={() => setFocusComment(false)}
                                     placeholder={commentPlaceholder}
                                     value={commentContent}
                                     onChange={e => setCommentContent(e.target.value)}
-                                    style={{ textIndent: "0.5rem" }}
+                                    style={{textIndent: "0.5rem"}}
                                 />
                                 {focusComment && (
-                                    <div className="absolute right-2 top-1/2 -translate-y-1/2" >
+                                    <div className="absolute right-2 top-1/2 -translate-y-1/2">
                                         <button
                                             className="px-2 py-1 text-sm text-primary hover:bg-primary/10 rounded-lg"
-                                            onClick={() => {
+                                            onMouseDown={() => {
                                                 setCommentParent(null);
                                                 setCommentPlaceholder("想说些什么?")
                                             }}
@@ -256,7 +244,8 @@ export default function NotifyPage() {
                                 )}
                             </div>
                         </div>
-                        <div className={`flex justify-end px-3 ${focusComment ? `max-h-96` : `max-h-0`} transition-all duration-300 overflow-hidden`}>
+                        <div
+                            className={`flex justify-end px-3 ${focusComment ? `max-h-96` : `max-h-0`} transition-all duration-300 overflow-hidden`}>
                             <IconButton
                                 text="提交"
                                 onClick={async () => {
@@ -264,7 +253,7 @@ export default function NotifyPage() {
                                 }}
                                 className="bg-primary-container text-on-primary-container
                                 hover:bg-primary-container/90 space-x-3"
-                            ><FontAwesomeIcon icon={faPaperPlane} /></IconButton>
+                            ><FontAwesomeIcon icon={faPaperPlane}/></IconButton>
                         </div>
                     </div>
 

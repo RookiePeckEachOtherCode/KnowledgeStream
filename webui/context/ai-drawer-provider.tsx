@@ -45,7 +45,7 @@ export function AIDrawerProvider({children}: ProviderProps) {
             <div className={`w-full h-full flex relative flex-col overflow-hidden`}>
                 {children}
                 <div
-                    className={`${fullScreen ? `w-4/5` : `w-1/2`} rounded-2xl absolute ${
+                    className={`${fullScreen ? `w-4/5` : `w-1/2`} rounded-2xl fixed ${
                         fullScreen ? `` : `right-12 top-1/5`
                     } space-y-6 p-6 flex flex-col ${
                         isOpen ? `translate-x-0 opacity-100` : `translate-x-1/2 opacity-0 z-[-1] `
@@ -95,7 +95,7 @@ export function AIDrawerProvider({children}: ProviderProps) {
                 <div
                     onMouseEnter={() => setButtonHover(true)}
                     onMouseLeave={() => setButtonHover(false)}
-                    className={`bottom-8 absolute right-3 flex flex-col items-center justify-center space-y-2`}>
+                    className={`bottom-8 fixed right-3 flex flex-col items-center justify-center space-y-2`}>
                     <LibraryIconButton
                         text={``}
                         onClick={handleAIDrawerOpenState}

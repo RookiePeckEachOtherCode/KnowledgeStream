@@ -75,6 +75,7 @@ struct UpdateCourseInfoReq{
     7:string ascription;
     8:string major;
     9:string faculty;
+    10:string class;
 }
 struct UpdateCourseInfoResp{
     1:common.BaseResponse base;

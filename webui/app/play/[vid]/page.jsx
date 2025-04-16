@@ -9,7 +9,7 @@ import {
     faPlay,
 } from "@fortawesome/free-solid-svg-icons";
 import {faDiscourse} from "@fortawesome/free-brands-svg-icons";
-import {OssImage, OssVideo} from "../../components/oss-midea.tsx";
+import {OssImage, OssVideo, OssVideoCover} from "../../components/oss-midea.tsx";
 import {useEffect, useState} from "react";
 import {Divider} from "../../components/divider.tsx";
 import {CommentStrip} from "../../components/comment-strip.tsx";
@@ -17,30 +17,8 @@ import {IconButton} from "../../components/icon-button.tsx";
 import {api} from "../../../api/instance.ts";
 import {useNotification} from "../../../context/notification-provider.tsx";
 
-const videoInfo = {
-    cover: "ks-course-cover/test.jpg",
-    chapter: "第一章",
-    title: "趣谈趣谈人工智能背景下拨动指针",
-    source: "ks-video/test",
-    description: "威风堂堂罗教授极品讲座解析",
-    length: "",
-    ascription: "cid",
-    uploader: "uid",
-    upload_time: "2077-27-78",
-};
-const courseInfo = {
-    title: "AAA超级JAVA精品课程",
-    description: "这里用不到捏",
-    begin_time: "huh",
-    end_time: "huh",
-    major: "软件工程",
-};
-const teacherInfo = {
-    avatar: "ks-user-avatar/114514.jpg",
-    name: "罗名西",
-    signature: "第五人格我真的豪爽!!!就这个第五爽!!",
-};
 import {useParams} from "next/navigation";
+import {useRouter} from "next/navigation.js";
 
 export default function PlayPage() {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -389,6 +367,14 @@ export default function PlayPage() {
                         videos={videoList}
                         currentVideo={videoInfo}
                     ></ChapterList>
+                    <div className={`w-full flex flex-col`}>
+                        <div>下一个播放</div>
+                        <div className={`w-full flex flex-row justify-between`}>
+                            <OssVideoCover url={videoInfo.source} className={`w-1/2 h-auto`}></OssVideoCover>           
+                            
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -446,7 +432,7 @@ function VideoList(props) {
     let {title, videos, currentVideo} = props;
     const [unfold, setUnfold] = useState(false);
     const [hover, setHover] = useState(-1);
-
+    const router = useRouter()
     return (
         <div className="w-full   transition-all rounded-2xl text-on-secondary-container flex justify-between flex-col">
             <div
@@ -473,6 +459,10 @@ function VideoList(props) {
                             <div
                                 onMouseLeave={() => setHover(-1)}
                                 onMouseOver={() => setHover(index)}
+                                onClick={() => {
+                                    router.push(`/play/${item.vid}`)
+                                }}
+
                                 className={`flex flex-row  hover:bg-primary-fixed-dim transition-all duration-200 pl-3 pr-3 justify-between items-center h-auto min-h-10`}
                             >
                                 <div className={`text-on-secondary-fixed`}>{item.title}</div>

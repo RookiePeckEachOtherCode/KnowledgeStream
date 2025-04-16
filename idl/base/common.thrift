@@ -31,6 +31,7 @@ struct CourseInfo{
     7:string end_time;
     8:string major;
     9:string class;
+    10:string faculty;
 }
 struct VideoInfo{
     1:string vid;

@@ -32,7 +32,8 @@ export  type AdminServiceRequest = {
         faculty?: string;
         major?: string;
         begin_time?: string,
-        end_time?: string
+        end_time?: string,
+        class?: string
     }
     QUERY_COURSE: {
         keyword?: string;

@@ -89,7 +89,7 @@ export function MainPage() {
                 return
             }
             setCourses(res.coursesinfo)
-        } else {
+        } else if (localStorage.getItem("authority") === UserAuthority.Teacher) {
             const res = await api.teacherService.myCourse({
                 keyword: searchKeyword,
                 offset: 0,

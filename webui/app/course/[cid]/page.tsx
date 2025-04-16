@@ -5,13 +5,12 @@ import {useEffect, useState} from "react"
 import {faPlayCircle, faChevronDown, faChevronRight, faPaperPlane} from "@fortawesome/free-solid-svg-icons";
 import {useRouter} from "next/navigation";
 import AnimatedContent from "@/app/components/animated-content";
-import {api} from "@/api/instance";
-import {NotifyType} from "@/api/internal/model/response/notify";
-import {func} from "prop-types";
-import {useModal} from "@/context/modal-provider";
-import {IconButton} from "@/app/components/icon-button";
-import MDButton from "@/app/components/md-button";
 
+import { api } from "@/api/instance";
+import { NotifyType } from "@/api/internal/model/response/notify";
+import MDButton from "@/app/components/md-button";
+import { UserAuthority } from "@/api/internal/service/user";
+import { OssImage } from "@/app/components/oss-midea";
 
 export default function CoursePage({
                                        params,
@@ -20,26 +19,18 @@ export default function CoursePage({
 }) {
     const [cid, setCid] = useState("")
     const router = useRouter()
-    const {showNotification} = useNotification()
-    const [courseData, setCourseData] = useState<MockCourseDataType | null>(null)
+
+    const { showNotification } = useNotification()
+    const [courseData, setCourseData] = useState<CourseDataVO | null>(null)
     const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set())
     const [courseNotify, setCourseNotify] = useState<Array<NotifyType>>([])
     const [isNotifyLoading, setIsNotifyLoading] = useState(true)
-    const {isShow, toggleShowModal, setForm} = useModal()
+    const [isTeacher, setIsTeacher] = useState(true)
 
     const gotoPlay = (id: string) => {
         router.push(`/play/${id}`)
     }
-    const gotoNotification = (index: number, id: string) => {
-        if (courseNotify[index].read) {
-            //TODO impl api
-            setCourseNotify((prev) => {
-                const newData = [...prev]
-                newData[index].read = true
-                return newData
-            })
-        }
-
+    const gotoNotification = (id: string) => {
         router.push(`/course/${cid}/notify?id=${id}`)
     }
 
@@ -75,9 +66,9 @@ export default function CoursePage({
     ) : []
 
     useEffect(() => {
-        const fetchCourseData = async () => {
+        const fetchData = async () => {
             const cid = (await params).cid
-            const res = await mockData(cid)
+            const res = await fetchCourseData(cid)
             if (res.base.code !== 200) {
                 showNotification({
                     title: "获取课程数据失败",
@@ -86,12 +77,10 @@ export default function CoursePage({
                 })
                 return
             }
-
             setCid(cid)
             setCourseData(res)
         }
-
-        fetchCourseData()
+        fetchData()
     }, [params, showNotification])
     useEffect(() => {
         const fetchCourseNotify = async () => {
@@ -116,6 +105,11 @@ export default function CoursePage({
         fetchCourseNotify()
     }, [params, showNotification])
 
+    useEffect(() => {
+        if (localStorage.getItem("authority") === UserAuthority.Teacher) {
+            setIsTeacher(true)
+        }
+    }, [])
 
     const gotoTecher = () => {
         if (!courseData?.techer.id) return
@@ -131,15 +125,17 @@ export default function CoursePage({
                             distance={100}
                             reverse={true}
                             config={{tension: 80, friction: 20}}
+
                         >
                             <div className="bg-surface-container rounded-3xl p-6 shadow-md">
-                                <h1 className="text-3xl font-bold text-on-surface mb-4">{courseData.name}</h1>
+                                <div className="flex justify-between items-center">
+                                    <h1 className="text-3xl font-bold text-on-surface mb-4">{courseData.name}</h1>
+                                    {isTeacher && (
+                                        <MDButton onClick={() => router.push(`/course/${cid}/edit`)}>修改课程</MDButton>
+                                    )}
+                                </div>
                                 <div className="flex items-start space-x-4">
-                                    <img
-                                        src={courseData.techer.avatar}
-                                        alt={courseData.techer.name}
-                                        className="w-12 h-12 rounded-full"
-                                    />
+                                    <OssImage className="size-12 rounded-full" url={courseData.techer.avatar} />
                                     <div className="flex flex-col">
                                         <span className="text-on-surface-variant text-xl hover:underline cursor-pointer"
                                               onClick={() => {
@@ -372,7 +368,7 @@ function CreateNotificationForm({cid}: CreateNotificationFormProps) {
 }
 
 
-interface MockCourseDataType {
+interface CourseDataVO {
     id: string,
     name: string,
     techer: {
@@ -389,7 +385,7 @@ interface MockCourseDataType {
     }>
 }
 
-interface MockRequestType {
+interface RequestType {
     base: {
         code: number,
         msg: string
@@ -410,82 +406,76 @@ interface MockRequestType {
     }>
 }
 
-async function mockData(cid: string): Promise<MockRequestType> {
-    console.log(cid)
+async function fetchCourseData(cid: string): Promise<RequestType> {
+    const courseCapt = await api.courseService.videos({ cid });
+    const courseInfo = await api.courseService.info({ cid });
+
+    if (courseCapt.base.code !== 200 || courseInfo.base.code !== 200) {
+        const resp = {
+            base: {
+                code: 0,
+                msg: ""
+            },
+            id: "",
+            name: "",
+            techer: {
+                id: "",
+                name: "",
+                avatar: "",
+                signatrue: ""
+            },
+            list: []
+        }
+        if (courseCapt.base.code !== 200) {
+            resp.base.code = courseCapt.base.code
+            resp.base.msg = courseCapt.base.msg
+        } else if (courseInfo.base.code !== 200) {
+            resp.base.code = courseInfo.base.code
+            resp.base.msg = courseInfo.base.msg
+        }
+        return resp
+    }
+
+    const capts = courseCapt.videosinfo.map((item) => {
+        return {
+            id: item.vid,
+            section_number: item.chapter,
+            section_name: item.title,
+            video_id: item.vid
+        }
+    });
+    const techerInfo = await api.userService.uidInfo({ uid: courseInfo.courseinfo.ascription });
+    if (techerInfo.base.code !== 200) {
+        return {
+            base: {
+                code: techerInfo.base.code,
+                msg: techerInfo.base.msg
+            },
+            id: "",
+            name: "",
+            techer: {
+                id: "",
+                name: "",
+                avatar: "",
+                signatrue: ""
+            },
+            list: []
+        }
+    }
+
     return {
         base: {
             code: 200,
             msg: "success"
         },
-        id: "114514",
-        name: "韭菜动力学",
+        id: techerInfo.userinfo.uid,
+        name: courseInfo.courseinfo.title,
         techer: {
-            id: "1919810",
-            name: "罗民西",
-            avatar: "https://tse3-mm.cn.bing.net/th/id/OIP-C.huUG6H4rNQYhb6yiOl9ZugHaHW?rs=1&pid=ImgDetMain",
-            signatrue: "我会使用指针拨动整个计算机世界！！！",
+            id: techerInfo.userinfo.uid,
+            name: techerInfo.userinfo.name,
+            avatar: techerInfo.userinfo.avatar,
+            signatrue: techerInfo.userinfo.signature
         },
-        list: [
-            {
-                id: "1",
-                section_number: "章节1",
-                section_name: "韭菜的起源(上)",
-                video_id: "1"
-            },
-            {
-                id: "1",
-                section_number: "章节1",
-                section_name: "韭菜的起源(下)",
-                video_id: "1"
-            },
-            {
-                id: "2",
-                section_number: "章节2",
-                section_name: "韭菜的心理(上)",
-                video_id: "20"
-            },
-            {
-                id: "2",
-                section_number: "章节2",
-                section_name: "韭菜的心理(中)",
-                video_id: "20"
-            },
-            {
-                id: "2",
-                section_number: "章节2",
-                section_name: "韭菜的心理(下)",
-                video_id: "20"
-            },
-            {
-                id: "3",
-                section_number: "章节3",
-                section_name: "趣谈波动韭菜的指针(上)",
-                video_id: "3"
-            },
-            {
-                id: "3",
-                section_number: "章节3",
-                section_name: "趣谈波动韭菜的指针(下)",
-                video_id: "3"
-            },
-            {
-                id: "4",
-                section_number: "章节4",
-                section_name: "韭菜的动力",
-                video_id: "4"
-            },
-            {
-                id: "5",
-                section_number: "章节5",
-                section_name: "噶韭菜的方法",
-                video_id: "5"
-            },
-            {
-                id: "6",
-                section_number: "章节6",
-                section_name: "韭菜可持续发展的路径",
-                video_id: "6"
-            }
-        ]
+        list: capts
     }
 }

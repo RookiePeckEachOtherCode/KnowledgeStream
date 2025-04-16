@@ -1,5 +1,3 @@
-import {BaseResponse, UserInfo} from "@/api/internal/model/static/base-resp";
-
 export type UserServiceRequest = {
   LOGIN: {
     phone: string;

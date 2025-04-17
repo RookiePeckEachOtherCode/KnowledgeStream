@@ -2,15 +2,14 @@ import {useScreenRecord} from "../../context/screen-record-provider";
 import {useEffect, useRef, useState} from "react";
 import {IconButton} from "../components/icon-button.tsx";
 import {OssBuckets, useOss} from "../../context/oss-uploader-provider.tsx";
-import {OssVideo} from "../components/oss-midea.tsx";
 import {useModal} from "../../context/modal-provider.js";
 import {api} from "../../api/instance.ts";
 import {useNotification} from "../../context/notification-provider.tsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faArrowDown} from "@fortawesome/free-solid-svg-icons";
 
-export function ScreenRecordControlPage(props){
-    const {                
+export function ScreenRecordControlPage(props) {
+    const {
         isRecording,
         isPaused,
         startRecording,
@@ -19,10 +18,11 @@ export function ScreenRecordControlPage(props){
         resumeRecording,
         clearRecordedData,
         recordedBlob,
-        liveStream} = useScreenRecord();
-    const {isShow, toggleShowModal, setForm}=useModal()
+        liveStream
+    } = useScreenRecord();
+    const {isShow, toggleShowModal, setForm} = useModal()
     const previewVideoRef = useRef(null);//实时预览流
-    const {ossHandleUploadFile,generateSignedUrl} = useOss();
+    const {ossHandleUploadFile, generateSignedUrl} = useOss();
     const {showNotification} = useNotification();
 
     //结束录屏生成预览
@@ -57,7 +57,7 @@ export function ScreenRecordControlPage(props){
     const handleDownload = () => {
         if (!recordedBlob) return;
 
-        const filename = `recording_${new Date().toISOString().slice(0,19)}.webm`;
+        const filename = `recording_${new Date().toISOString().slice(0, 19)}.webm`;
         const url = URL.createObjectURL(recordedBlob);
 
         const a = document.createElement('a');
@@ -72,20 +72,20 @@ export function ScreenRecordControlPage(props){
             URL.revokeObjectURL(url);
         }, 100);
     };
-    
+
 
     const videoRef = useRef(null);
-    
-    
+
+
     // 视频录制中回显
     useEffect(() => {
         if (previewVideoRef.current && liveStream) {
             previewVideoRef.current.srcObject = liveStream;
         }
     }, [liveStream]);
-    
-    
-    useEffect(()=>{
+
+
+    useEffect(() => {
         setForm(<VideoSubmitForm
             key={Date.now()}
             uploadBlob={UploadVideoToOss}
@@ -93,78 +93,79 @@ export function ScreenRecordControlPage(props){
             blobSrc={blobUrl}
         >
         </VideoSubmitForm>)
-    },[isShow])
-    
-    const UploadVideoToOss=async (fileName)=>{
-        const success = await ossHandleUploadFile(recordedBlob,fileName,OssBuckets.Video);
-        if(success){
+    }, [isShow])
+
+    const UploadVideoToOss = async (fileName) => {
+        const success = await ossHandleUploadFile(recordedBlob, fileName, OssBuckets.Video);
+        if (success) {
             showNotification({
-                type:"success",
-                title:"视频文件已上传"
+                type: "success",
+                title: "视频文件已上传"
             })
-        }else{
+        } else {
             showNotification({
-                type:"error",
-                title:"视频文件上传失败，请重试"
+                type: "error",
+                title: "视频文件上传失败，请重试"
             })
         }
     }
-    
+
 
     return (
         <div className={`w-full  space-x-6  h-full flex flex-row p-8`}>
             <div className={`h-full flex flex-col space-y-6`}>
-                {!isRecording?
-                    <IconButton 
+                {!isRecording ?
+                    <IconButton
                         className={` bg-secondary  text-on-secondary
                      hover:text-on-primary hover:bg-primary w-24 h-12`}
                         text={`开始录制`}
                         onClick={startRecording}>
-                    </IconButton>:  <IconButton 
+                    </IconButton> : <IconButton
                         className={`w-24 h-12 bg-error-container text-on-error-container 
                         hover:bg-error hover:text-on-error
-                        `} 
-                        text={`结束录制`} 
+                        `}
+                        text={`结束录制`}
                         onClick={stopRecording}>
-                    </IconButton >
+                    </IconButton>
                 }
                 {
-                    isRecording&&(!isPaused?
+                    isRecording && (!isPaused ?
                         <IconButton text={`暂停录制`} onClick={pauseRecording}
                                     className={`bg-secondary  hover:bg-secondary-fixed`}></IconButton>
-                        :<IconButton text={`恢复录制`} onClick={resumeRecording} 
-                                     className={`bg-primary-fixed-dim`}></IconButton>)
+                        : <IconButton text={`恢复录制`} onClick={resumeRecording}
+                                      className={`bg-primary-fixed-dim`}></IconButton>)
                 }
-                {recordedBlob&&<IconButton
+                {recordedBlob && <IconButton
                     className={` bg-tertiary-container  text-on-tertiary-container
                      hover:text-on-tertiary hover:bg-tertiary w-24 h-12`}
-                    onClick={()=>toggleShowModal(true)}
+                    onClick={() => toggleShowModal(true)}
                     text={`上传录屏`}
                 >
                 </IconButton>}
-                {recordedBlob&&<IconButton
+                {recordedBlob && <IconButton
                     className={` bg-surface-dim  text-on-surface
                      hover:text-on-tertiary hover:bg-tertiary w-24 h-12`}
                     text={`清除缓存`}
-                 onClick={clearRecordedData}
+                    onClick={clearRecordedData}
                 >
                 </IconButton>}
-                {recordedBlob&&<IconButton
+                {recordedBlob && <IconButton
                     className={` bg-primary-fixed  text-on-primary-fixed
                      hover:text-on-primary-fixed-variant hover:bg-primary-fixed-dim w-24 h-12`}
                     text={`下载视频`}
                     onClick={handleDownload}
                 >
                 </IconButton>
-                    
+
                 }
             </div>
 
             <div className={`w-full items-center flex  justify-center`}>
                 {
-                    isRecording?(
+                    isRecording ? (
                             <div className={`w-3/4 relative flex`}>
-                                {isPaused&&<div className={`bg-black bg-opacity-10 absolute w-full h-full`}>录制暂停中</div>}
+                                {isPaused &&
+                                    <div className={`bg-black bg-opacity-10 absolute w-full h-full`}>录制暂停中</div>}
                                 <video
                                     ref={previewVideoRef}
                                     autoPlay={true}
@@ -179,10 +180,13 @@ export function ScreenRecordControlPage(props){
                                 controls
                                 src={blobUrl}
                                 className={`w-3/4 object-cover`}
-                                onLoadedMetadata={()=>{}}
-                        />
-                        ):<div className={`w-full flex  h-full relative`}>
-                            <div className={`text-4xl absolute top-2/5 left-2/5 flex flex-col justify-center text-center`}>录制未开始<p>点击左侧按钮开启录制</p></div>
+                                onLoadedMetadata={() => {
+                                }}
+                            />
+                        ) : <div className={`w-full flex  h-full relative`}>
+                            <div
+                                className={`text-4xl absolute top-2/5 left-2/5 flex flex-col justify-center text-center`}>录制未开始
+                                <p>点击左侧按钮开启录制</p></div>
                         </div>
                 }
             </div>
@@ -191,7 +195,7 @@ export function ScreenRecordControlPage(props){
 
 }
 
-function VideoSubmitForm({ videoDuration, blobSrc, uploadBlob }) {
+function VideoSubmitForm({videoDuration, blobSrc, uploadBlob}) {
     const [formData, setFormData] = useState({
         title: "",
         description: "",
@@ -205,15 +209,15 @@ function VideoSubmitForm({ videoDuration, blobSrc, uploadBlob }) {
     const [localFile, setLocalFile] = useState(null);
     const [localFileUrl, setLocalFileUrl] = useState("");
     const [fileName, setFileName] = useState("");
-    const {ossHandleUploadFile,generateSignedUrl} = useOss();
+    const {ossHandleUploadFile, generateSignedUrl} = useOss();
     const [localVideoDuration, setLocalVideoDuration] = useState(0);
     // 原有状态
     const [courseName, setCourseName] = useState("");
     const [courses, setCourses] = useState([]);
     const [errors, setErrors] = useState({});
     const [courseDrawerIsOpen, setCourseDrawerIsOpen] = useState(false);
-    const { showNotification } = useNotification();
-    const { toggleShowModal } = useModal();
+    const {showNotification} = useNotification();
+    const {toggleShowModal} = useModal();
 
     // 预览处理
     const handlePreview = () => {
@@ -231,7 +235,7 @@ function VideoSubmitForm({ videoDuration, blobSrc, uploadBlob }) {
 
         // 验证文件类型
         if (!file.type.startsWith("video/")) {
-            showNotification({ type: "error", title: "仅支持视频文件" });
+            showNotification({type: "error", title: "仅支持视频文件"});
             return;
         }
 
@@ -248,7 +252,7 @@ function VideoSubmitForm({ videoDuration, blobSrc, uploadBlob }) {
             setLocalVideoDuration(duration);
 
             // 更新表单时长字段
-            setFormData(prev => ({ ...prev, length: duration }));
+            setFormData(prev => ({...prev, length: duration}));
         } catch (error) {
             showNotification({
                 type: "error",
@@ -296,6 +300,7 @@ function VideoSubmitForm({ videoDuration, blobSrc, uploadBlob }) {
                 });
             }
         }
+
         fetchData();
     }, []);
 
@@ -306,7 +311,7 @@ function VideoSubmitForm({ videoDuration, blobSrc, uploadBlob }) {
             [field]: e.target.value
         }));
         if (errors[field]) {
-            setErrors(prev => ({ ...prev, [field]: '' }));
+            setErrors(prev => ({...prev, [field]: ''}));
         }
     };
 
@@ -325,7 +330,7 @@ function VideoSubmitForm({ videoDuration, blobSrc, uploadBlob }) {
         // 公共验证
         if (!formData.chapter.trim()) newErrors.chapter = "章节不能为空";
         if (!formData.title.trim()) newErrors.title = "标题不能为空";
-        if (!formData.cid.trim() ) {
+        if (!formData.cid.trim()) {
             newErrors.cid = "请选择有效课程";
         }
 
@@ -349,35 +354,35 @@ function VideoSubmitForm({ videoDuration, blobSrc, uploadBlob }) {
             description: formData.description,
             cid: formData.cid,
             chapter: formData.chapter,
-            length: currentDuration, 
+            length: currentDuration,
         });
-        if(resp.base.code===200){
+        if (resp.base.code === 200) {
             const success = await ossHandleUploadFile(
                 file,
                 resp.newid,
                 OssBuckets.Video
             );
-            if(success){
+            if (success) {
                 showNotification({
-                    title:"视频已上传",
-                    type:"success"
+                    title: "视频已上传",
+                    type: "success"
                 })
-            }else{
+            } else {
                 showNotification({
-                    title:"视频存储出现错误",
-                    type:"error"
+                    title: "视频存储出现错误",
+                    type: "error"
                 })
             }
-        }else{
+        } else {
             showNotification({
-                title:"保存视频信息失败",
-                content:resp.base.msg,
-                type:"error"
+                title: "保存视频信息失败",
+                content: resp.base.msg,
+                type: "error"
             })
         }
     };
-    
-    const handleOnlineUpload=async()=>{
+
+    const handleOnlineUpload = async () => {
         const currentDuration = formatDuration(videoDuration);
         const resp = await api.teacherService.uploadVideo({
             title: formData.title,
@@ -386,35 +391,35 @@ function VideoSubmitForm({ videoDuration, blobSrc, uploadBlob }) {
             chapter: formData.chapter,
             length: currentDuration,
         });
-        if(resp.base.code!==200){
+        if (resp.base.code !== 200) {
             showNotification({
-                title:"保存视频信息失败",
-                content:resp.base.msg,
-                type:"error"
+                title: "保存视频信息失败",
+                content: resp.base.msg,
+                type: "error"
             })
-        }else{
+        } else {
             await uploadBlob(resp.newid)
         }
-        
+
     }
 
     // 提交处理
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
-        
-        if(uploadMode==="blob"){
+
+        if (uploadMode === "blob") {
             await handleOnlineUpload()
-        }else{
+        } else {
             const parts = fileName.split(".");
-            if(parts.length>2){
+            if (parts.length > 2) {
                 showNotification({
-                    title:"哥们啥文件名啊",
-                    type:"error"
+                    title: "哥们啥文件名啊",
+                    type: "error"
                 })
                 return
             }
-            await handleLocalUpload(localFile,parts[1])
+            await handleLocalUpload(localFile, parts[1])
         }
     };
 
@@ -491,7 +496,7 @@ function VideoSubmitForm({ videoDuration, blobSrc, uploadBlob }) {
 
             {/* 原有表单内容 */}
             <div className="w-full text-2xl text-on-secondary-container">完善视频信息</div>
-            <form className="space-y-6">
+            <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                     {/* 标题输入 */}
                     <div className="space-y-2">
@@ -614,7 +619,7 @@ function VideoSubmitForm({ videoDuration, blobSrc, uploadBlob }) {
                         text={uploadMode === "blob" ? "提交录屏" : "上传文件"}
                     />
                 </div>
-            </form>
+            </div>
         </div>
     );
 }
@@ -626,6 +631,6 @@ const formatDuration = (seconds) => {
 
     return [h, m, s]
         .map(v => v.toString().padStart(2, "0"))
-        .filter((v,i) => v !== "00" || i > 0)
+        .filter((v, i) => v !== "00" || i > 0)
         .join(":");
 };

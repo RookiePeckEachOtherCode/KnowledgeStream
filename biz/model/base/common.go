@@ -929,6 +929,7 @@ type CourseInfo struct {
 	EndTime     string `thrift:"end_time,7" form:"end_time" json:"end_time" query:"end_time"`
 	Major       string `thrift:"major,8" form:"major" json:"major" query:"major"`
 	Class       string `thrift:"class,9" form:"class" json:"class" query:"class"`
+	Faculty     string `thrift:"faculty,10" form:"faculty" json:"faculty" query:"faculty"`
 }
 
 func NewCourseInfo() *CourseInfo {
@@ -974,16 +975,21 @@ func (p *CourseInfo) GetClass() (v string) {
 	return p.Class
 }
 
+func (p *CourseInfo) GetFaculty() (v string) {
+	return p.Faculty
+}
+
 var fieldIDToName_CourseInfo = map[int16]string{
-	1: "cid",
-	2: "title",
-	3: "description",
-	4: "cover",
-	5: "ascription",
-	6: "begin_time",
-	7: "end_time",
-	8: "major",
-	9: "class",
+	1:  "cid",
+	2:  "title",
+	3:  "description",
+	4:  "cover",
+	5:  "ascription",
+	6:  "begin_time",
+	7:  "end_time",
+	8:  "major",
+	9:  "class",
+	10: "faculty",
 }
 
 func (p *CourseInfo) Read(iprot thrift.TProtocol) (err error) {
@@ -1071,6 +1077,14 @@ func (p *CourseInfo) Read(iprot thrift.TProtocol) (err error) {
 		case 9:
 			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField9(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 10:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField10(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
@@ -1204,6 +1218,17 @@ func (p *CourseInfo) ReadField9(iprot thrift.TProtocol) error {
 	p.Class = _field
 	return nil
 }
+func (p *CourseInfo) ReadField10(iprot thrift.TProtocol) error {
+
+	var _field string
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.Faculty = _field
+	return nil
+}
 
 func (p *CourseInfo) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
@@ -1245,6 +1270,10 @@ func (p *CourseInfo) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField9(oprot); err != nil {
 			fieldId = 9
+			goto WriteFieldError
+		}
+		if err = p.writeField10(oprot); err != nil {
+			fieldId = 10
 			goto WriteFieldError
 		}
 	}
@@ -1408,6 +1437,22 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 9 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 9 end error: ", p), err)
+}
+func (p *CourseInfo) writeField10(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("faculty", thrift.STRING, 10); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Faculty); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 10 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 10 end error: ", p), err)
 }
 
 func (p *CourseInfo) String() string {

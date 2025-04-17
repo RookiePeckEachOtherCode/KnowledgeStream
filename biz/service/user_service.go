@@ -117,7 +117,7 @@ func (s *UserService) GetUserInfoWithId(c context.Context, id int64) (*entity.Us
 	return user, err
 }
 
-func (s *UserService) UpdateUserInfoWithId(c context.Context, id int64, name string, avatar string, phone string, signature string, major string, faculty string, grade string) error {
+func (s *UserService) UpdateUserInfoWithId(c context.Context, id int64, name string, avatar string, phone string, signature string, major string, faculty string, grade string, class string) error {
 	u := query.User
 	user, err := u.WithContext(c).Where(u.ID.Eq(id)).First()
 	if err != nil {
@@ -132,6 +132,9 @@ func (s *UserService) UpdateUserInfoWithId(c context.Context, id int64, name str
 	if grade == "" {
 		grade = user.Grade
 	}
+	if class == "" {
+		class = user.Class
+	}
 	_, err = u.WithContext(c).Where(u.ID.Eq(id)).Updates(entity.User{
 		Name:      name,
 		Avatar:    avatar,
@@ -140,6 +143,7 @@ func (s *UserService) UpdateUserInfoWithId(c context.Context, id int64, name str
 		Major:     major,
 		Faculty:   faculty,
 		Grade:     grade,
+		Class:     class,
 	})
 	if err != nil {
 		hlog.Error("更新用户信息失败: ", err)
@@ -195,43 +199,66 @@ func (s *UserService) AdminQueryUser(
 	faculty string,
 	authority string,
 ) ([]*base.UserInfo, error) {
-	if authority == "Student" {
+	// 转换权限标识到存储值
+	switch authority {
+	case "Student":
 		authority = "USER"
-	} else if authority == "Teacher" {
+	case "Teacher":
 		authority = "ADMIN"
-	} else if authority == "Admin" {
+	case "Admin":
 		authority = "SUPER_ADMIN"
+	default:
+		authority = "" // 无效值视为不过滤权限
 	}
+
 	u := query.User
-	users, err := u.WithContext(c).
-		Where(u.Name.Like("%" + keyword + "%")).
-		Where(u.Authority.Neq("SUPER_ADMIN")).
-		Where(u.Major.Like("%" + major + "%")).
-		Where(u.Faculty.Eq("%" + faculty + "%")).
-		Where(u.Authority.Eq(authority)).
+	queryBuilder := u.WithContext(c).
+		Where(u.Authority.Neq("SUPER_ADMIN")) // 始终排除超级管理员
+
+	// 动态构建查询条件
+	if keyword != "" {
+		queryBuilder = queryBuilder.Where(u.Name.Like("%" + keyword + "%"))
+	}
+	if major != "" {
+		queryBuilder = queryBuilder.Where(u.Major.Like("%" + major + "%"))
+	}
+	if faculty != "" {
+		queryBuilder = queryBuilder.Where(u.Faculty.Like("%" + faculty + "%"))
+	}
+	if authority != "" {
+		queryBuilder = queryBuilder.Where(u.Authority.Eq(authority))
+	}
+
+	// 执行分页查询
+	users, err := queryBuilder.
 		Offset(int(offset)).
-		Limit(int(size)).Find()
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
+		Limit(int(size)).
+		Find()
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		hlog.Error("查询用户失败: ", err)
 		return nil, err
 	}
+
+	// 转换结果集
 	var result []*base.UserInfo
 	for _, user := range users {
-		userInfo := new(base.UserInfo)
-		userInfo.Name = user.Name
-		userInfo.Avatar = user.Avatar
-		userInfo.UID = fmt.Sprintf("%d", user.ID)
-		userInfo.Signature = user.Signature
-		userInfo.Faculty = user.Faculty
-		userInfo.Class = user.Class
-		userInfo.Major = user.Major
-		userInfo.Grade = user.Grade
-		if user.Authority == entity.AuthorityUser {
+		userInfo := &base.UserInfo{
+			Name:      user.Name,
+			Avatar:    user.Avatar,
+			Phone:     user.Phone,
+			UID:       fmt.Sprintf("%d", user.ID),
+			Signature: user.Signature,
+			Faculty:   user.Faculty,
+			Class:     user.Class,
+			Major:     user.Major,
+			Grade:     user.Grade,
+		}
+
+		// 转换权限为业务术语
+		switch user.Authority {
+		case "USER":
 			userInfo.Authority = "Student"
-		} else if user.Authority == entity.AuthorityAdmin {
+		case "ADMIN":
 			userInfo.Authority = "Teacher"
 		}
 		result = append(result, userInfo)

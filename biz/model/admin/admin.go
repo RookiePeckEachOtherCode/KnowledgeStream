@@ -653,6 +653,7 @@ type UpdateUserInfoReq struct {
 	Major     string `thrift:"major,8" form:"major" json:"major" query:"major"`
 	Password  string `thrift:"password,9" form:"password" json:"password" query:"password"`
 	Signature string `thrift:"signature,10" form:"signature" json:"signature" query:"signature"`
+	Class     string `thrift:"class,11" form:"class" json:"class" query:"class"`
 }
 
 func NewUpdateUserInfoReq() *UpdateUserInfoReq {
@@ -702,6 +703,10 @@ func (p *UpdateUserInfoReq) GetSignature() (v string) {
 	return p.Signature
 }
 
+func (p *UpdateUserInfoReq) GetClass() (v string) {
+	return p.Class
+}
+
 var fieldIDToName_UpdateUserInfoReq = map[int16]string{
 	1:  "uid",
 	2:  "name",
@@ -713,6 +718,7 @@ var fieldIDToName_UpdateUserInfoReq = map[int16]string{
 	8:  "major",
 	9:  "password",
 	10: "signature",
+	11: "class",
 }
 
 func (p *UpdateUserInfoReq) Read(iprot thrift.TProtocol) (err error) {
@@ -808,6 +814,14 @@ func (p *UpdateUserInfoReq) Read(iprot thrift.TProtocol) (err error) {
 		case 10:
 			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField10(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 11:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField11(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
@@ -952,6 +966,17 @@ func (p *UpdateUserInfoReq) ReadField10(iprot thrift.TProtocol) error {
 	p.Signature = _field
 	return nil
 }
+func (p *UpdateUserInfoReq) ReadField11(iprot thrift.TProtocol) error {
+
+	var _field string
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.Class = _field
+	return nil
+}
 
 func (p *UpdateUserInfoReq) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
@@ -997,6 +1022,10 @@ func (p *UpdateUserInfoReq) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField10(oprot); err != nil {
 			fieldId = 10
+			goto WriteFieldError
+		}
+		if err = p.writeField11(oprot); err != nil {
+			fieldId = 11
 			goto WriteFieldError
 		}
 	}
@@ -1176,6 +1205,22 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 10 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 10 end error: ", p), err)
+}
+func (p *UpdateUserInfoReq) writeField11(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("class", thrift.STRING, 11); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Class); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 11 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 11 end error: ", p), err)
 }
 
 func (p *UpdateUserInfoReq) String() string {
@@ -2913,6 +2958,7 @@ type UpdateCourseInfoReq struct {
 	Ascription  string `thrift:"ascription,7" form:"ascription" json:"ascription" query:"ascription"`
 	Major       string `thrift:"major,8" form:"major" json:"major" query:"major"`
 	Faculty     string `thrift:"faculty,9" form:"faculty" json:"faculty" query:"faculty"`
+	Class       string `thrift:"class,10" form:"class" json:"class" query:"class"`
 }
 
 func NewUpdateCourseInfoReq() *UpdateCourseInfoReq {
@@ -2958,16 +3004,21 @@ func (p *UpdateCourseInfoReq) GetFaculty() (v string) {
 	return p.Faculty
 }
 
+func (p *UpdateCourseInfoReq) GetClass() (v string) {
+	return p.Class
+}
+
 var fieldIDToName_UpdateCourseInfoReq = map[int16]string{
-	1: "cid",
-	2: "cover",
-	3: "title",
-	4: "description",
-	5: "begin_time",
-	6: "end_time",
-	7: "ascription",
-	8: "major",
-	9: "faculty",
+	1:  "cid",
+	2:  "cover",
+	3:  "title",
+	4:  "description",
+	5:  "begin_time",
+	6:  "end_time",
+	7:  "ascription",
+	8:  "major",
+	9:  "faculty",
+	10: "class",
 }
 
 func (p *UpdateCourseInfoReq) Read(iprot thrift.TProtocol) (err error) {
@@ -3055,6 +3106,14 @@ func (p *UpdateCourseInfoReq) Read(iprot thrift.TProtocol) (err error) {
 		case 9:
 			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField9(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 10:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField10(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
@@ -3188,6 +3247,17 @@ func (p *UpdateCourseInfoReq) ReadField9(iprot thrift.TProtocol) error {
 	p.Faculty = _field
 	return nil
 }
+func (p *UpdateCourseInfoReq) ReadField10(iprot thrift.TProtocol) error {
+
+	var _field string
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.Class = _field
+	return nil
+}
 
 func (p *UpdateCourseInfoReq) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
@@ -3229,6 +3299,10 @@ func (p *UpdateCourseInfoReq) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField9(oprot); err != nil {
 			fieldId = 9
+			goto WriteFieldError
+		}
+		if err = p.writeField10(oprot); err != nil {
+			fieldId = 10
 			goto WriteFieldError
 		}
 	}
@@ -3392,6 +3466,22 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 9 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 9 end error: ", p), err)
+}
+func (p *UpdateCourseInfoReq) writeField10(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("class", thrift.STRING, 10); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Class); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 10 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 10 end error: ", p), err)
 }
 
 func (p *UpdateCourseInfoReq) String() string {

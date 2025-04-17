@@ -6,7 +6,7 @@ import {
     faChalkboardUser, faChevronDown, faChevronUp, faCommentDots,
     faEye,
     faFile, faGraduationCap,
-    faKeyboard, faPenSquare, faPenToSquare, faSave, faTrash, faUpload, faUsers,
+    faKeyboard, faPenSquare, faPenToSquare, faSave, faSchoolFlag, faTrash, faUpload, faUsers,
     faUserSecret,
     faUsersViewfinder
 } from "@fortawesome/free-solid-svg-icons";
@@ -237,6 +237,83 @@ export function GlanceData() {
         },
 
     ])
+    const [offset, setOffset] = useState(0)
+    const [size, setSize] = useState(10)
+    const [currentTarget, setCurrentTarget] = useState()
+    const {showNotification} = useNotification();
+
+    const GetStudentFacultyData = async () => {
+        const sfRes = await api.statisticService.studentFaculty({
+            offset: offset,
+            size: size
+        });
+        if (sfRes.base.code !== 200) {
+            showNotification({
+                title: "暂时无法获取学生学院信息",
+                content: "",
+                type: "info"
+            })
+        } else {
+            setStudentFaculty(sfRes.datas)
+        }
+    }
+
+    const GetTeacherFacultyData = async () => {
+        const tfRes = await api.statisticService.teacherFaculty({
+            offset: offset,
+            size: size
+        });
+        if (tfRes.base.code !== 200) {
+            showNotification({
+                title: "暂时无法获取学生学院信息",
+                content: "",
+                type: "info"
+            })
+        } else {
+            setTeacherFaculty(tfRes.datas)
+        }
+    }
+    const GetPlayCntData = async () => {
+        const pcRes = await api.statisticService.videoPlays({
+            offset: offset,
+            size: size
+        })
+        if (pcRes.base.code !== 200) {
+            showNotification({
+                title: "暂时无法获取视频播放数据",
+                content: "",
+                type: "info"
+            })
+        } else {
+            setVideoPlays(pcRes.datas)
+        }
+    }
+    const GetMajorVideosData = async () => {
+        const mvRes = await api.statisticService.videoMajor({
+            offset: offset,
+            size: size
+        });
+        if (mvRes.base.code !== 200) {
+            showNotification({
+                title: "暂时无法获取视频数量数据",
+                content: "",
+                type: "info"
+            })
+        } else {
+            setVideoMajor(mvRes.datas)
+        }
+
+    }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            await GetStudentFacultyData()
+            await GetTeacherFacultyData()
+            await GetPlayCntData()
+            await GetMajorVideosData()
+        }
+        fetchData()
+    }, []);
 
     // noinspection TypeScriptValidateTypes
     return (
@@ -480,41 +557,7 @@ export function ManageCourse() {
 
     const [keyword, setKeyword] = useState("")
     const [size, setSize] = useState(10)
-    const [courses, setCourses] = useState<Array<CourseInfo>>([
-        {
-            ascription: "计算机学院",
-            begin_time: "2023-09-01",
-            class: "2023级1班",
-            cover: "ks-user-avatar/114514.jpg",
-            description: "数据结构与算法基础课程，涵盖链表、树、图等核心内容",
-            end_time: "2024-01-15",
-            cid: "CS101-2023",
-            major: "计算机科学与技术",
-            title: "数据结构导论"
-        },
-        {
-            ascription: "数学系",
-            begin_time: "2023-08-28",
-            class: "数学实验班",
-            cover: "ks-user-avatar/114514.jpg",
-            description: "高等数学进阶课程，重点讲解微积分与线性代数应用",
-            end_time: "2024-01-10",
-            cid: "MATH201-2023",
-            major: "应用数学",
-            title: "高等数学精讲"
-        },
-        {
-            ascription: "外国语学院",
-            begin_time: "2023-09-10",
-            class: "英语强化班",
-            cover: "ks-user-avatar/114514.jpg",
-            description: "商务英语实战训练，提升专业写作与口语交流能力",
-            end_time: "2023-12-20",
-            cid: "ENG301-2023",
-            major: "英语",
-            title: "商务英语实践"
-        }
-    ])
+    const [courses, setCourses] = useState<Array<CourseInfo>>([])
     const [major, setMajor] = useState("")
     const [faculty, setFaculty] = useState("")
     const [endTime, setEndTime] = useState("")
@@ -539,7 +582,7 @@ export function ManageCourse() {
             })
             return
         }
-        setCourses(queryRes.coursesinfo)
+        setCourses(queryRes.courses)
 
     }
     const openEditForm = async (index: number) => {
@@ -552,7 +595,11 @@ export function ManageCourse() {
             description={courses[index].description}
             end_time={courses[index].end_time}
             cid={courses[index].cid}
+            faculty={courses[index].faculty}
             major={courses[index].major}
+            reload={() => {
+                SearchCourse()
+            }}
             title={courses[index].title}/>)
         toggleShowModal(true)
 
@@ -617,6 +664,7 @@ export function ManageCourse() {
                             title={item.title}
                             id={item.cid}
                             major={item.major}
+                            faculty={item.faculty}
                             begin_time={item.begin_time}
                             end_time={item.end_time}
                             cover={item.cover}
@@ -637,7 +685,7 @@ export function ManageCourse() {
 }
 
 export function ManageUser() {
-    const Authorities = ["USER", "ADMIN", "SUPER_ADMIN"]
+    const Authorities = ["Student", "Teacher", "Admin"]
     const [major, setMajor] = useState("")
     const [faculty, setFaculty] = useState("")
     const [keyword, setKeyword] = useState("")
@@ -665,7 +713,7 @@ export function ManageUser() {
             })
             return
         }
-        setUsers(usersRes.usersinfo)
+        setUsers(usersRes.users)
 
     }
 
@@ -677,6 +725,11 @@ export function ManageUser() {
             name={users[index].name}
             password={users[index].password}
             phone={users[index].phone}
+            grade={users[index].grade}
+            signature={users[index].signature}
+            reload={() => {
+                SearchUser()
+            }}
             class={users[index].class} uid={users[index].uid}/>)
 
         toggleShowModal(true)
@@ -803,6 +856,7 @@ interface CourseListItemProps {
     className: string;
     cover: string;
     onEdit?: () => void;
+    faculty: string;
     onDelete?: () => void
 }
 
@@ -815,6 +869,7 @@ export function CourseListItem({
                                    className,
                                    cover,
                                    onEdit,
+                                   faculty,
                                    onDelete
                                }: CourseListItemProps) {
     return (
@@ -857,6 +912,7 @@ export function CourseListItem({
                         </span>
                     </div>
 
+
                     <div className="flex items-center">
                         <FontAwesomeIcon
                             icon={faUsers}
@@ -864,6 +920,15 @@ export function CourseListItem({
                         />
                         <span className="text-body-medium text-on-surface-variant">
                             {className}
+                        </span>
+                    </div>
+                    <div className="flex items-center">
+                        <FontAwesomeIcon
+                            icon={faSchoolFlag}
+                            className="text-primary mr-2"
+                        />
+                        <span className="text-body-medium text-on-surface-variant">
+                            {faculty}
                         </span>
                     </div>
                 </div>
@@ -1070,6 +1135,7 @@ export interface CompleteUserInfo {
     signature?: string;
     uid: string,
     class: string,
+    reload: () => void
 }
 
 export function EditUserInfo({
@@ -1083,7 +1149,8 @@ export function EditUserInfo({
                                  phone,
                                  signature,
                                  uid,
-                                 class: userClass // 使用别名避免与class关键字冲突
+                                 class: userClass, // 使用别名避免与class关键字冲突,
+                                 reload
                              }: CompleteUserInfo) {
     // 状态管理
     const [f_name, setName] = useState(name)
@@ -1125,6 +1192,7 @@ export function EditUserInfo({
             password: f_password,
             phone: f_phone,
             signature: f_signature,
+            class: f_class,
             uid: uid
         });
         if (saveRes.base.code !== 200) {
@@ -1140,6 +1208,7 @@ export function EditUserInfo({
             content: "",
             type: "success"
         })
+        reload()
         toggleShowModal(false)
     }
 
@@ -1341,6 +1410,20 @@ export function EditUserInfo({
     )
 }
 
+interface EditCourseInfoProps {
+    ascription: string;
+    begin_time: string;
+    class: string;
+    cover: string;
+    description: string;
+    end_time: string;
+    cid: string;
+    major: string;
+    title: string;
+    faculty: string;
+    reload: () => void
+}
+
 export function EditCourseInfo({
                                    ascription,
                                    begin_time,
@@ -1350,8 +1433,10 @@ export function EditCourseInfo({
                                    cid,
                                    major,
                                    title,
-                                   class: courseClass
-                               }: CourseInfo) {
+                                   class: courseClass,
+                                   reload,
+                                   faculty,
+                               }: EditCourseInfoProps) {
     // 状态管理
     const [f_title, setTitle] = useState(title)
     const [f_major, setMajor] = useState(major)
@@ -1360,6 +1445,7 @@ export function EditCourseInfo({
     const [f_description, setDescription] = useState(description)
     const [f_class, setClass] = useState(courseClass)
     const [f_cover, setCover] = useState(cover)
+    const [f_faculty, setF_faculty] = useState(faculty)
     const [videoFile, setVideoFile] = useState<File | null>(null)
     const {showNotification} = useNotification();
     const {isShow, toggleShowModal, setForm} = useModal()
@@ -1390,6 +1476,8 @@ export function EditCourseInfo({
             title: f_title,
             description: f_description,
             id: cid,
+            class: f_class,
+            faculty: f_faculty,
             major: f_major,
             begin_time: f_beginTime,
             end_time: f_endTime
@@ -1402,6 +1490,7 @@ export function EditCourseInfo({
             })
             return
         }
+        reload()
         toggleShowModal(false)
         showNotification({
             title: "修改成功",
@@ -1492,6 +1581,18 @@ export function EditCourseInfo({
                                 onChange={e => setClass(e.target.value)}
                                 className="w-full p-3 rounded-lg border bg-secondary-container text-on-surface"
                                 placeholder="请输入课程班级"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-on-primary-container">
+                                所属学院
+                            </label>
+                            <input
+                                type="text"
+                                value={f_faculty}
+                                onChange={e => setF_faculty(e.target.value)}
+                                className="w-full p-3 rounded-lg border bg-secondary-container text-on-surface"
+                                placeholder="请输入学院信息"
                             />
                         </div>
 

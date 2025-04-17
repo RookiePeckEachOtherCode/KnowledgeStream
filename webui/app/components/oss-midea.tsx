@@ -74,8 +74,6 @@ export function OssVideo(props: OssVideoProps) {
                     content: errorMessage,
                     type: "error"
                 });
-
-                console.error("视频加载错误:", error);
             }
         };
 
@@ -175,7 +173,6 @@ export function OssImage({
             content: "无法加载图片资源",
             type: "error",
         });
-        console.error("图片加载错误", e);
     };
 
     return blobUrl ? (
@@ -191,6 +188,105 @@ export function OssImage({
             <FontAwesomeIcon className={`w-full animate-spin transition-all duration-300`}
                 icon={faTruckLoading}></FontAwesomeIcon>
             <div className={`w-full`}>Loading...</div>
+        </div>
+    );
+}
+
+
+export function OssVideoCover(props: { className?: string; url: string }) {
+    const {className = "", url} = props;
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const {showNotification} = useNotification();
+    const {generateSignedUrl} = useOss();
+    const {bucket, fileName} = parseOssUrl(url);
+
+    useEffect(() => {
+        if (!url || !bucket || !fileName) return;
+
+        // 1. 创建 AbortController 用于取消请求
+        const abortController = new AbortController();
+
+        // 2. 获取视频前 512KB 数据（按需调整范围）
+        const fetchPartialVideo = async () => {
+            try {
+                const signedUrl = await generateSignedUrl(fileName, bucket);
+                const response = await fetch(signedUrl, {
+                    headers: {Range: "bytes=0-524288"}, // 仅请求前 512KB
+                    signal: abortController.signal,
+                });
+
+                if (!response.ok) {
+                    showNotification({
+                        content: "",
+                        type: "error",
+                        title: "生成封面失败"
+                    })
+                }
+
+                // 3. 生成 Blob 并创建临时 URL
+                const blob = await response.blob();
+                const videoUrl = URL.createObjectURL(blob);
+
+                // 4. 使用隐藏 video 元素截取首帧
+                const video = document.createElement("video");
+                video.crossOrigin = "anonymous";
+                video.preload = "metadata";
+                video.src = videoUrl;
+
+                // 5. 等待元数据加载完成
+                await new Promise<void>((resolve, reject) => {
+                    video.onloadedmetadata = () => resolve();
+                    video.onerror = () => reject(new Error("视频元数据加载失败"));
+                });
+
+                // 6. 定位到首帧（兼容性处理）
+                video.currentTime = 0.1;
+                await new Promise<void>((resolve) => {
+                    video.onseeked = () => resolve();
+                });
+
+                // 7. 绘制到 Canvas 生成预览图
+                const canvas = document.createElement("canvas");
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext("2d");
+                ctx?.drawImage(video, 0, 0);
+
+                // 8. 转换为 DataURL 并更新状态
+                setPreviewUrl(canvas.toDataURL("image/jpeg", 0.8));
+
+                // 9. 清理临时资源
+                URL.revokeObjectURL(videoUrl);
+                video.remove();
+            } catch (err) {
+                showNotification({
+                    title: "封面生成失败",
+                    content: err instanceof Error ? err.message : "未知错误",
+                    type: "error",
+                });
+            }
+        };
+
+        fetchPartialVideo();
+
+        // 10. 组件卸载时中止请求
+        return () => {
+            abortController.abort();
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+        };
+    }, [url, bucket, fileName]);
+
+    return (
+        <div className={className}>
+            {previewUrl ? (
+                <img
+                    src={previewUrl}
+                    alt="视频封面"
+                    className="w-full h-full object-cover"
+                />
+            ) : (
+                <div className="animate-pulse bg-gray-100 h-full w-full"/>
+            )}
         </div>
     );
 }

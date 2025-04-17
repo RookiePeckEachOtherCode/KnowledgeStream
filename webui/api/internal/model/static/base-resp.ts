@@ -39,6 +39,7 @@ export interface CourseInfo {
     end_time: string;
     cid: string;
     major: string;
+    faculty: string;
     title: string;
 }
 

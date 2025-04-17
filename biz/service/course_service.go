@@ -9,6 +9,7 @@ import (
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/base"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/utils"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"gorm.io/gen"
 	"gorm.io/gorm"
 	"strconv"
 	"sync"
@@ -266,14 +267,46 @@ func (s *CourseService) AdminQueryCourse(
 	qu := query.User
 	cu := query.Course
 
-	//先查关键字匹配的老师
-	teacher, err := qu.WithContext(c).Where(qu.Authority.In("ADMIN", "SUPER_ADMIN")).Where(qu.Name.Like("%" + keyword + "%")).Find()
+	// 查询匹配关键字的教师
+	teacherQuery := qu.WithContext(c).Where(qu.Authority.In("ADMIN", "SUPER_ADMIN"))
+	if keyword != "" {
+		teacherQuery = teacherQuery.Where(qu.Name.Like("%" + keyword + "%"))
+	}
+	teacher, err := teacherQuery.Find()
+	if err != nil {
+		hlog.Error("查询教师失败: ", err)
+		return nil, err
+	}
+
 	var tides []int64
 	for _, user := range teacher {
 		tides = append(tides, user.ID)
 	}
-	queryBuilder := cu.WithContext(c).
-		Where(cu.Title.Like("%" + keyword + "%")).Where(cu.Major.Like("%" + major + "%")).Where(cu.Faculty.Like("%" + faculty + "%")).Or(cu.Ascription.In(tides...))
+
+	// 动态构建课程查询条件
+	queryBuilder := cu.WithContext(c)
+	var orConditions []gen.Condition
+
+	// 仅当字段非空时添加对应的OR条件
+	if keyword != "" {
+		orConditions = append(orConditions, cu.Title.Like("%"+keyword+"%"))
+	}
+	if major != "" {
+		orConditions = append(orConditions, cu.Major.Like("%"+major+"%"))
+	}
+	if faculty != "" {
+		orConditions = append(orConditions, cu.Faculty.Like("%"+faculty+"%"))
+	}
+	if len(tides) > 0 {
+		orConditions = append(orConditions, cu.Ascription.In(tides...))
+	}
+
+	// 应用OR条件（仅在存在条件时添加）
+	if len(orConditions) > 0 {
+		queryBuilder = queryBuilder.Where(
+			cu.Or(orConditions...),
+		)
+	}
 
 	// 添加时间过滤条件
 	if begin_time != "" {
@@ -295,19 +328,21 @@ func (s *CourseService) AdminQueryCourse(
 		return nil, err
 	}
 
+	// 转换结果
 	var result []*base.CourseInfo
 	for _, course := range courses {
-		courseInfo := new(base.CourseInfo)
-		courseInfo.Cid = fmt.Sprintf("%d", course.ID)
-		courseInfo.Cover = course.Cover
-		courseInfo.Description = course.Description
-		courseInfo.Title = course.Title
-		courseInfo.Major = course.Major
-		courseInfo.Class = course.Class
-		courseInfo.Ascription = fmt.Sprintf("%d", course.Ascription)
-		courseInfo.EndTime = course.EndTime
-		courseInfo.BeginTime = course.BeginTime
-		result = append(result, courseInfo)
+		result = append(result, &base.CourseInfo{
+			Cid:         fmt.Sprintf("%d", course.ID),
+			Cover:       course.Cover,
+			Description: course.Description,
+			Title:       course.Title,
+			Major:       course.Major,
+			Faculty:     course.Faculty,
+			Class:       course.Class,
+			Ascription:  fmt.Sprintf("%d", course.Ascription),
+			EndTime:     course.EndTime,
+			BeginTime:   course.BeginTime,
+		})
 	}
 	return result, nil
 }
@@ -359,7 +394,7 @@ func (s *CourseService) DeleteCourseWithCid(c context.Context, cid int64) error 
 	}
 	return nil
 }
-func (s *CourseService) UpdateCourseWithCid(c context.Context, cid int64, title string, description string, cover string, begin_time string, end_time string, ascription string, faculty string, major string) error {
+func (s *CourseService) UpdateCourseWithCid(c context.Context, cid int64, title string, description string, cover string, begin_time string, end_time string, ascription string, faculty string, major string, class string) error {
 	cc := query.Course
 	course, err := cc.WithContext(c).Where(cc.ID.Eq(cid)).First()
 	if err != nil {
@@ -390,6 +425,9 @@ func (s *CourseService) UpdateCourseWithCid(c context.Context, cid int64, title 
 	}
 	if faculty != "" {
 		course.Faculty = faculty
+	}
+	if class != "" {
+		course.Class = class
 	}
 	if err = cc.WithContext(c).Save(course); err != nil {
 		hlog.Error("更新课程域信息失败: ", err)

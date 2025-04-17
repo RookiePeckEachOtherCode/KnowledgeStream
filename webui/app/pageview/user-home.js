@@ -4,12 +4,17 @@ import {useEffect, useRef, useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
     faAdd,
-    faArrowRight, faBook, faCalendar, faClock,
+    faArrowRight,
+    faBook,
+    faCalendar,
+    faClock,
     faEdit,
-    faIdCard, faMagnet,
+    faIdCard,
+    faMagnet,
     faPhone,
     faSchool,
-    faUpload, faUpRightFromSquare,
+    faUpload,
+    faUpRightFromSquare,
     faUserGraduate
 } from "@fortawesome/free-solid-svg-icons";
 import {useModal} from "../../context/modal-provider.js";
@@ -17,58 +22,56 @@ import {IconButton} from "../components/icon-button.tsx";
 import {OssBuckets, useOss} from "../../context/oss-uploader-provider.tsx";
 import {useNotification} from "../../context/notification-provider.tsx";
 import {api} from "../../api/instance.ts";
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import {CustomDatePicker} from "../components/custom-date-picker.jsx.tsx";
+
 export function UserHome() {
-    const { showNotification } = useNotification();
-    
-    
-    
+    const {showNotification} = useNotification();
+
+
     const [userInfo, setUserInfo] = useState({
-        uid:"114514",
-        avatar:"",
-        name:"未知用户",
-        authority:"未知",
-        phone:"无",
-        grade:"2077",
-        faculty:"未归属",
-        major:"未归属",
-        signature:"nil",
+        uid: "114514",
+        avatar: "",
+        name: "未知用户",
+        authority: "未知",
+        phone: "无",
+        grade: "2077",
+        faculty: "未归属",
+        major: "未归属",
+        signature: "nil",
     })
-    
-    const GetUserInfo=async ()=>{
-       const resp = await api.userService.queryInfo({});
-       if(resp.base.code!==200){
-           showNotification({
-               title:"获取用户信息失败",
-               content:resp.base.msg,
-               type:"error"
-           })
-           return
-       }
-       setUserInfo(resp.userinfo)
-        
+
+    const GetUserInfo = async () => {
+        const resp = await api.userService.queryInfo({});
+        if (resp.base.code !== 200) {
+            showNotification({
+                title: "获取用户信息失败",
+                content: resp.base.msg,
+                type: "error"
+            })
+            return
+        }
+        setUserInfo(resp.userinfo)
+
     }
     useEffect(() => {
-        async function fetchData(){
+        async function fetchData() {
             await GetUserInfo()
         }
+
         fetchData()
     }, []);
-    
+
     const [pager, setPager] = useState(0)
-    const Block=["基本资料","修改头像","修改密码","管理课程"]
-    
-    const currentDisplay=()=>{
-        switch (pager){
+    const Block = ["基本资料", "修改头像", "修改密码", "管理课程"]
+
+    const currentDisplay = () => {
+        switch (pager) {
             case 0:
                 return <BaseInfo userInfo={userInfo} flashUserInfo={GetUserInfo}></BaseInfo>
             case 1:
-                return <UpdateAvatar url={userInfo.avatar} uid={userInfo.uid} flashUserInfo={GetUserInfo}></UpdateAvatar>
+                return <UpdateAvatar url={userInfo.avatar} uid={userInfo.uid}
+                                     flashUserInfo={GetUserInfo}></UpdateAvatar>
             case 2:
                 return <EditPasswordForm></EditPasswordForm>
             case 3:
@@ -76,53 +79,54 @@ export function UserHome() {
         }
     }
 
-    
-    
+
     const [animationClass, setAnimationClass] = useState("");
     useEffect(() => {
-        setTimeout(()=>{
+        setTimeout(() => {
             setAnimationClass("opacity-0")
-            requestAnimationFrame(()=>{
+            requestAnimationFrame(() => {
                 setAnimationClass("opacity-100")
             })
-        },300)
+        }, 300)
     }, [pager]);
-    
-    
-    
-    
-  return (
-      <div className={`w-full h-full flex flex-col space-y-6 p-8`}>
-
-          <div className={`w-full flex flex-col space-y-8 rounded-b-2xl p-3  bg-primary-container`}>
-              <div className={`w-full flex-row flex `}>
-                  <div className={`text-3xl`}>个人资料</div>
-              </div>
-              <Divider vertical={false}></Divider>
-              <div className={`flex w-full space-x-8  flex-row`}>
-                  {
-                      Block.map((item,index)=>{
-                          if(index!==3||userInfo.authority!=="USER") return  <TagButton  title={item} onClick={()=>{setPager(index);setAnimationClass("hidden")}} underline={index===pager}></TagButton>
-                          
-                      }
-                      )
-                  }
-              </div>
-          </div>
-          <div className={`${animationClass} w-full h-full transition-all duration-200`}>
-              {
-                  currentDisplay()
-              }
-          </div>
 
 
+    return (
+        <div className={`w-full h-full flex flex-col space-y-6 p-8`}>
 
-      </div>
-  );
+            <div className={`w-full flex flex-col space-y-8 rounded-b-2xl p-3  bg-primary-container`}>
+                <div className={`w-full flex-row flex `}>
+                    <div className={`text-3xl`}>个人资料</div>
+                </div>
+                <Divider vertical={false}></Divider>
+                <div className={`flex w-full space-x-8  flex-row`}>
+                    {
+                        Block.map((item, index) => {
+                                if (index !== 3 || userInfo.authority !== "USER") return <TagButton title={item}
+                                                                                                    onClick={() => {
+                                                                                                        setPager(index);
+                                                                                                        setAnimationClass("hidden")
+                                                                                                    }}
+                                                                                                    underline={index === pager}></TagButton>
+
+                            }
+                        )
+                    }
+                </div>
+            </div>
+            <div className={`${animationClass} w-full h-full transition-all duration-200`}>
+                {
+                    currentDisplay()
+                }
+            </div>
+
+
+        </div>
+    );
 }
-    
-function BaseInfo({userInfo,flashUserInfo}){
-    var {isShowModal,toggleShowModal,setForm} = useModal();
+
+function BaseInfo({userInfo, flashUserInfo}) {
+    var {isShowModal, toggleShowModal, setForm} = useModal();
 
 
     useEffect(() => {
@@ -136,7 +140,7 @@ function BaseInfo({userInfo,flashUserInfo}){
                 avatar={userInfo.avatar}
             />
         );
-    }, [userInfo]); 
+    }, [userInfo]);
     return (
         <div className={`w-full bg-secondary-container space-y-3 rounded-2xl p-6 flex flex-col`}>
             <div
@@ -235,16 +239,16 @@ function BaseInfo({userInfo,flashUserInfo}){
     )
 }
 
-function UpdateBaseInfoForm({phone,signature,name,avatar,flashUserInfo}) {
-    const { toggleShowModal } = useModal();
+function UpdateBaseInfoForm({phone, signature, name, avatar, flashUserInfo}) {
+    const {toggleShowModal} = useModal();
     const [formData, setFormData] = useState({
         phone: phone || '',
         signature: signature || '',
         name: name || '',
-        avatar:avatar
+        avatar: avatar
     });
     const [errors, setErrors] = useState({});
-    const { showNotification } = useNotification();
+    const {showNotification} = useNotification();
     // 统一处理输入变化
     const handleChange = (field) => (e) => {
         setFormData(prev => ({
@@ -283,26 +287,26 @@ function UpdateBaseInfoForm({phone,signature,name,avatar,flashUserInfo}) {
 
         try {
             const res = await api.userService.updateInfo({
-                name:formData.name,
-                signature:formData.signature,
-                phone:formData.phone,
-                avatar:formData.avatar
+                name: formData.name,
+                signature: formData.signature,
+                phone: formData.phone,
+                avatar: formData.avatar
             });
-            if(res.base.code!==200){
+            if (res.base.code !== 200) {
                 showNotification({
-                    title:"更新信息失败",
-                    content:res.base.msg,
-                    type:"error"
+                    title: "更新信息失败",
+                    content: res.base.msg,
+                    type: "error"
                 })
-            }else{
+            } else {
                 flashUserInfo()
                 showNotification({
-                    title:"用户信息已更新",
-                    type:"success"
+                    title: "用户信息已更新",
+                    type: "success"
                 })
             }
             toggleShowModal(false);
-            
+
         } catch (error) {
             console.error('更新失败:', error);
         }
@@ -313,7 +317,7 @@ function UpdateBaseInfoForm({phone,signature,name,avatar,flashUserInfo}) {
              onClick={e => e.stopPropagation()}>
             <div className="text-3xl text-on-primary-container mb-6 font-medium">编辑基础信息</div>
 
-            <form  className="space-y-6">
+            <div className="space-y-6">
                 {/* 用户名输入 */}
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-on-primary-container">
@@ -390,24 +394,24 @@ function UpdateBaseInfoForm({phone,signature,name,avatar,flashUserInfo}) {
                     <IconButton
                         type="submit"
                         className="px-6 py-2 rounded-lg bg-primary text-on-primary hover:bg-primary-hover transition-all"
-                        onClick={handleSubmit} 
+                        onClick={handleSubmit}
                         text={"保存修改"}>
                     </IconButton>
                 </div>
-            </form>
+            </div>
         </div>
     );
 }
 
-function UpdateAvatar({uid,url,flashUserInfo}) {
+function UpdateAvatar({uid, url, flashUserInfo}) {
     const [newFileName, setNewFileName] = useState(null);
     const [newFile, setNewFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
     const fileInputRef = useRef(null);
-    
-    var { ossHandleUploadFile, generateSignedUrl } = useOss();
+
+    var {ossHandleUploadFile, generateSignedUrl} = useOss();
     var {showNotification} = useNotification();
-    
+
 
     // 清理对象URL
     useEffect(() => {
@@ -430,36 +434,36 @@ function UpdateAvatar({uid,url,flashUserInfo}) {
             setPreviewUrl(objectUrl);
         }
     };
-    
-    const handleSubmit=async ()=>{
-        if(!newFile||!newFileName){
+
+    const handleSubmit = async () => {
+        if (!newFile || !newFileName) {
             showNotification({
-                title:"未上传头像文件",
-                type:"error"
-                })
-            return
-        }
-        var parts = newFileName.split(".");
-        if(parts.length>2){
-            showNotification({
-                title:"哥们啥文件名啊",
-                type:"error"
+                title: "未上传头像文件",
+                type: "error"
             })
             return
         }
-        const ossName=uid+"."+parts[1]
-        const upload_success= await ossHandleUploadFile(newFile, ossName,OssBuckets.UserAvatar)
-        if (upload_success){
-           var res = await api.userService.updateInfo({
-                avatar:"ks-user-avatar/"+ossName
+        var parts = newFileName.split(".");
+        if (parts.length > 2) {
+            showNotification({
+                title: "哥们啥文件名啊",
+                type: "error"
+            })
+            return
+        }
+        const ossName = uid + "." + parts[1]
+        const upload_success = await ossHandleUploadFile(newFile, ossName, OssBuckets.UserAvatar)
+        if (upload_success) {
+            var res = await api.userService.updateInfo({
+                avatar: "ks-user-avatar/" + ossName
             });
-           if(res.base.code!==200){
-               showNotification({
-                   title:"用户头像字段更新失败",
-                   type:"error"
-               })
-               return
-           }
+            if (res.base.code !== 200) {
+                showNotification({
+                    title: "用户头像字段更新失败",
+                    type: "error"
+                })
+                return
+            }
         }
         flashUserInfo()
     }
@@ -496,14 +500,14 @@ function UpdateAvatar({uid,url,flashUserInfo}) {
                         onClick={handleSubmit}
                         className="h-auto space-x-3 bg-primary-container text-on-primary-container"
                     >
-                        <FontAwesomeIcon icon={faUpload} />
+                        <FontAwesomeIcon icon={faUpload}/>
                     </IconButton>
-                    
+
                     <span className="text-sm  text-center text-on-surface-variant">
                         {newFileName || "未选择文件"}
                     </span>
-                    <FontAwesomeIcon size={`3x`}  icon={faArrowRight}></FontAwesomeIcon>
-                    
+                    <FontAwesomeIcon size={`3x`} icon={faArrowRight}></FontAwesomeIcon>
+
                 </div>
 
                 {/* 预览 */}
@@ -516,7 +520,7 @@ function UpdateAvatar({uid,url,flashUserInfo}) {
                             onClick={handleUploadClick}
                         />
                     ) : (
-                        <div 
+                        <div
                             className="w-full h-full flex items-center justify-center"
                             onClick={handleUploadClick}
                         >
@@ -533,28 +537,28 @@ function EditPasswordForm() {
     const [oldPassword, setOldPassword] = useState("")
     const [newPassword, setNewPassword] = useState("")
     const [errors, setErrors] = useState({});
-    
-    const validateForm = ()=>{
-        const newErrors={}
-        if(oldPassword.length<6){
+
+    const validateForm = () => {
+        const newErrors = {}
+        if (oldPassword.length < 6) {
             newErrors.old = '密码大于等于6位';
         }
-        if(newPassword.length){
-            newErrors.new="密码大于等于6位"
+        if (newPassword.length) {
+            newErrors.new = "密码大于等于6位"
         }
         setErrors(newErrors)
         return Object.keys(newErrors).length === 0;
     }
-    
-    const handleSubmit=async ()=>{
-        if(!validateForm())return;
+
+    const handleSubmit = async () => {
+        if (!validateForm()) return;
         //TODO    
     }
-    
+
     return (
         <div
             className={`w-full bg-secondary-container rounded-2xl p-6 flex items-start space-x-3 flex-col justify-items-start`}>
-            <form className={`space-y-6`}>
+            <div className={`space-y-6`}>
 
                 <div className={`space-x-4`}>
                     <label className={`text-on-secondary-container`}>
@@ -599,18 +603,18 @@ function EditPasswordForm() {
 
                     </IconButton>
                 </div>
-            </form>
+            </div>
 
         </div>
     )
 
 }
 
-function TagButton({onClick,title,underline,hidden}) {
+function TagButton({onClick, title, underline, hidden}) {
     const [isHover, setIsHover] = useState(false)
 
     return <div
-        className={`relative inline-flex flex-col items-center justify-center px-3 py-2 transition-colors ${hidden&&`hidden`}`}
+        className={`relative inline-flex flex-col items-center justify-center px-3 py-2 transition-colors ${hidden && `hidden`}`}
         onMouseOver={() => setIsHover(true)}
         onMouseLeave={() => setIsHover(false)}
         onClick={onClick}
@@ -626,11 +630,11 @@ function TagButton({onClick,title,underline,hidden}) {
 }
 
 function CourseList({}) {
-    const { showNotification } = useNotification();
+    const {showNotification} = useNotification();
     const [offset, setOffset] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const { isShowModal, toggleShowModal, setForm } = useModal();
+    const {isShowModal, toggleShowModal, setForm} = useModal();
     const [list, setList] = useState([{
         title: "123",
         cid: "123",
@@ -663,11 +667,12 @@ function CourseList({}) {
         async function fetchCourseData() {
             await GetCourseListInfo(currentPage);
         }
+
         fetchCourseData();
     }, [currentPage]);  // 依赖改为 currentPage
 
     useEffect(() => {
-        setForm(<CreateCourseForm key={Date.now()}  flashList={GetCourseListInfo}/>);
+        setForm(<CreateCourseForm key={Date.now()} flashList={GetCourseListInfo}/>);
     }, [list]);
 
     // 分页控制器组件
@@ -751,8 +756,8 @@ function CourseList({}) {
             <div className="w-full flex p-3 text-2xl">我管理的课程</div>
 
             <div className="w-full flex flex-col space-y-3">
-                <div 
-                    onClick={()=>toggleShowModal(true)}
+                <div
+                    onClick={() => toggleShowModal(true)}
                     className={`w-full p-3 hover:bg-surface-variant rounded-2xl flex flex-row`}>
                     <IconWithText text={`新建课程`} className={``}>
                         <FontAwesomeIcon size={`2x`} icon={faAdd}></FontAwesomeIcon>
@@ -770,12 +775,12 @@ function CourseList({}) {
                     />
                 ))}
             </div>
-            <Pagination />
+            <Pagination/>
         </div>
     );
 }
 
-function CourseListItem({ title, cover, major, begin_time, end_time, class_name }) {
+function CourseListItem({title, cover, major, begin_time, end_time, class_name}) {
     const [openDrawer, setOpenDrawer] = useState(false)
     const [isHover, setIsHover] = useState(false)
 
@@ -798,7 +803,7 @@ function CourseListItem({ title, cover, major, begin_time, end_time, class_name 
                         ${isHover
                         ? "opacity-100 translate-x-0 bg-primary text-on-primary"
                         : "opacity-0 translate-x-12"}`}>
-                    <FontAwesomeIcon icon={faUpRightFromSquare} />
+                    <FontAwesomeIcon icon={faUpRightFromSquare}/>
                 </div>
             </div>
 
@@ -807,13 +812,13 @@ function CourseListItem({ title, cover, major, begin_time, end_time, class_name 
                     ${openDrawer ? "max-h-52 opacity-100" : "max-h-0 opacity-0"}`}>
                 <div className="w-full flex flex-row gap-4">
                     <IconWithText text={major || "未知专业"}>
-                        <FontAwesomeIcon icon={faBook} />
+                        <FontAwesomeIcon icon={faBook}/>
                     </IconWithText>
                     <IconWithText text={begin_time || "未设置开始时间"}>
-                        <FontAwesomeIcon icon={faCalendar} />
+                        <FontAwesomeIcon icon={faCalendar}/>
                     </IconWithText>
                     <IconWithText text={end_time || "未设置结束时间"}>
-                        <FontAwesomeIcon icon={faClock} />
+                        <FontAwesomeIcon icon={faClock}/>
                     </IconWithText>
                 </div>
             </div>
@@ -821,7 +826,7 @@ function CourseListItem({ title, cover, major, begin_time, end_time, class_name 
     )
 }
 
-function IconWithText({ children, text, className }) {
+function IconWithText({children, text, className}) {
     return (
         <div className={` flex flex-row items-center p-1 space-x-2`}>
             {children}
@@ -831,17 +836,17 @@ function IconWithText({ children, text, className }) {
 }
 
 function CreateCourseForm({flashList}) {
-    const { toggleShowModal } = useModal();
+    const {toggleShowModal} = useModal();
     var {showNotification} = useNotification();
     const [formData, setFormData] = useState({
-        title:"",
-        description:"",
-        cover:"",
-        begin_time:"",
-        end_time:"",
-        major:"",
-        faculty:"",
-        class:""
+        title: "",
+        description: "",
+        cover: "",
+        begin_time: "",
+        end_time: "",
+        major: "",
+        faculty: "",
+        class: ""
     })
     const [errors, setErrors] = useState({});
     const handleChange = (field) => (e) => {
@@ -877,13 +882,13 @@ function CreateCourseForm({flashList}) {
         if (!formData.title.trim()) {
             newErrors.name = '标题不能为控';
         }
-        if(!formData.major.trim()){
-            newErrors.major='专业不能为控'
+        if (!formData.major.trim()) {
+            newErrors.major = '专业不能为控'
         }
-        if(!formData.class.trim()){
-            newErrors.class='班级不能为空'
+        if (!formData.class.trim()) {
+            newErrors.class = '班级不能为空'
         }
-        if(formData.description.length>100){
+        if (formData.description.length > 100) {
             newErrors.description = '课程简介不能超过100字';
         }
         if (!formData.begin_time) {
@@ -900,40 +905,40 @@ function CreateCourseForm({flashList}) {
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
-    const handleSubmit= async (e)=>{
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
         var res = await api.teacherService.createCourse({
-            title:formData.title,
-            description:formData.description,
-            begin_time:formData.begin_time,
-            end_time:formData.end_time,
-            major:formData.major,
-            cover:"ks-course-cover/default.jpg",
-            faculty:formData.faculty,
-            class:formData.class
+            title: formData.title,
+            description: formData.description,
+            begin_time: formData.begin_time,
+            end_time: formData.end_time,
+            major: formData.major,
+            cover: "ks-course-cover/default.jpg",
+            faculty: formData.faculty,
+            class: formData.class
         });
-        if(res.base.code===200){
+        if (res.base.code === 200) {
             showNotification({
-                type:"success",
-                title:"课程信息已保存"
+                type: "success",
+                title: "课程信息已保存"
             })
             flashList()
             toggleShowModal(false)
-        }else{
+        } else {
             showNotification({
-                type:"error",
-                title:"课程",
-                content:res.base.msg
+                type: "error",
+                title: "课程",
+                content: res.base.msg
             })
         }
-        
+
     }
     return (
         <div className="p-6 w-full max-w-2xl bg-primary-container rounded-2xl shadow-xl"
              onClick={e => e.stopPropagation()}>
             <div className="text-3xl text-on-primary-container mb-6 font-medium">创建课程域</div>
-            <form className={`space-y-6`}>
+            <div className={`space-y-6`}>
 
                 <div className={`space-y-2`}>
                     <label className="text-sm font-medium text-on-primary-container">
@@ -1079,7 +1084,7 @@ function CreateCourseForm({flashList}) {
                     </IconButton>
                 </div>
 
-            </form>
+            </div>
 
         </div>
     )

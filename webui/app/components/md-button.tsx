@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import {useMemo} from "react";
+import { useMemo } from "react";
 
 interface MDButtonProps {
     className?: string;
@@ -9,11 +9,11 @@ interface MDButtonProps {
 }
 
 export default function MDButton({
-                                     className,
-                                     onClick,
-                                     variant,
-                                     children,
-                                 }: MDButtonProps) {
+    className,
+    onClick,
+    variant,
+    children,
+}: MDButtonProps) {
     const buttonStyle = useMemo(() => {
         if (variant === "primary") {
             return "bg-primary";

@@ -4,11 +4,14 @@ import { HTMLInputTypeAttribute, useState } from "react";
 interface MDInputProps {
   className?: string;
   value: string;
-  onValueChange: (value: string) => void;
+  onValueChange?: (value: string) => void;
   placeholder?: string;
   type?: HTMLInputTypeAttribute;
   isUnValid?: boolean;
   onEnter?: () => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
+  disabled?: boolean;
 }
 
 export default function MDInput({
@@ -19,6 +22,8 @@ export default function MDInput({
   type,
   isUnValid,
   onEnter,
+  onFocus,
+  disabled,
 }: MDInputProps) {
   const [isFocused, setIsFocused] = useState(false);
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -30,6 +35,7 @@ export default function MDInput({
 
   const handleFocus = () => {
     setIsFocused(true);
+    onFocus?.();
   };
 
   const handleBlur = () => {
@@ -48,9 +54,10 @@ export default function MDInput({
             : "border-secondary focus:border-primary",
           className
         )}
+        disabled={disabled}
         value={value || ''}
         placeholder=""
-        onChange={(e) => onValueChange(e.target.value)}
+        onChange={(e) => onValueChange?.(e.target.value)}
         type={type}
         onFocus={handleFocus}
         onBlur={handleBlur}

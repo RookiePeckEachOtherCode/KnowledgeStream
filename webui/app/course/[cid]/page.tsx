@@ -10,6 +10,7 @@ import { NotifyType } from "@/api/internal/model/response/notify";
 import MDButton from "@/app/components/md-button";
 import { UserAuthority } from "@/api/internal/service/user";
 import { OssImage } from "@/app/components/oss-midea";
+import { CourseDataVO, fetchCourseData } from "../vo";
 
 
 export default function CoursePage({
@@ -69,7 +70,7 @@ export default function CoursePage({
                 return
             }
             setCid(cid)
-            setCourseData(res)
+            setCourseData(res.data)
         }
         fetchData()
     }, [params, showNotification])
@@ -121,7 +122,7 @@ export default function CoursePage({
                                 <div className="flex justify-between items-center">
                                     <h1 className="text-3xl font-bold text-on-surface mb-4">{courseData.name}</h1>
                                     {isTeacher && (
-                                        <MDButton onClick={() => router.push(`/course/${cid}/edit`)}>修改课程</MDButton>
+                                        <MDButton onClick={() => router.push(`/course/edit/${cid}`)}>修改课程</MDButton>
                                     )}
                                 </div>
                                 <div className="flex items-start space-x-4">
@@ -200,7 +201,7 @@ export default function CoursePage({
                                             <div
                                                 key={index}
                                                 className="p-4 bg-surface-container-low rounded-2xl hover:bg-surface-container-high transition-colors relative group cursor-pointer mt-2"
-                                                onClick={() => gotoNotification(index, notify.id)}
+                                                onClick={() => gotoNotification(notify.id)}
                                             >
                                                 {!notify.read && (
                                                     <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full"></div>
@@ -228,116 +229,3 @@ export default function CoursePage({
         </div>
     )
 };
-
-
-interface CourseDataVO {
-    id: string,
-    name: string,
-    techer: {
-        id: string,
-        name: string
-        avatar: string
-        signatrue: string
-    },
-    list: Array<{
-        id: string,
-        section_number: string,
-        section_name: string,
-        video_id: string
-    }>
-}
-
-interface RequestType {
-    base: {
-        code: number,
-        msg: string
-    },
-    id: string,
-    name: string,
-    techer: {
-        id: string,
-        name: string,
-        avatar: string,
-        signatrue: string
-    },
-    list: Array<{
-        id: string,
-        section_number: string,
-        section_name: string,
-        video_id: string
-    }>
-}
-
-async function fetchCourseData(cid: string): Promise<RequestType> {
-    const courseCapt = await api.courseService.videos({ cid });
-    const courseInfo = await api.courseService.info({ cid });
-
-    if (courseCapt.base.code !== 200 || courseInfo.base.code !== 200) {
-        const resp = {
-            base: {
-                code: 0,
-                msg: ""
-            },
-            id: "",
-            name: "",
-            techer: {
-                id: "",
-                name: "",
-                avatar: "",
-                signatrue: ""
-            },
-            list: []
-        }
-        if (courseCapt.base.code !== 200) {
-            resp.base.code = courseCapt.base.code
-            resp.base.msg = courseCapt.base.msg
-        } else if (courseInfo.base.code !== 200) {
-            resp.base.code = courseInfo.base.code
-            resp.base.msg = courseInfo.base.msg
-        }
-        return resp
-    }
-
-    const capts = courseCapt.videosinfo.map((item) => {
-        return {
-            id: item.vid,
-            section_number: item.chapter,
-            section_name: item.title,
-            video_id: item.vid
-        }
-    });
-    const techerInfo = await api.userService.uidInfo({ uid: courseInfo.courseinfo.ascription });
-    if (techerInfo.base.code !== 200) {
-        return {
-            base: {
-                code: techerInfo.base.code,
-                msg: techerInfo.base.msg
-            },
-            id: "",
-            name: "",
-            techer: {
-                id: "",
-                name: "",
-                avatar: "",
-                signatrue: ""
-            },
-            list: []
-        }
-    }
-
-    return {
-        base: {
-            code: 200,
-            msg: "success"
-        },
-        id: techerInfo.userinfo.uid,
-        name: courseInfo.courseinfo.title,
-        techer: {
-            id: techerInfo.userinfo.uid,
-            name: techerInfo.userinfo.name,
-            avatar: techerInfo.userinfo.avatar,
-            signatrue: techerInfo.userinfo.signature
-        },
-        list: capts
-    }
-}

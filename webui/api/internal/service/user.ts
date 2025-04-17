@@ -4,14 +4,14 @@ import { UserServiceRequest } from "../model/request/user";
 import { UserServiceResponse } from "../model/response/user";
 import { StudentServiceRequest } from "../model/request/user";
 import { StudentServiceResponse } from "../model/response/user";
-import { TeacherServiceRequest } from "../model/request/user.ts";
-import { TeacherServiceResponse } from "../model/response/user.ts";
+import { TeacherServiceRequest } from "../model/request/user";
+import { TeacherServiceResponse } from "../model/response/user";
 
 export class UserService {
   constructor(private executor: Executor) {}
 
   async login(
-      req: UserServiceRequest["LOGIN"]
+    req: UserServiceRequest["LOGIN"]
   ): Promise<UserServiceResponse["LOGIN"]> {
     return this.executor({
       uri: "/user/login",
@@ -21,7 +21,7 @@ export class UserService {
   }
 
   async register(
-      req: UserServiceRequest["REGISTER"]
+    req: UserServiceRequest["REGISTER"]
   ): Promise<UserServiceResponse["REGISTER"]> {
     return this.executor({
       uri: "/user/register",
@@ -31,18 +31,18 @@ export class UserService {
   }
 
   async queryInfo(
-      req: UserServiceRequest["USER_INFO"]
+    req: UserServiceRequest["USER_INFO"]
   ): Promise<UserServiceResponse["USER_INFO"]> {
     return this.executor({
       uri: "/user/info",
       method: "GET",
       body: null,
-      query:req
+      query: req,
     }) as Promise<UserServiceResponse["USER_INFO"]>;
   }
 
   async updateInfo(
-      req: UserServiceRequest["UPDATE_INFO"]
+    req: UserServiceRequest["UPDATE_INFO"]
   ): Promise<UserServiceResponse["UPDATE_INFO"]> {
     return this.executor({
       uri: "/user/update",
@@ -52,63 +52,59 @@ export class UserService {
   }
 
   async uidInfo(
-      req: UserServiceRequest["UID_INFO"]
+    req: UserServiceRequest["UID_INFO"]
   ): Promise<UserServiceResponse["UID_INFO"]> {
     return this.executor({
       uri: "/user/uid",
       method: "GET",
       body: null,
-      query:req,
+      query: req,
     }) as Promise<UserServiceResponse["UID_INFO"]>;
   }
 
   async searchStudent(
-      req: UserServiceRequest["SEARCH_STUDENT"]
+    req: UserServiceRequest["SEARCH_STUDENT"]
   ): Promise<UserServiceResponse["SEARCH_STUDENT"]> {
     return this.executor({
       uri: "/teacher/query/student",
       method: "GET",
       body: null,
-      query:req
+      query: req,
     }) as Promise<UserServiceResponse["SEARCH_STUDENT"]>;
   }
 }
-
-
 
 export class StudentService {
   constructor(private executor: Executor) {}
 
   async myCourse(
-      req: StudentServiceRequest["MY_COURSE"]
+    req: StudentServiceRequest["MY_COURSE"]
   ): Promise<StudentServiceResponse["MY_COURSE"]> {
     return this.executor({
       uri: "/user/student/mycourse",
       method: "GET",
       body: null,
-      query:req
+      query: req,
     }) as Promise<StudentServiceResponse["MY_COURSE"]>;
   }
 }
-
-
 
 export class TeacherService {
   constructor(private executor: Executor) {}
 
   async myCourse(
-      req: TeacherServiceRequest["MY_COURSE"]
+    req: TeacherServiceRequest["MY_COURSE"]
   ): Promise<TeacherServiceResponse["MY_COURSE"]> {
     return this.executor({
       uri: "/user/teacher/mycourse",
       method: "GET",
       body: null,
-      query:req
+      query: req,
     }) as Promise<TeacherServiceResponse["MY_COURSE"]>;
   }
 
   async inviteStudent(
-      req: TeacherServiceRequest["INVITE_STUDENT"]
+    req: TeacherServiceRequest["INVITE_STUDENT"]
   ): Promise<TeacherServiceResponse["INVITE_STUDENT"]> {
     return this.executor({
       uri: "/user/teacher/invite",
@@ -118,7 +114,7 @@ export class TeacherService {
   }
 
   async uploadVideo(
-      req: TeacherServiceRequest["UPLOAD_VIDEO"]
+    req: TeacherServiceRequest["UPLOAD_VIDEO"]
   ): Promise<TeacherServiceResponse["UPLOAD_VIDEO"]> {
     return this.executor({
       uri: "/user/teacher/uploadvideo",
@@ -128,7 +124,7 @@ export class TeacherService {
   }
 
   async createCourse(
-      req: TeacherServiceRequest["CREATE_COURSE"]
+    req: TeacherServiceRequest["CREATE_COURSE"]
   ): Promise<TeacherServiceResponse["CREATE_COURSE"]> {
     return this.executor({
       uri: "/user/teacher/createcourse",
@@ -138,7 +134,7 @@ export class TeacherService {
   }
 
   async deleteCourse(
-      req: TeacherServiceRequest["DELETE_COURSE"]
+    req: TeacherServiceRequest["DELETE_COURSE"]
   ): Promise<TeacherServiceResponse["DELETE_COURSE"]> {
     return this.executor({
       uri: "/user/teacher/deletecourse",
@@ -148,7 +144,7 @@ export class TeacherService {
   }
 
   async updateCourse(
-      req: TeacherServiceRequest["UPDATE_COURSE"]
+    req: TeacherServiceRequest["UPDATE_COURSE"]
   ): Promise<TeacherServiceResponse["UPDATE_COURSE"]> {
     return this.executor({
       uri: "/user/teacher/update/course",
@@ -158,7 +154,7 @@ export class TeacherService {
   }
 
   async handleCourseMember(
-      req: TeacherServiceRequest["HANDLE_COURSE_MEMBER"]
+    req: TeacherServiceRequest["HANDLE_COURSE_MEMBER"]
   ): Promise<TeacherServiceResponse["HANDLE_COURSE_MEMBER"]> {
     return this.executor({
       uri: "/user/teacher/update/course/member",
@@ -168,7 +164,7 @@ export class TeacherService {
   }
 
   async deleteVideo(
-      req: TeacherServiceRequest["DELETE_VIDEO"]
+    req: TeacherServiceRequest["DELETE_VIDEO"]
   ): Promise<TeacherServiceResponse["DELETE_VIDEO"]> {
     return this.executor({
       uri: "/user/teacher/deletevideo",
@@ -178,8 +174,8 @@ export class TeacherService {
   }
 }
 
-export const UserAuthority={
-  Student:"Student",
-  Teacher:"Teacher",
-  Admin:"Admin"
-}
+export const UserAuthority = {
+  Student: "Student",
+  Teacher: "Teacher",
+  Admin: "Admin",
+};

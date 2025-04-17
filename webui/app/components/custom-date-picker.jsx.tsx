@@ -5,13 +5,13 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from "dayjs";
 
 export const CustomDatePicker = ({
-                                     label,
-                                     value,
-                                     onChange,
-                                     minDate,
-                                     error,
-                                     helperText,
-                                 }) => (
+    label,
+    value,
+    onChange,
+    minDate,
+    error,
+    helperText,
+}) => (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
             value={value ? dayjs(value) : null}

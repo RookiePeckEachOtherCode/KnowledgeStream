@@ -1,8 +1,10 @@
 "use client"
 
-import { createContext, useContext, useRef, useState, ReactNode } from "react";
+import {createContext, useContext, useRef, useState, ReactNode} from "react";
 import OSS from 'ali-oss';
-import { useNotification } from "./notification-provider.tsx";
+import {useNotification} from "./notification-provider.tsx";
+import React from "react";
+import {preconnect} from "react-dom";
 
 type OssContextType = {
     ossHandleUploadFile: (file: Blob, fileName: string, bucket: string) => Promise<boolean>;
@@ -26,20 +28,29 @@ type STSCredentials = {
     SecurityToken: string;
 };
 
-export function OssUploaderProvider({ children }: ProviderProps) {
-    const [loading, setLoading] = useState(false);
-    const { showNotification } = useNotification();
-    const clientCache = useRef<Map<string, CacheEntry>>(new Map());
+interface initOssClientBack {
+    client: OSS;
+    stsToken: string
+}
 
+export function OssUploaderProvider({children}: ProviderProps) {
+    const [loading, setLoading] = useState(false);
+    const {showNotification} = useNotification();
+    const clientCache = useRef<Map<string, CacheEntry>>(new Map());
+    const [uploadProgress, setUploadProgress] = useState(0);
     const getSTSCredentials = async (): Promise<STSCredentials> => {
         const res = await fetch('/api/sts-token');
         return await res.json();
     };
+    const [stsToken, setStsToken] = useState("")
 
-    const initOSSClient = async (bucket: string): Promise<OSS> => {
+    const initOSSClient = async (bucket: string): Promise<initOssClientBack> => {
         const cached = clientCache.current.get(bucket);
         if (cached && Date.now() - cached.lastRenew < 300000) {
-            return cached.client;
+            return {
+                client: cached.client,
+                stsToken: stsToken
+            };
         }
 
         const credentials = await getSTSCredentials();
@@ -52,6 +63,7 @@ export function OssUploaderProvider({ children }: ProviderProps) {
             bucket: bucket,
             refreshSTSToken: async () => {
                 const newCredentials = await getSTSCredentials();
+                setStsToken(newCredentials.SecurityToken)
                 return {
                     accessKeyId: newCredentials.AccessKeyId,
                     accessKeySecret: newCredentials.AccessKeySecret,
@@ -66,49 +78,73 @@ export function OssUploaderProvider({ children }: ProviderProps) {
             lastRenew: Date.now()
         });
 
-        return newClient;
+        return {client: newClient, stsToken: credentials.SecurityToken};
     };
 
     const ossHandleUploadFile = async (file: Blob, fileName: string, bucket: string): Promise<boolean> => {
-        if (!file) return;
+        if (!file) return false;
         setLoading(true);
-        let success=true
+        let success = true;
         try {
-            const client = await initOSSClient(bucket);
-            const result = await client.put(fileName, file, {
+            const {client} = await initOSSClient(bucket);
+            const partSize = 1024 * 1024; // 建议提取为常量
+
+            const result = await client.multipartUpload(fileName, file, {
                 headers: {
                     'Content-Disposition': 'inline',
-                    'Content-Type': file.type
+                    'Content-Type': file.type,
+                },
+                parallel: 4,
+                partSize,
+                progress: (p: number, checkpoint: OSS.Checkpoint | null) => { // 允许null类型
+                    const safeCheckpoint = checkpoint || {doneParts: []};
+                    const totalParts = Math.ceil(file.size / partSize);
+
+                    const donePartsCount = safeCheckpoint.doneParts?.length || 0;
+                    const percent = totalParts > 0
+                        ? Math.min(100, Math.round((donePartsCount / totalParts) * 100))
+                        : 0;
+
+                    setUploadProgress(percent);
                 }
             });
 
-            showNotification({
-                title: "上传成功",
-                content: "文件已上传",
-                type: "success",
-            });
+            showNotification({title: "上传成功", type: "success", content: ""});
+            return true;
         } catch (err) {
+            // 增强错误处理
+            const errorMessage = err.message || '未知错误';
+            const isTokenError = errorMessage.includes('security-token')
+                || errorMessage.includes('STS Token');
+
             showNotification({
                 title: "上传失败",
-                content: `${err instanceof Error ? err.message : String(err)}`,
-                type: "error",
+                content: isTokenError
+                    ? '安全令牌失效，正在尝试重新上传...'
+                    : `错误代码：${err.code || 'N/A'}，信息：${errorMessage}`,
+                type: "error"
             });
-            success=false
+
+            // 如果是凭证问题，清除缓存重试
+            if (isTokenError) {
+                clientCache.current.delete(bucket);
+                return await ossHandleUploadFile(file, fileName, bucket);
+            }
+
+            success = false;
         } finally {
             setLoading(false);
         }
-        return success
-        
+        return success;
     };
-
     const generateSignedUrl = async (
         fileName: string,
         bucket: string,
         expires: number = 36000
     ): Promise<string> => {
         try {
-            const client = await initOSSClient(bucket);
-            return client.signatureUrl(fileName, {
+            const ossClientBack = await initOSSClient(bucket);
+            return ossClientBack.client.signatureUrl(fileName, {
                 expires,
                 response: {
                     'content-disposition': 'inline'
@@ -125,8 +161,27 @@ export function OssUploaderProvider({ children }: ProviderProps) {
     };
 
     return (
-        <OssContext.Provider value={{ ossHandleUploadFile, generateSignedUrl }}>
+        <OssContext.Provider value={{ossHandleUploadFile, generateSignedUrl}}>
             {children}
+            {loading && (
+                <div
+                    className="fixed bottom-4 right-4 z-50 p-4 w-64 bg-on-surface rounded-lg shadow-lg border-outline ">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-surface-variant">
+                            上传进度...
+                        </span>
+                        <span className="text-sm text-surface-variant">
+                            {uploadProgress}%
+                        </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                            className="bg-tertiary h-2 rounded-full transition-all duration-300"
+                            style={{width: `${uploadProgress}%`}}
+                        />
+                    </div>
+                </div>
+            )}
         </OssContext.Provider>
     );
 }
@@ -139,8 +194,10 @@ export const useOss = (): OssContextType => {
     return context;
 };
 
-export const OssBuckets={
-    Video:"ks-video",
-    UserAvatar:"ks-user-avatar",
-    CourseCover:"ks-course-cover"
+export const OssBuckets = {
+    Video: "ks-video",
+    UserAvatar: "ks-user-avatar",
+    CourseCover: "ks-course-cover",
+    NotificationAnnex: "ks-notification-annex"
+
 }

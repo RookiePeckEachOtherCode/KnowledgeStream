@@ -6,11 +6,15 @@ import {faPlayCircle, faChevronDown, faChevronRight, faPaperPlane} from "@fortaw
 import {useRouter} from "next/navigation";
 import AnimatedContent from "@/app/components/animated-content";
 
-import { api } from "@/api/instance";
-import { NotifyType } from "@/api/internal/model/response/notify";
+import {api} from "@/api/instance";
+import {NotifyType} from "@/api/internal/model/response/notify";
 import MDButton from "@/app/components/md-button";
-import { UserAuthority } from "@/api/internal/service/user";
-import { OssImage } from "@/app/components/oss-midea";
+import {UserAuthority} from "@/api/internal/service/user";
+import {OssImage} from "@/app/components/oss-midea";
+import {useModal} from "@/context/modal-provider";
+import {IconButton} from "@/app/components/icon-button";
+import {OssBuckets, useOss} from "@/context/oss-uploader-provider";
+
 import { CourseDataVO, fetchCourseData } from "../vo";
 
 export default function CoursePage({
@@ -21,7 +25,7 @@ export default function CoursePage({
     const [cid, setCid] = useState("")
     const router = useRouter()
 
-    const { showNotification } = useNotification()
+    const {showNotification} = useNotification()
     const [courseData, setCourseData] = useState<CourseDataVO | null>(null)
     const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set())
     const [courseNotify, setCourseNotify] = useState<Array<NotifyType>>([])
@@ -136,7 +140,7 @@ export default function CoursePage({
                                     )}
                                 </div>
                                 <div className="flex items-start space-x-4">
-                                    <OssImage className="size-12 rounded-full" url={courseData.techer.avatar} />
+                                    <OssImage className="size-12 rounded-full" url={courseData.techer.avatar}/>
                                     <div className="flex flex-col">
                                         <span className="text-on-surface-variant text-xl hover:underline cursor-pointer"
                                               onClick={() => {
@@ -280,10 +284,13 @@ function CreateNotificationForm({cid}: CreateNotificationFormProps) {
     const [fileName, setFileName] = useState("");
     const [fileSize, setFileSize] = useState("");
     const {isShow, toggleShowModal, setForm} = useModal()
+    const [title, setTitle] = useState("")
     const MAX_FILE_SIZE_MB = 500; // 最大500MB
     const BYTES_PER_MB = 1024 * 1024;
+    const {ossHandleUploadFile, generateSignedUrl} = useOss();
+    const [uploadProgress, setUploadProgress] = useState(0); // 新增进度状态
+    var {showNotification} = useNotification();
 
-    const {showNotification} = useNotification();
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -311,12 +318,60 @@ function CreateNotificationForm({cid}: CreateNotificationFormProps) {
         setFileSize(`${sizeInMB} MB`);
     };
 
+    const SubmitForm = async () => {
+        const createRes = await api.notifyService.create({
+            cid: cid,
+            content: content,
+            title: title,
+            file: fileName != ""
+        });
+        if (createRes.base.code !== 200) {
+            showNotification({
+                title: "发起通知失败",
+                content: createRes.base.msg,
+                type: "error"
+            })
+            return
+        }
+        showNotification({
+            title: "发送成功",
+            type: "info",
+            content: ""
+        })
+        if (file) {
+            const success = await ossHandleUploadFile(file, createRes.nid, OssBuckets.NotificationAnnex);
+            if (!success) {
+                showNotification({
+                    title: "上传云附件失败",
+                    content: "",
+                    type: "error"
+                })
+            }
+        }
+
+        toggleShowModal(false)
+
+    }
+
     return (
         <div className={`w-1/2 h-1/2 bg-secondary flex flex-col p-6 rounded-2xl space-y-3`}
              onClick={e => e.stopPropagation()}>
             <div className={`w-full flex flex-row items-end space-x-3`}>
                 <div className={`text-2xl text-on-secondary`}>发起通知</div>
                 <div className={`text-outline`}>当前课程id:{cid}</div>
+            </div>
+            <div className="space-y-2">
+                <label className="text-sm font-medium text-on-secondary">
+                    标题
+                </label>
+
+                <input
+                    type={`text`}
+                    value={title || ''}
+                    onChange={e => setTitle(e.target.value)}
+                    className="w-full p-3 rounded-lg border bg-secondary-container text-on-surface h-12"
+                    placeholder="输入标题"
+                />
             </div>
             <div className="space-y-2">
                 <label className="text-sm font-medium text-on-secondary">
@@ -351,14 +406,135 @@ function CreateNotificationForm({cid}: CreateNotificationFormProps) {
             </div>
             <div className={`w-full flex flex-row items-center justify-center`}>
                 <div className={`w-1/2 flex-row justify-between flex`}>
-                    <MDButton className={`w-24 h-12 `}>
+                    <MDButton
+                        onClick={SubmitForm}
+                        className={`w-24 h-12 `}>
                         <div>发送</div>
                     </MDButton>
-                    <MDButton className={`w-24 h-12 bg-error-container`}>
+                    <MDButton
+                        onClick={() => {
+                            toggleShowModal(false)
+                        }}
+                        className={`w-24 h-12 bg-error-container`}>
                         <div>取消</div>
                     </MDButton>
                 </div>
             </div>
         </div>
     )
+
+
+}
+
+
+interface CourseDataVO {
+    id: string,
+    name: string,
+    techer: {
+        id: string,
+        name: string
+        avatar: string
+        signatrue: string
+    },
+    list: Array<{
+        id: string,
+        section_number: string,
+        section_name: string,
+        video_id: string
+    }>
+}
+
+interface RequestType {
+    base: {
+        code: number,
+        msg: string
+    },
+    id: string,
+    name: string,
+    techer: {
+        id: string,
+        name: string,
+        avatar: string,
+        signatrue: string
+    },
+    list: Array<{
+        id: string,
+        section_number: string,
+        section_name: string,
+        video_id: string
+    }>
+}
+
+async function fetchCourseData(cid: string): Promise<RequestType> {
+    const courseCapt = await api.courseService.videos({cid});
+    const courseInfo = await api.courseService.info({cid});
+
+    if (courseCapt.base.code !== 200 || courseInfo.base.code !== 200) {
+        const resp = {
+            base: {
+                code: 0,
+                msg: ""
+            },
+            id: "",
+            name: "",
+            techer: {
+                id: "",
+                name: "",
+                avatar: "",
+                signatrue: ""
+            },
+            list: []
+        }
+        if (courseCapt.base.code !== 200) {
+            resp.base.code = courseCapt.base.code
+            resp.base.msg = courseCapt.base.msg
+        } else if (courseInfo.base.code !== 200) {
+            resp.base.code = courseInfo.base.code
+            resp.base.msg = courseInfo.base.msg
+        }
+        return resp
+    }
+
+    const capts = courseCapt.videosinfo.map((item) => {
+        return {
+            id: item.vid,
+            section_number: item.chapter,
+            section_name: item.title,
+            video_id: item.vid
+        }
+    });
+    const techerInfo = await api.userService.uidInfo({uid: courseInfo.courseinfo.ascription});
+    if (techerInfo.base.code !== 200) {
+        return {
+            base: {
+                code: techerInfo.base.code,
+                msg: techerInfo.base.msg
+            },
+            id: "",
+            name: "",
+            techer: {
+                id: "",
+                name: "",
+                avatar: "",
+                signatrue: ""
+            },
+            list: []
+        }
+    }
+
+    return {
+        base: {
+            code: 200,
+            msg: "success"
+        },
+        id: techerInfo.userinfo.uid,
+        name: courseInfo.courseinfo.title,
+        techer: {
+            id: techerInfo.userinfo.uid,
+            name: techerInfo.userinfo.name,
+            avatar: techerInfo.userinfo.avatar,
+            signatrue: techerInfo.userinfo.signature
+        },
+        list: capts
+    }
 }

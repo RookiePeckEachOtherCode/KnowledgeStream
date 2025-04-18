@@ -81,7 +81,6 @@ func CreateNotification(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
-
 	resp := new(notification.CreateNotificationResp)
 
 	cid, err := strconv.ParseInt(req.Cid, 10, 64)
@@ -91,7 +90,7 @@ func CreateNotification(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	response, err := service.NotificationServ().CreateNotification(
+	response, nid, err := service.NotificationServ().CreateNotification(
 		ctx,
 		cid,
 		req.Content,
@@ -104,6 +103,7 @@ func CreateNotification(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	resp.Base = response
+	resp.Nid = *nid
 	c.JSON(consts.StatusOK, resp)
 }
 

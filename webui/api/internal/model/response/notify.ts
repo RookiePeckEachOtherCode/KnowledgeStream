@@ -1,22 +1,26 @@
-import { BaseResponse } from "../static/base-resp";
+import {BaseResponse} from "../static/base-resp";
 
-export type NotifyServiceResponse={
-    COURSE_NOTIFY:{
+export type NotifyServiceResponse = {
+    COURSE_NOTIFY: {
         base: BaseResponse;
-        notifacitons: Array<NotifyType> 
+        notifacitons: Array<NotifyType>
     }
-    NOTIFY_INFO:{
+    NOTIFY_INFO: {
         base: BaseResponse;
         notification: NotifyType
     }
-    NOTIFY_ACTION:{
+    NOTIFY_ACTION: {
         base: BaseResponse;
+    }
+    CREATE_NOTIFY: {
+        base: BaseResponse;
+        nid: string
     }
 }
 
-export interface NotifyType{
-    id:string
-    cid:string
+export interface NotifyType {
+    id: string
+    cid: string
     title: string;
     content: string;
     file: string;

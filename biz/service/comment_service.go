@@ -75,24 +75,31 @@ func (s *CommentService) CrateComment(c context.Context, name string, avatar str
 func (s *CommentService) QueryCommentsWithParentId(
 	c context.Context,
 	parent int64,
-	size ...int64, // 使用可变参数实现可选参数
+	size ...int64,
 ) ([]*base.CommentInfo, error) {
-
 	// 初始化查询构造器
-	queryBuilder := query.Comment.
-		WithContext(c).
-		Where(query.Comment.Parent.Eq(parent)).Order(query.Comment.Time)
-
-	// 处理 size 参数
+	q := query.Q
+	commentQuery := query.Comment.WithContext(c)
+	var limit = 10
 	if len(size) > 0 && size[0] > 0 {
-		// 将 int64 转换为 GORM 需要的 int 类型
-		queryBuilder = queryBuilder.Limit(int(size[0]))
+		limit = int(size[0])
 	}
 
-	// 执行查询
-	comments, err := queryBuilder.Find()
+	// 关联用户表并选择需要的字段
+	comments, err := commentQuery.
+		// 联表查询用户表
+		LeftJoin(query.User, q.Comment.Ascription.EqCol(q.User.ID)).
+		// 选择评论表所有字段 + 用户表的name和avatar
+		Select(
+			q.Comment.ALL,          // 评论表所有字段
+			q.User.Name.As("name"), // 用户表的name覆盖评论表字段
+			q.User.Avatar.As("avatar"),
+		).
+		Where(q.Comment.Parent.Eq(parent)).
+		Order(q.Comment.Time).Limit(limit).Find()
+
 	if err != nil {
-		hlog.Error("查询数据库评论失败: ", err)
+		hlog.Error("查询评论失败: ", err)
 		return nil, err
 	}
 
@@ -102,10 +109,10 @@ func (s *CommentService) QueryCommentsWithParentId(
 		resp = append(resp, &base.CommentInfo{
 			ID:         strconv.FormatInt(item.ID, 10),
 			Ascription: strconv.FormatInt(item.Ascription, 10),
-			Name:       item.Name,
+			Name:       item.Name, // 来自用户表
 			Content:    item.Content,
 			Parent:     strconv.FormatInt(item.Parent, 10),
-			Avatar:     item.Avatar,
+			Avatar:     item.Avatar, // 来自用户表
 			Time:       item.Time,
 			Children:   item.Children,
 		})

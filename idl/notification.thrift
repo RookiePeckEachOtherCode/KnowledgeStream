@@ -23,12 +23,13 @@ struct NotificationUnderCourseResp{
 struct CreateNotificationReq{
     1:string cid;
     2:string content;
-    3:string file;
+    3:bool file;
     4:string title;
 }
 
 struct  CreateNotificationResp{
     1:common.BaseResponse base;
+    2:string nid;
 }
 
 struct BrowseNotificationReq{

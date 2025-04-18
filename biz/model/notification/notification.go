@@ -653,7 +653,7 @@ func (p *NotificationUnderCourseResp) String() string {
 type CreateNotificationReq struct {
 	Cid     string `thrift:"cid,1" form:"cid" json:"cid" query:"cid"`
 	Content string `thrift:"content,2" form:"content" json:"content" query:"content"`
-	File    string `thrift:"file,3" form:"file" json:"file" query:"file"`
+	File    bool   `thrift:"file,3" form:"file" json:"file" query:"file"`
 	Title   string `thrift:"title,4" form:"title" json:"title" query:"title"`
 }
 
@@ -672,7 +672,7 @@ func (p *CreateNotificationReq) GetContent() (v string) {
 	return p.Content
 }
 
-func (p *CreateNotificationReq) GetFile() (v string) {
+func (p *CreateNotificationReq) GetFile() (v bool) {
 	return p.File
 }
 
@@ -722,7 +722,7 @@ func (p *CreateNotificationReq) Read(iprot thrift.TProtocol) (err error) {
 				goto SkipFieldError
 			}
 		case 3:
-			if fieldTypeId == thrift.STRING {
+			if fieldTypeId == thrift.BOOL {
 				if err = p.ReadField3(iprot); err != nil {
 					goto ReadFieldError
 				}
@@ -790,8 +790,8 @@ func (p *CreateNotificationReq) ReadField2(iprot thrift.TProtocol) error {
 }
 func (p *CreateNotificationReq) ReadField3(iprot thrift.TProtocol) error {
 
-	var _field string
-	if v, err := iprot.ReadString(); err != nil {
+	var _field bool
+	if v, err := iprot.ReadBool(); err != nil {
 		return err
 	} else {
 		_field = v
@@ -884,10 +884,10 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
 }
 func (p *CreateNotificationReq) writeField3(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("file", thrift.STRING, 3); err != nil {
+	if err = oprot.WriteFieldBegin("file", thrift.BOOL, 3); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.File); err != nil {
+	if err := oprot.WriteBool(p.File); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -926,6 +926,7 @@ func (p *CreateNotificationReq) String() string {
 
 type CreateNotificationResp struct {
 	Base *base.BaseResponse `thrift:"base,1" form:"base" json:"base" query:"base"`
+	Nid  string             `thrift:"nid,2" form:"nid" json:"nid" query:"nid"`
 }
 
 func NewCreateNotificationResp() *CreateNotificationResp {
@@ -944,8 +945,13 @@ func (p *CreateNotificationResp) GetBase() (v *base.BaseResponse) {
 	return p.Base
 }
 
+func (p *CreateNotificationResp) GetNid() (v string) {
+	return p.Nid
+}
+
 var fieldIDToName_CreateNotificationResp = map[int16]string{
 	1: "base",
+	2: "nid",
 }
 
 func (p *CreateNotificationResp) IsSetBase() bool {
@@ -973,6 +979,14 @@ func (p *CreateNotificationResp) Read(iprot thrift.TProtocol) (err error) {
 		case 1:
 			if fieldTypeId == thrift.STRUCT {
 				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 2:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField2(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
@@ -1015,6 +1029,17 @@ func (p *CreateNotificationResp) ReadField1(iprot thrift.TProtocol) error {
 	p.Base = _field
 	return nil
 }
+func (p *CreateNotificationResp) ReadField2(iprot thrift.TProtocol) error {
+
+	var _field string
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.Nid = _field
+	return nil
+}
 
 func (p *CreateNotificationResp) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
@@ -1024,6 +1049,10 @@ func (p *CreateNotificationResp) Write(oprot thrift.TProtocol) (err error) {
 	if p != nil {
 		if err = p.writeField1(oprot); err != nil {
 			fieldId = 1
+			goto WriteFieldError
+		}
+		if err = p.writeField2(oprot); err != nil {
+			fieldId = 2
 			goto WriteFieldError
 		}
 	}
@@ -1059,6 +1088,22 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
+}
+func (p *CreateNotificationResp) writeField2(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("nid", thrift.STRING, 2); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Nid); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
 }
 
 func (p *CreateNotificationResp) String() string {

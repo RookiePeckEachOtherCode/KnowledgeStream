@@ -451,7 +451,7 @@ function UpdateAvatar({uid, url, flashUserInfo}) {
             })
             return
         }
-        const ossName = uid + "." + parts[1]
+        const ossName = uid
         const upload_success = await ossHandleUploadFile(newFile, ossName, OssBuckets.UserAvatar)
         if (upload_success) {
             var res = await api.userService.updateInfo({

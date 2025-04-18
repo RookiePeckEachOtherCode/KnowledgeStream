@@ -15,7 +15,7 @@ app.prepare().then(() => {
         const sts = new STS({
             accessKeyId: process.env.ALIYUN_ACCESS_KEY_ID,
             accessKeySecret: process.env.ALIYUN_ACCESS_KEY_SECRET,
-            endpoint: 'sts.aliyuncs.com'
+            endpoint: 'sts.aliyuncs.com',
         });
 
         try {

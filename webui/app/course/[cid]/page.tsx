@@ -15,6 +15,7 @@ import {useModal} from "@/context/modal-provider";
 import {IconButton} from "@/app/components/icon-button";
 import {OssBuckets, useOss} from "@/context/oss-uploader-provider";
 
+import { CourseDataVO, fetchCourseData } from "../vo";
 
 export default function CoursePage({
                                        params,
@@ -82,7 +83,7 @@ export default function CoursePage({
                 return
             }
             setCid(cid)
-            setCourseData(res)
+            setCourseData(res.data)
         }
         fetchData()
     }, [params, showNotification])
@@ -135,7 +136,7 @@ export default function CoursePage({
                                 <div className="flex justify-between items-center">
                                     <h1 className="text-3xl font-bold text-on-surface mb-4">{courseData.name}</h1>
                                     {isTeacher && (
-                                        <MDButton onClick={() => router.push(`/course/${cid}/edit`)}>修改课程</MDButton>
+                                        <MDButton onClick={() => router.push(`/course/edit/${cid}`)}>修改课程</MDButton>
                                     )}
                                 </div>
                                 <div className="flex items-start space-x-4">
@@ -290,6 +291,7 @@ function CreateNotificationForm({cid}: CreateNotificationFormProps) {
     const [uploadProgress, setUploadProgress] = useState(0); // 新增进度状态
     var {showNotification} = useNotification();
 
+
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -418,10 +420,7 @@ function CreateNotificationForm({cid}: CreateNotificationFormProps) {
                     </MDButton>
                 </div>
             </div>
-
-
         </div>
-
     )
 
 

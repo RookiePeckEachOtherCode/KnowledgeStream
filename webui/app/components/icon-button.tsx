@@ -9,12 +9,12 @@ interface IconButtonProps {
 }
 
 export function IconButton({
-                               children,
-                               text,
-                               onClick,
-                               className,
-                               shadow = false
-                           }: IconButtonProps) {
+    children,
+    text,
+    onClick,
+    className,
+    shadow = false
+}: IconButtonProps) {
 
     return (
         <button

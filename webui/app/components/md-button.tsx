@@ -6,6 +6,7 @@ interface MDButtonProps {
     onClick?: () => void;
     children: React.ReactNode;
     variant?: "primary" | "secondary" | "error";
+    disabled?: boolean;
 }
 
 export default function MDButton({
@@ -13,6 +14,7 @@ export default function MDButton({
     onClick,
     variant,
     children,
+    disabled,
 }: MDButtonProps) {
     const buttonStyle = useMemo(() => {
         if (variant === "primary") {
@@ -35,6 +37,7 @@ export default function MDButton({
             onClick={() => {
                 onClick?.()
             }}
+            disabled={disabled}
         >
             {children}
         </button>

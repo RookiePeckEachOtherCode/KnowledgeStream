@@ -103,6 +103,7 @@ func (s *CourseService) CourseMembersInfoWithCid(c context.Context, cid int64) (
 		userInfo.Major = member.Major
 		userInfo.Signature = member.Signature
 		userInfo.Grade = member.Grade
+		userInfo.Phone = member.Phone
 		if member.Authority == entity.AuthorityUser {
 			userInfo.Authority = "Student"
 		} else if member.Authority == entity.AuthorityAdmin {
@@ -209,7 +210,7 @@ func (s *CourseService) TeacherQueryCourse(
 	size int32,
 	offset int32,
 	begin_time string, // 新增开始时间参数
-	end_time string, // 新增结束时间参数
+	end_time string,   // 新增结束时间参数
 ) ([]*base.CourseInfo, error) {
 	cu := query.Course
 

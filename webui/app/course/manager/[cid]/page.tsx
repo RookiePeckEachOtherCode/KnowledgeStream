@@ -45,6 +45,7 @@ export default function CourseManagerPage({
     });
     const [showAddStudentDialog, setShowAddStudentDialog] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [newStudentUid, setNewStudentUid] = useState("");
 
     const toggleStudentDialog = () => {
         setShowAddStudentDialog(prev => !prev);
@@ -104,7 +105,6 @@ export default function CourseManagerPage({
     }
 
     useEffect(() => {
-
         fetchStudents();
     }, [params])
 
@@ -159,6 +159,20 @@ export default function CourseManagerPage({
         }
     };
 
+    const handleAddStudentConfirm = () => {
+        if (newStudentUid.trim()) {
+            addStudent(newStudentUid.trim());
+            setNewStudentUid("");
+            toggleStudentDialog();
+        } else {
+            showNotification({
+                title: "输入错误",
+                content: "请输入有效的学生UID",
+                type: "info"
+            });
+        }
+    };
+
     const addStudent = async (uid: string) => {
         const res = await api.teacherService.inviteStudent({ cid: cid, sid: uid })
         if (res.base.code !== 200) {
@@ -174,6 +188,9 @@ export default function CourseManagerPage({
             content: "已添加新学生",
             type: "success"
         })
+        setSelectedStudents(new Set())
+        setStudents([])
+        fetchStudents()
     };
 
     const handleImport = () => {
@@ -209,7 +226,6 @@ export default function CourseManagerPage({
                 }).filter(student => student.uid && student.name);
 
                 const jobs: Array<Promise<{ base: BaseResponse }>> = [];
-                //TODO call new student api
                 newStudents.forEach((stu) => {
                     const job = api.teacherService.inviteStudent({ cid: cid, sid: stu.uid })
                     jobs.push(job);
@@ -322,8 +338,31 @@ export default function CourseManagerPage({
     const endItem = Math.min(currentPage * pageSize, filteredStudents.length);
 
     return (
-        <div className="p-6 min-h-screen bg-surface">
-            <div className="max-w-6xl mx-auto space-y-6">
+        <div className="p-6 min-h-screen bg-surface relative">
+            {showAddStudentDialog && (
+                <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+                    <AnimatedContent
+                        distance={50}
+                        reverse={true}
+                        config={{ tension: 80, friction: 20 }}
+                    >
+                        <div className="bg-surface-container rounded-2xl p-6 shadow-xl w-96 space-y-4">
+                            <h3 className="text-xl font-semibold text-on-surface">添加学生</h3>
+                            <MDInput
+                                placeholder="学生UID"
+                                value={newStudentUid}
+                                onValueChange={(value) => setNewStudentUid(value)}
+                            />
+                            <div className="flex justify-end gap-2 pt-4">
+                                <MDButton onClick={toggleStudentDialog}>取消</MDButton>
+                                <MDButton onClick={handleAddStudentConfirm}>确认添加</MDButton>
+                            </div>
+                        </div>
+                    </AnimatedContent>
+                </div>
+            )}
+
+            <div className="max-w-7xl mx-auto">
                 <AnimatedContent
                     distance={100}
                     reverse={false}

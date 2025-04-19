@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/entity"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/query"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/redis"
@@ -70,7 +71,7 @@ func (s *NotificationService) CreateNotification(
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &base.BaseResponse{
 				Code: 200,
-				Msg:  "通知已迭达",
+				Msg:  "课程内没有找到学生",
 			}, &formatId, nil
 		} else {
 			hlog.Error(" db-user_course 查询鼠了: ", err)
@@ -89,7 +90,7 @@ func (s *NotificationService) CreateNotification(
 		//存在记录表时加上一个未读记录
 		if exists > 0 {
 			record := redis.UserNotificationRecord{}
-			err := redis.Client.GetValue(c, recordKey, record)
+			err := redis.Client.GetValue(c, recordKey, &record)
 			if err != nil {
 				hlog.Error("UserNotification  redis的记录查询爆了:: ", err)
 				return nil, nil, err
@@ -98,12 +99,15 @@ func (s *NotificationService) CreateNotification(
 				Content:  content,
 				File:     url,
 				Cid:      strconv.FormatInt(cid, 10),
+				Title:    title,
 				Favorite: 0,
 				Read_:    false,
 				ID:       strconv.FormatInt(*flakeId, 10),
 			})
 			redis.Client.SetValue(c, recordKey, record)
 		} else { //生成一个新的表
+			fmt.Print("生成了新的记录:" + recordKey)
+
 			var notifications []*base.NotificationInfo
 			newRecord := redis.UserNotificationRecord{
 				Uid:           item.UserID,
@@ -114,6 +118,7 @@ func (s *NotificationService) CreateNotification(
 				File:     url,
 				Cid:      strconv.FormatInt(cid, 10),
 				Favorite: 0,
+				Title:    title,
 				Read_:    false,
 				ID:       strconv.FormatInt(*flakeId, 10),
 			})

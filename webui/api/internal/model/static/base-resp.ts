@@ -58,6 +58,9 @@ export interface Notification {
      */
     file: string;
     id: string;
+    title: string,
+    faved: false,
+    time: "1145-12:12"
     /**
      * 是否已读
      */

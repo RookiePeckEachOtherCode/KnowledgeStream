@@ -43,7 +43,8 @@
     "stream-browserify": "^3.0.0",
     "styled-components": "^6.1.16",
     "util": "^0.12.5",
-    "webm-duration-fix": "^1.0.4"
+    "webm-duration-fix": "^1.0.4",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

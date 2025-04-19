@@ -5,12 +5,13 @@ package user
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/entity"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/base"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/service"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/utils"
-	"net/http"
-	"strconv"
 
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/srverror"
 	user "github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/user"
@@ -339,7 +340,7 @@ func OperateMember(ctx context.Context, c *app.RequestContext) {
 
 	resp := new(user.OperateMemberResp)
 	resp.Base = new(base.BaseResponse)
-	uid, authority, err := utils.AuthCheck(c)
+	_, authority, err := utils.AuthCheck(c)
 	if err != nil {
 		resp.Base.Code = http.StatusUnauthorized
 		resp.Base.Msg = err.Error()
@@ -359,7 +360,14 @@ func OperateMember(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	err = service.CourseServ().OperateMemberWithCidAndUid(ctx, cid, uid)
+	deletedUserId, err := strconv.ParseInt(req.UID, 10, 64)
+	if err != nil {
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		hlog.Error("被删除user_id数据格式转换失败：", err)
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	err = service.CourseServ().OperateMemberWithCidAndUid(ctx, cid, deletedUserId)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		c.JSON(consts.StatusOK, resp)

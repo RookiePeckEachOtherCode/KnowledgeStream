@@ -37,9 +37,10 @@ type Config struct {
 	} `mapstructure:"redis"`
 
 	OssBuckets struct {
-		VideoSource string `mapstructure:"bucket_video"`
-		CourseCover string `mapstructure:"bucket_course_cover"`
-		UserAvatar  string `mapstructure:"bucket_user_avatar"`
+		VideoSource       string `mapstructure:"bucket_video"`
+		CourseCover       string `mapstructure:"bucket_course_cover"`
+		UserAvatar        string `mapstructure:"bucket_user_avatar"`
+		NotificationAnnex string `mapstructure:"bucket_notification_annex"`
 	} `mapstructure:"oss_buckets"` // ← 这里必须与 YAML 的键名一致
 }
 

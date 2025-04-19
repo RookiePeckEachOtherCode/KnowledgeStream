@@ -9,6 +9,7 @@ import (
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/base"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/notification"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/utils"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/config"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"gorm.io/gorm"
 	"strconv"
@@ -35,14 +36,19 @@ func (s *NotificationService) CreateNotification(
 	cid int64,
 	content string,
 	title string,
-	file string,
-) (*base.BaseResponse, error) {
+	file bool,
+) (*base.BaseResponse, *string, error) {
 
 	//生成id并保存db
 	flakeId, err := utils.NextSnowFlakeId()
 	if err != nil {
 		hlog.Error("雪花id怎么生成报错了啊: ", err)
-		return nil, err
+		return nil, nil, err
+	}
+	formatId := strconv.FormatInt(*flakeId, 10)
+	var url = " "
+	if file {
+		url = config.Get().OssBuckets.NotificationAnnex + "/" + formatId
 	}
 	err = query.Notification.WithContext(c).Save(
 		&entity.Notification{
@@ -50,12 +56,12 @@ func (s *NotificationService) CreateNotification(
 			Cid:     cid,
 			Content: content,
 			Title:   title,
-			File:    file,
+			File:    url,
 		},
 	)
 	if err != nil {
 		hlog.Error("pg存通知时鼠了: ", err)
-		return nil, err
+		return nil, nil, err
 	}
 
 	//找课程域内学生
@@ -65,10 +71,10 @@ func (s *NotificationService) CreateNotification(
 			return &base.BaseResponse{
 				Code: 200,
 				Msg:  "通知已迭达",
-			}, nil
+			}, &formatId, nil
 		} else {
 			hlog.Error(" db-user_course 查询鼠了: ", err)
-			return nil, err
+			return nil, nil, err
 		}
 	}
 
@@ -78,7 +84,7 @@ func (s *NotificationService) CreateNotification(
 		exists, err := redis.Client.R.Exists(c, recordKey).Result()
 		if err != nil {
 			hlog.Error("UserNotificationRecord redis的记录查询存在爆了: ", err)
-			return nil, err
+			return nil, nil, err
 		}
 		//存在记录表时加上一个未读记录
 		if exists > 0 {
@@ -86,11 +92,11 @@ func (s *NotificationService) CreateNotification(
 			err := redis.Client.GetValue(c, recordKey, record)
 			if err != nil {
 				hlog.Error("UserNotification  redis的记录查询爆了:: ", err)
-				return nil, err
+				return nil, nil, err
 			}
 			record.Notifications = append(record.Notifications, &base.NotificationInfo{
 				Content:  content,
-				File:     file,
+				File:     url,
 				Cid:      strconv.FormatInt(cid, 10),
 				Favorite: 0,
 				Read_:    false,
@@ -105,7 +111,7 @@ func (s *NotificationService) CreateNotification(
 			}
 			newRecord.Notifications = append(newRecord.Notifications, &base.NotificationInfo{
 				Content:  content,
-				File:     file,
+				File:     url,
 				Cid:      strconv.FormatInt(cid, 10),
 				Favorite: 0,
 				Read_:    false,
@@ -117,7 +123,7 @@ func (s *NotificationService) CreateNotification(
 	return &base.BaseResponse{
 		Code: 200,
 		Msg:  "通知已迭达",
-	}, nil
+	}, &formatId, nil
 
 }
 

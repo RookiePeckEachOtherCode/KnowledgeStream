@@ -585,6 +585,25 @@ export function ManageCourse() {
         setCourses(queryRes.courses)
 
     }
+
+    const deleteCourse = async (cid: string) => {
+        const deleteRes = await api.adminService.objectDelete({
+            target: "course",
+            tid: cid
+        });
+        if (deleteRes.base.code !== 200) {
+            showNotification({
+                title: "删除失败",
+                content: deleteRes.base.msg,
+                type: "error"
+            })
+            return
+        }
+        await SearchCourse()
+
+
+    }
+
     const openEditForm = async (index: number) => {
         await setForm(<EditCourseInfo
             key={Date.now()}
@@ -632,11 +651,9 @@ export function ManageCourse() {
                     className={`w-1/8 p-3 rounded-lg border bg-secondary-container text-on-surface`}
                     placeholder="所属学院"
                 />
-            </div>
-            <div className={`w-full flex`}>
-                <div className={`grid grid-cols-2 gap-4 z-index-[100] `}>
+                <div className={`grid grid-cols-2 gap-4 z-index-[100] items-center relative `}>
                     <div className={`space-y-2 ml-12`}>
-                        <label className={`text-sm font-medium text-on-surface`}>
+                        <label className={`text-sm absolute -top-6 font-medium text-on-surface`}>
                             起始时间
                         </label>
                         <CustomDatePicker
@@ -645,7 +662,7 @@ export function ManageCourse() {
                         </CustomDatePicker>
                     </div>
                     <div className={`space-y-2`}>
-                        <label className={`text-sm font-medium text-on-surface`}>
+                        <label className={`text-sm absolute -top-6 font-medium text-on-surface`}>
                             结束时间
                         </label>
                         <CustomDatePicker
@@ -670,6 +687,9 @@ export function ManageCourse() {
                             cover={item.cover}
                             onEdit={() => {
                                 openEditForm(index)
+                            }}
+                            onDelete={() => {
+                                deleteCourse(item.cid)
                             }}
                             className={item.class}>
 
@@ -714,6 +734,23 @@ export function ManageUser() {
             return
         }
         setUsers(usersRes.users)
+
+    }
+    const deleteCourse = async (uid: string) => {
+        const deleteRes = await api.adminService.objectDelete({
+            target: "user",
+            tid: uid
+        });
+        if (deleteRes.base.code !== 200) {
+            showNotification({
+                title: "删除失败",
+                content: deleteRes.base.msg,
+                type: "error"
+            })
+            return
+        }
+        await SearchUser()
+
 
     }
 
@@ -818,6 +855,9 @@ export function ManageUser() {
                             major={item.major ? item.major : `未定义`}
                             onEdit={() => {
                                 OpenEditInfoForm(index)
+                            }}
+                            onDelete={() => {
+                                deleteCourse(item.uid)
                             }}
                             class={item.class}>
                         </UserListItem>
@@ -1265,9 +1305,9 @@ export function EditUserInfo({
                                 onChange={e => setAuthority(e.target.value)}
                                 className="w-full p-3 rounded-lg border bg-secondary-container text-on-surface"
                             >
-                                <option value="admin">管理员</option>
-                                <option value="teacher">教师</option>
-                                <option value="student">学生</option>
+                                <option value="Admin">管理员</option>
+                                <option value="Teacher">教师</option>
+                                <option value="Student">学生</option>
                             </select>
                         </div>
                         <div className="space-y-2">

@@ -31,7 +31,7 @@ export default function CoursePage({
     const [courseNotify, setCourseNotify] = useState<Array<NotifyType>>([])
     const [isNotifyLoading, setIsNotifyLoading] = useState(true)
     const [isTeacher, setIsTeacher] = useState(true)
-    const { isShow, toggleShowModal, setForm } = useModal()
+    const { toggleShowModal, setForm } = useModal()
     const gotoPlay = (id: string) => {
         router.push(`/play/${id}`)
     }
@@ -101,7 +101,7 @@ export default function CoursePage({
                     })
                     return
                 }
-                setCourseNotify(res.notifacitons)
+                setCourseNotify(res.notifications)
             } finally {
                 setIsNotifyLoading(false)
             }
@@ -286,12 +286,11 @@ function CreateNotificationForm({ cid }: CreateNotificationFormProps) {
     const [file, setFile] = useState<File | null>(null);
     const [fileName, setFileName] = useState("");
     const [fileSize, setFileSize] = useState("");
-    const { isShow, toggleShowModal, setForm } = useModal()
+    const { toggleShowModal } = useModal()
     const [title, setTitle] = useState("")
     const MAX_FILE_SIZE_MB = 500; // 最大500MB
     const BYTES_PER_MB = 1024 * 1024;
-    const {ossHandleUploadFile, generateSignedUrl} = useOss();
-    const [uploadProgress, setUploadProgress] = useState(0); // 新增进度状态
+    const {ossHandleUploadFile} = useOss();
 
     const { showNotification } = useNotification();
 

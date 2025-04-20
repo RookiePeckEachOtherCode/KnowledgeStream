@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/entity"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/query"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/redis"
@@ -50,6 +51,11 @@ func (s *NotificationService) CreateNotification(
 	if file {
 		url = config.Get().OssBuckets.NotificationAnnex + "/" + formatId
 	}
+	timestr, err := utils.GetNowTime()
+	if err != nil {
+		timestr = ""
+	}
+
 	err = query.Notification.WithContext(c).Save(
 		&entity.Notification{
 			ID:      *flakeId,
@@ -57,6 +63,7 @@ func (s *NotificationService) CreateNotification(
 			Content: content,
 			Title:   title,
 			File:    url,
+			Time:    timestr,
 		},
 	)
 	if err != nil {
@@ -70,7 +77,7 @@ func (s *NotificationService) CreateNotification(
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &base.BaseResponse{
 				Code: 200,
-				Msg:  "通知已迭达",
+				Msg:  "课程内没有找到学生",
 			}, &formatId, nil
 		} else {
 			hlog.Error(" db-user_course 查询鼠了: ", err)
@@ -89,7 +96,7 @@ func (s *NotificationService) CreateNotification(
 		//存在记录表时加上一个未读记录
 		if exists > 0 {
 			record := redis.UserNotificationRecord{}
-			err := redis.Client.GetValue(c, recordKey, record)
+			err := redis.Client.GetValue(c, recordKey, &record)
 			if err != nil {
 				hlog.Error("UserNotification  redis的记录查询爆了:: ", err)
 				return nil, nil, err
@@ -98,12 +105,16 @@ func (s *NotificationService) CreateNotification(
 				Content:  content,
 				File:     url,
 				Cid:      strconv.FormatInt(cid, 10),
+				Title:    title,
 				Favorite: 0,
 				Read_:    false,
+				Time:     timestr,
 				ID:       strconv.FormatInt(*flakeId, 10),
 			})
 			redis.Client.SetValue(c, recordKey, record)
 		} else { //生成一个新的表
+			fmt.Print("生成了新的记录:" + recordKey)
+
 			var notifications []*base.NotificationInfo
 			newRecord := redis.UserNotificationRecord{
 				Uid:           item.UserID,
@@ -114,7 +125,9 @@ func (s *NotificationService) CreateNotification(
 				File:     url,
 				Cid:      strconv.FormatInt(cid, 10),
 				Favorite: 0,
+				Title:    title,
 				Read_:    false,
+				Time:     timestr,
 				ID:       strconv.FormatInt(*flakeId, 10),
 			})
 			redis.Client.SetValue(c, recordKey, newRecord)
@@ -151,9 +164,11 @@ func (s *NotificationService) BrowseNotification(
 	resNotification := &base.NotificationInfo{
 		Content:  dbNotification.Content,
 		File:     dbNotification.File,
+		Title:    dbNotification.Title,
 		Cid:      strconv.FormatInt(dbNotification.Cid, 10),
 		Favorite: dbNotification.Favorite,
 		Read_:    true,
+		Time:     dbNotification.Time,
 		ID:       strconv.FormatInt(dbNotification.ID, 10),
 	}
 
@@ -184,6 +199,8 @@ func (s *NotificationService) BrowseNotification(
 			if record.Notifications[i].ID == resNotification.ID {
 				record.Notifications[i].Read_ = true
 				found = true
+				record.Notifications[i].Favorite = dbNotification.Favorite
+				resNotification.Faved = record.Notifications[i].Faved
 				break
 			}
 		}
@@ -192,7 +209,6 @@ func (s *NotificationService) BrowseNotification(
 			hlog.Warnf("通知ID %s 未在Redis记录中找到，可能缓存未更新", resNotification.ID)
 			//record.Notifications = append(record.Notifications, resNotification) // 自动修复缓存?
 		}
-
 		redis.Client.SetValue(c, recordKey, record)
 
 		return &notification.BrowseNotificationResp{
@@ -265,6 +281,7 @@ func (s *NotificationService) QueryCourseNotifications(
 			Content:  item.Content,
 			File:     item.File,
 			Cid:      strconv.FormatInt(item.Cid, 10),
+			Time:     item.Time,
 			Favorite: item.Favorite,
 			ID:       strconv.FormatInt(item.ID, 10),
 		})
@@ -273,28 +290,44 @@ func (s *NotificationService) QueryCourseNotifications(
 
 }
 func (s *NotificationService) FavNotification(
-	nid string,
+	nid int64,
 	uid int64,
 	c context.Context,
 ) (*notification.FavNotificationResp, error) {
 	recordKey := redis.GenUserNotificationRecordKey(uid)
 	record := redis.UserNotificationRecord{}
 
-	err := redis.Client.GetValue(c, recordKey, record)
+	err := redis.Client.GetValue(c, recordKey, &record)
 	if err != nil {
 		hlog.Error("redis查用户通知时鼠了: ", err)
 		return nil, err
 	}
-	for _, item := range record.Notifications {
-		if item.ID == nid {
-			item.Faved = !item.Faved
+	for index, item := range record.Notifications {
+		if item.ID == strconv.FormatInt(nid, 10) {
+			record.Notifications[index].Faved = !record.Notifications[index].Faved
+			delta := 1
+			if !record.Notifications[index].Faved {
+				delta = -1
+			}
+			record.Notifications[index].Favorite += int32(delta)
+			// 更新数据库
+			if _, err := query.Notification.
+				WithContext(c).
+				Where(query.Notification.ID.Eq(nid)).
+				UpdateSimple(query.Notification.Favorite.Add(int32(delta))); err != nil {
+				hlog.Error("更新数据库失败: ", err)
+				return nil, err
+			}
 		}
 	}
 	redis.Client.SetValue(c, recordKey, record)
+	if err != nil {
+		return nil, err
+	}
 	var res = &notification.FavNotificationResp{
 		Base: &base.BaseResponse{
 			Code: 200,
-			Msg:  "",
+			Msg:  "点赞操作成功",
 		},
 	}
 	return res, nil

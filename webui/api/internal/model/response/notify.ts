@@ -1,13 +1,13 @@
-import {BaseResponse} from "../static/base-resp";
+import {BaseResponse, Notification} from "../static/base-resp";
 
 export type NotifyServiceResponse = {
     COURSE_NOTIFY: {
         base: BaseResponse;
-        notifacitons: Array<NotifyType>
+        notifications: Array<Notification>;
     }
     NOTIFY_INFO: {
         base: BaseResponse;
-        notification: NotifyType
+        notification: Notification
     }
     NOTIFY_ACTION: {
         base: BaseResponse;

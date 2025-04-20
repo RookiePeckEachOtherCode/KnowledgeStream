@@ -9,7 +9,7 @@ import {faFile} from "@fortawesome/free-solid-svg-icons"
 import {faHeart as faHeartRegular} from "@fortawesome/free-regular-svg-icons"
 import {faHeart as faHeartSolid} from "@fortawesome/free-solid-svg-icons"
 import {CommentStrip} from "@/app/components/comment-strip"
-import {Comment, UserInfo} from "@/api/internal/model/static/base-resp"
+import {Comment, Notification, UserInfo} from "@/api/internal/model/static/base-resp"
 import {OssImage} from "@/app/components/oss-midea"
 import {api} from "@/api/instance"
 import {IconButton} from "@/app/components/icon-button"
@@ -18,7 +18,7 @@ import {NotifyType} from "@/api/internal/model/response/notify"
 
 export default function NotifyPage() {
     const searchParams = useSearchParams()
-    const [notify, setNotify] = useState<NotifyType | null>(null)
+    const [notify, setNotify] = useState<Notification | null>(null)
     const {showNotification} = useNotification()
     const [isLike, setIsLike] = useState<boolean>(false)
     const [comments, setComments] = useState<Array<Comment>>([])
@@ -30,7 +30,7 @@ export default function NotifyPage() {
 
     const likeAction = async () => {
         if (!notify) return
-        const res = await api.notifyService.action({id: notify.id})
+        const res = await api.notifyService.like({nid: notify.id})
         if (res.base.code !== 200) {
             showNotification({
                 title: "点赞失败",
@@ -50,7 +50,7 @@ export default function NotifyPage() {
         const fetchNotifyData = async () => {
             const id = searchParams.get('id')
             if (!id) return
-            const res = await api.notifyService.notifyInfo({id})
+            const res = await api.notifyService.notifyInfo({nid: id})
             if (res.base.code !== 200) {
                 showNotification({
                     title: "获取课程数据失败",

@@ -18,7 +18,7 @@ export class NotifyService {
     }
 
     async notifyInfo(
-        req: { id: string }
+        req: { nid: string }
     ): Promise<NotifyServiceResponse['NOTIFY_INFO']> {
         return this.executor({
             uri: "/notification/browse",
@@ -28,14 +28,13 @@ export class NotifyService {
         }) as Promise<NotifyServiceResponse['NOTIFY_INFO']>;
     }
 
-    async action(
-        req: { id: string }
+    async like(
+        req: { nid: string }
     ): Promise<NotifyServiceResponse['NOTIFY_ACTION']> {
         return this.executor({
-            uri: "/notification/action",
+            uri: "/notification/like",
             method: "POST",
-            body: null,
-            query: req,
+            body: req,
         }) as Promise<NotifyServiceResponse['NOTIFY_ACTION']>;
     }
 

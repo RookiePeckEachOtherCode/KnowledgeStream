@@ -183,6 +183,12 @@ func (s *UserService) DeleteUserWithUid(c context.Context, uid int64) error {
 		hlog.Error("查询用户失败: ", err)
 		return err
 	}
+	uc := query.UserInCourse
+	_, err = uc.WithContext(c).Where(uc.UserID.Eq(uid)).Delete()
+	if err != nil {
+		hlog.Error("删除用户关联课程失败: ", err)
+		return err
+	}
 	_, err = u.WithContext(c).Delete(user)
 	if err != nil {
 		hlog.Error("删除用户失败: ", err)

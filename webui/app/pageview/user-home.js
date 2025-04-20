@@ -31,7 +31,7 @@ export function UserHome() {
 
     const [userInfo, setUserInfo] = useState({
         uid: "114514",
-        avatar: "",
+        avatar: "null",
         name: "未知用户",
         authority: "未知",
         phone: "无",
@@ -152,7 +152,7 @@ function BaseInfo({userInfo, flashUserInfo}) {
                     </OssImage>
                     <div className={`flex flex-col space-y-6  justify-center h-full`}>
                         <div className={`flex text-3xl`}>{userInfo.name}</div>
-                        <div className={`flex text-xl`}>{userInfo.authority}</div>
+                        <div className={`flex text-xl`}>{localStorage.getItem("authority")}</div>
                     </div>
                 </div>
                 <div className="w-1/3 bg-inverse-primary rounded-lg shadow-lg overflow-hidden">

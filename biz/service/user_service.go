@@ -65,7 +65,7 @@ func (s *UserService) UserRegister(
 
 	user := entity.User{
 		ID:        *id,
-		Avatar:    config.Get().DefaultAvatarURL,
+		Avatar:    config.Get().OssBuckets.DefaultUserAvatar,
 		Salt:      salt,
 		Password:  hashedPassword,
 		Name:      name,

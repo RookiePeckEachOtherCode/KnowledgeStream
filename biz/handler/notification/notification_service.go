@@ -164,8 +164,14 @@ func FavNotification(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	uid := Uid.(int64)
-
-	favNotificationResp, err := service.NotificationServ().FavNotification(req.Nid, uid, ctx)
+	nid, err := strconv.ParseInt(req.Nid, 10, 64)
+	if err != nil {
+		resp.Base = &base.BaseResponse{
+			Code: http.StatusBadRequest,
+			Msg:  "转换通知id失败" + err.Error(),
+		}
+	}
+	favNotificationResp, err := service.NotificationServ().FavNotification(nid, uid, ctx)
 	if err != nil {
 		resp.Base = &base.BaseResponse{
 			Code: 400,

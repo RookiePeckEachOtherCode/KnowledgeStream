@@ -33,6 +33,7 @@ func newNotification(db *gorm.DB, opts ...gen.DOOption) notification {
 	_notification.File = field.NewString(tableName, "file")
 	_notification.Favorite = field.NewInt32(tableName, "favorite")
 	_notification.Title = field.NewString(tableName, "title")
+	_notification.Time = field.NewString(tableName, "time")
 
 	_notification.fillFieldMap()
 
@@ -49,6 +50,7 @@ type notification struct {
 	File     field.String
 	Favorite field.Int32
 	Title    field.String
+	Time     field.String
 
 	fieldMap map[string]field.Expr
 }
@@ -71,6 +73,7 @@ func (n *notification) updateTableName(table string) *notification {
 	n.File = field.NewString(table, "file")
 	n.Favorite = field.NewInt32(table, "favorite")
 	n.Title = field.NewString(table, "title")
+	n.Time = field.NewString(table, "time")
 
 	n.fillFieldMap()
 
@@ -87,13 +90,14 @@ func (n *notification) GetFieldByName(fieldName string) (field.OrderExpr, bool) 
 }
 
 func (n *notification) fillFieldMap() {
-	n.fieldMap = make(map[string]field.Expr, 6)
+	n.fieldMap = make(map[string]field.Expr, 7)
 	n.fieldMap["id"] = n.ID
 	n.fieldMap["cid"] = n.Cid
 	n.fieldMap["content"] = n.Content
 	n.fieldMap["file"] = n.File
 	n.fieldMap["favorite"] = n.Favorite
 	n.fieldMap["title"] = n.Title
+	n.fieldMap["time"] = n.Time
 }
 
 func (n notification) clone(db *gorm.DB) notification {

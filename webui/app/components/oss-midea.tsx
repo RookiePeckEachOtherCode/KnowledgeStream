@@ -1,17 +1,17 @@
 "use client"
 
-import React, { useEffect, useState } from "react";
-import { useNotification } from "@/context/notification-provider";
-import { useOss } from "@/context/oss-uploader-provider";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTruckLoading } from "@fortawesome/free-solid-svg-icons";
+import React, {useEffect, useState} from "react";
+import {useNotification} from "@/context/notification-provider";
+import {useOss} from "@/context/oss-uploader-provider";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faTruckLoading} from "@fortawesome/free-solid-svg-icons";
 
 
 const parseOssUrl = (url?: string | null): { bucket?: string; fileName?: string } => {
-    if (!url) return { bucket: undefined, fileName: undefined };
+    if (!url) return {bucket: undefined, fileName: undefined};
 
     const parts = url.split('/').filter(Boolean); // 过滤空字符串
-    if (parts.length < 2) return { bucket: undefined, fileName: undefined };
+    if (parts.length < 2) return {bucket: undefined, fileName: undefined};
 
     return {
         bucket: parts[0],
@@ -25,12 +25,12 @@ interface OssVideoProps {
 }
 
 export function OssVideo(props: OssVideoProps) {
-    const { className = "", url } = props;
+    const {className = "", url} = props;
     const [blobUrl, setBlobUrl] = useState<string | null>(null);
-    const { showNotification } = useNotification();
-    const { generateSignedUrl } = useOss();
+    const {showNotification} = useNotification();
+    const {generateSignedUrl} = useOss();
 
-    const { bucket, fileName } = parseOssUrl(url);
+    const {bucket, fileName} = parseOssUrl(url);
 
     useEffect(() => {
         const fetchVideo = async () => {
@@ -108,14 +108,14 @@ interface OssImageProps {
 }
 
 export function OssImage({
-    className = "",
-    url,
-    alt = "OSS存储图片",
-}: OssImageProps) {
+                             className = "",
+                             url,
+                             alt = "OSS存储图片",
+                         }: OssImageProps) {
     const [blobUrl, setBlobUrl] = useState<string | null>(null);
-    const { showNotification } = useNotification();
-    const { generateSignedUrl } = useOss();
-    const { bucket, fileName } = parseOssUrl(url);
+    const {showNotification} = useNotification();
+    const {generateSignedUrl} = useOss();
+    const {bucket, fileName} = parseOssUrl(url);
 
     useEffect(() => {
 
@@ -186,15 +186,15 @@ export function OssImage({
         <div
             className={` ${className ? className : ``}  flex flex-col min-w-max  transition-all duration-300 space-x-6 items-center justify-center`}>
             <FontAwesomeIcon className={`w-full animate-spin transition-all duration-300`}
-                icon={faTruckLoading}></FontAwesomeIcon>
+                             icon={faTruckLoading}></FontAwesomeIcon>
             <div className={`w-full`}>Loading...</div>
         </div>
     );
 }
 
 
-export function OssVideoCover(props: { className?: string; url: string }) {
-    const {className = "", url} = props;
+export function OssVideoCover(props: { className?: string; url: string; onClick?: () => void }) {
+    const {className = "", url, onClick} = props;
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const {showNotification} = useNotification();
     const {generateSignedUrl} = useOss();
@@ -277,7 +277,9 @@ export function OssVideoCover(props: { className?: string; url: string }) {
     }, [url, bucket, fileName]);
 
     return (
-        <div className={className}>
+        <div className={className} onClick={() => {
+            onClick?.()
+        }}>
             {previewUrl ? (
                 <img
                     src={previewUrl}

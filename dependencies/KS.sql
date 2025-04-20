@@ -23,7 +23,8 @@ create table notifications
     content  text,
     file     text,
     favorite integer default 0,
-    title    text
+    title    text,
+    time    text
 );
 
 alter table notifications

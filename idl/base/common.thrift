@@ -55,6 +55,7 @@ struct NotificationInfo{
     6:string id;
     7:string title;
     8:bool faved;
+    9:string time;
 }
 struct CommentInfo{
     1:string id;

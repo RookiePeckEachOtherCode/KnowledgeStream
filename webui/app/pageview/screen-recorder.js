@@ -108,6 +108,7 @@ export function ScreenRecordControlPage(props) {
                 title: "视频文件上传失败，请重试"
             })
         }
+        return success
     }
 
 
@@ -372,6 +373,9 @@ function VideoSubmitForm({videoDuration, blobSrc, uploadBlob}) {
                     title: "视频存储出现错误",
                     type: "error"
                 })
+                await api.teacherService.deleteVideo({
+                    vid: resp.newid
+                });
             }
         } else {
             showNotification({
@@ -398,7 +402,12 @@ function VideoSubmitForm({videoDuration, blobSrc, uploadBlob}) {
                 type: "error"
             })
         } else {
-            await uploadBlob(resp.newid)
+            const success = await uploadBlob(resp.newid);
+            if (!success) {
+                await api.teacherService.deleteVideo({
+                    vid: resp.newid
+                });
+            }
         }
 
     }

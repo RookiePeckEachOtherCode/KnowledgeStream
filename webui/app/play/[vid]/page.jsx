@@ -6,7 +6,7 @@ import {
     faMagnet,
     faMinus,
     faPaperPlane,
-    faPlay,
+    faPlay, faPlayCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import {faDiscourse} from "@fortawesome/free-brands-svg-icons";
 import {OssImage, OssVideo, OssVideoCover} from "../../components/oss-midea.tsx";
@@ -26,11 +26,12 @@ export default function PlayPage() {
     const {showNotification} = useNotification();
     const params = useParams();
     const vid = params.vid;
-
+    const router = useRouter()
     //新评论
     const [commentContent, setCommentContent] = useState("");
     const [commentPlaceholder, setCommentPlaceholder] = useState("有什么想说的?");
     const [commentParent, setCommentParent] = useState(null);
+    const [nextVideoIndex, setNextVideoIndex] = useState(0)
 
     const ChangeCommentToReply = (name, cid) => {
         console.log(111);
@@ -202,6 +203,11 @@ export default function PlayPage() {
                     });
                 } else {
                     setVideoList(videosRes.videosinfo);
+                    videosRes.videosinfo.map((item, idx) => {
+                        if (item.vid === videoInfoRes.videoinfo.vid) {
+                            setNextVideoIndex(idx === videosRes.videosinfo.length - 1 ? 0 : idx + 1)
+                        }
+                    })
                 }
                 const commentsRes = await api.commentService.under_video({
                     vid: videoInfoRes.videoinfo.vid,
@@ -367,11 +373,37 @@ export default function PlayPage() {
                         videos={videoList}
                         currentVideo={videoInfo}
                     ></ChapterList>
-                    <div className={`w-full flex flex-col`}>
-                        <div>下一个播放</div>
-                        <div className={`w-full flex flex-row justify-between`}>
-                            <OssVideoCover url={videoInfo.source} className={`w-1/2 h-auto`}></OssVideoCover>           
-                            
+                    <div className={`w-full flex flex-col space-y-2`}>
+                        <div className={`text-on-background`}
+                             onClick={() => {
+                                 console.log(videoList[nextVideoIndex])
+                             }}
+                        >下一个播放
+                        </div>
+                        <div className={`w-full flex flex-row justify-between space-x-6`}>
+                            {videoList[nextVideoIndex] && <OssVideoCover
+                                onClick={() => {
+                                    router.push(`/play/${videoList[nextVideoIndex].vid}`)
+                                }}
+                                url={videoList[nextVideoIndex].source}
+                                className={`w-1/2 h-auto min-h-32 min-w-52 hover:cursor-pointer`}></OssVideoCover>}
+                            {videoList[nextVideoIndex] &&
+                                <div className={`flex w-full flex-col space-y-2 justify-between`}>
+                                    <div
+                                        className={`text-on-background text-wrap`}>{videoList[nextVideoIndex].title}</div>
+                                    <div
+                                        className={`text-on-background text-wrap`}>{videoList[nextVideoIndex].chapter}</div>
+                                    <div className={`grid grid-cols-2`}>
+                                        <div className={`text-outline flex items-center space-x-3`}>
+                                            <FontAwesomeIcon icon={faPlayCircle}></FontAwesomeIcon>
+                                            <div>{videoList[nextVideoIndex].plays ? videoList[nextVideoIndex].plays : `--`}</div>
+                                        </div>
+                                        <div className={`text-outline flex items-center space-x-3`}>
+                                            <FontAwesomeIcon icon={faPlayCircle}></FontAwesomeIcon>
+                                            <div>{videoList[nextVideoIndex].length ? videoList[nextVideoIndex].length : `--`}</div>
+                                        </div>
+                                    </div>
+                                </div>}
                         </div>
                     </div>
 

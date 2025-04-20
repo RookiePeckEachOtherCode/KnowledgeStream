@@ -7,4 +7,5 @@ type Notification struct {
 	File     string `gorm:"column:file" json:"file"`
 	Favorite int32  `gorm:"column:favorite" json:"favorite"`
 	Title    string `gorm:"column:title" json:"title"`
+	Time     string `gorm:"column:time" json:"time"`
 }

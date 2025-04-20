@@ -4,7 +4,6 @@ import {
     LeftNavigation,
     NavigationItem,
 } from "@/app/components/left-navigation";
-import {TopBar} from "@/app/components/top-bar";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
     faAngleLeft,
@@ -25,6 +24,7 @@ import {MainPage} from "./pageview/main-page";
 import {ScreenRecordControlPage} from "./pageview/screen-recorder";
 import {AdminPage} from "./pageview/admin-page.tsx";
 import {NotificationList} from "./pageview/notification-list";
+import {TopBar} from "./components/top-bar.js";
 
 export default function Home() {
     const {theme, toggleTheme} = useTheme();

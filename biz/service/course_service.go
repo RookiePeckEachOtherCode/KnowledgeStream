@@ -210,7 +210,7 @@ func (s *CourseService) TeacherQueryCourse(
 	size int32,
 	offset int32,
 	begin_time string, // 新增开始时间参数
-	end_time string,   // 新增结束时间参数
+	end_time string, // 新增结束时间参数
 ) ([]*base.CourseInfo, error) {
 	cu := query.Course
 
@@ -386,6 +386,12 @@ func (s *CourseService) DeleteCourseWithCid(c context.Context, cid int64) error 
 	_, err = uc.WithContext(c).Where(uc.CourseID.Eq(cid)).Delete()
 	if err != nil {
 		hlog.Error("删除课程域成员失败: ", err)
+		return err
+	}
+	v := query.Video
+	_, err = v.WithContext(c).Where(v.Ascription.Eq(cid)).Delete()
+	if err != nil {
+		hlog.Error("删除课程域下视频失败: ", err)
 		return err
 	}
 	if _, err = cc.WithContext(c).Delete(course); err != nil {

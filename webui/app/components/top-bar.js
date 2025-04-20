@@ -1,17 +1,11 @@
-import MDInput from "./md-input.tsx";
 import {useEffect, useState} from "react";
 import {api} from "../../api/instance.ts";
 import {OssImage} from "./oss-midea.tsx";
 import { useRouter } from "next/navigation";
-export function TopBar(props) {
+export function TopBar() {
   const router = useRouter();
-
-  const [searchKeyword, setSearchKeyword] = useState('')
-
   const [userInfo, setUserInfo] = useState({})
-
   const [avatarIsHover, setAvatarIsHover] = useState(false)
-  
   const GetUserInfo=async ()=>{
     const resp = await api.userService.queryInfo({});
     if(resp.base.code!==200){
@@ -39,13 +33,6 @@ export function TopBar(props) {
           className={`w-full flex flex-row h-1/10  items-center pl-8 pr-8  justify-between transition-all bg-surface-container-high text-on-surface`}
       >
         <div className={`text-3xl`}>KnowledgeStream</div>
-        <div className={`w-1/8 hover:w-1/3 transition-all duration-300`}>
-          <MDInput
-              value={searchKeyword}
-              onValueChange={e => setSearchKeyword(e)}
-              placeholder={`搜索课程`}
-          ></MDInput>
-        </div>
         <div
             onMouseOver={() => setAvatarIsHover(true)}
             onMouseLeave={() => setAvatarIsHover(false)}

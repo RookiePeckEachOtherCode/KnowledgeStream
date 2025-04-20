@@ -19,7 +19,7 @@ export function MainPage() {
     const [searchBeginTime, setSearchBeginTime] = useState("")
     const [searchEndTime, setSearchEndTime] = useState("")
 
-    const handleTimeChange = (field: string) => (value: any) => {
+    const handleTimeChange = (field: string) => (value: dayjs.ConfigType) => {
         if (field === "begin") {
             setSearchBeginTime(
                 value ? dayjs(value).format('YYYY-MM-DD') : ''

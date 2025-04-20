@@ -1,5 +1,4 @@
 "use client"
-import {NotifyServiceResponse} from "@/api/internal/model/response/notify"
 import {useEffect, useState} from "react"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faHeart as faHeartRegular} from "@fortawesome/free-regular-svg-icons"

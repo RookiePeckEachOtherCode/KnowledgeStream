@@ -19,7 +19,7 @@ export default function RegisterPage() {
     () => password === confirmPassword,
     [password, confirmPassword]
   );
-  var {showNotification} = useNotification();
+  const {showNotification} = useNotification();
 
   const register = async () => {
     if (username.length == 0) {

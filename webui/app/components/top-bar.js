@@ -1,25 +1,16 @@
 import {useEffect, useState} from "react";
 import {api} from "../../api/instance.ts";
 import {OssImage} from "./oss-midea.tsx";
-import {useRouter} from "next/navigation";
 
-export function TopBar(props) {
-    const router = useRouter();
-
-    const [searchKeyword, setSearchKeyword] = useState('')
-
-    const [userInfo, setUserInfo] = useState({
-        avatar: "null"
-    })
-
-    const [avatarIsHover, setAvatarIsHover] = useState(false)
-
-    const GetUserInfo = async () => {
-        const resp = await api.userService.queryInfo({});
-        if (resp.base.code !== 200) {
-            return
-        }
-        setUserInfo(resp.userinfo)
+import { useRouter } from "next/navigation";
+export function TopBar() {
+  const router = useRouter();
+  const [userInfo, setUserInfo] = useState({})
+  const [avatarIsHover, setAvatarIsHover] = useState(false)
+  const GetUserInfo=async ()=>{
+    const resp = await api.userService.queryInfo({});
+    if(resp.base.code!==200){
+      return
     }
 
     const Logout = () => {
@@ -35,9 +26,12 @@ export function TopBar(props) {
         }
 
         fetchData()
-    }, [])
-
-    return (
+    }, [])  
+  return (
+      <div
+          className={`w-full flex flex-row h-1/10  items-center pl-8 pr-8  justify-between transition-all bg-surface-container-high text-on-surface`}
+      >
+        <div className={`text-3xl`}>KnowledgeStream</div>
         <div
             className={`w-full flex flex-row h-1/10  items-center pl-8 pr-8  justify-between transition-all bg-surface-container-high text-on-surface`}
         >

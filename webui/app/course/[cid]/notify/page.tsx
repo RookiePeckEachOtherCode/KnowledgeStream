@@ -14,7 +14,6 @@ import {OssImage} from "@/app/components/oss-midea"
 import {api} from "@/api/instance"
 import {IconButton} from "@/app/components/icon-button"
 import {faPaperPlane,} from "@fortawesome/free-solid-svg-icons";
-import {NotifyType} from "@/api/internal/model/response/notify"
 
 export default function NotifyPage() {
     const searchParams = useSearchParams()

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "@/styles/themes/default.css";
+// import "@/styles/themes/purple.css";
+// import "@/styles/themes/green.css"
+import "@/styles/themes/default.css"
 import "@/styles/globals.css";
 
 import Providers from "@/context/providers";

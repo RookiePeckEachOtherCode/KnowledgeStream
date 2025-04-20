@@ -129,7 +129,7 @@ export function OssImage({
         }
 
         if (!bucket || !fileName) {
-            showNotification({
+            if (url !== "null") showNotification({
                 title: "地址格式错误",
                 content: `无效的OSS地址格式: ${url}`,
                 type: "error"

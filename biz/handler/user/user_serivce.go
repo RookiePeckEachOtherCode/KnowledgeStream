@@ -28,6 +28,7 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 	err = c.BindAndValidate(&req)
 	if err != nil {
 		c.String(consts.StatusBadRequest, err.Error())
+		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
 	resp := new(user.UserLoginResp)

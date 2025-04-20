@@ -8,6 +8,7 @@ import (
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/dal/pg/query"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/model/base"
 	"github.com/RookiePeckEachOtherCode/KnowledgeStream/biz/utils"
+	"github.com/RookiePeckEachOtherCode/KnowledgeStream/config"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"gorm.io/gen"
 	"gorm.io/gorm"
@@ -159,11 +160,12 @@ func (s *CourseService) StudentQueryCourse(
 	for _, courseRecord := range userIn {
 		cides = append(cides, courseRecord.CourseID)
 	}
+	hlog.Info(cides)
 
 	// 构建基础查询
 	queryBuilder := cu.WithContext(c).
 		Where(cu.ID.In(cides...)).
-		Where(cu.Title.Like("%" + keyword + "%")).Or(cu.Ascription.In(tides...))
+		Where(cu.Where(cu.Title.Like("%" + keyword + "%")).Or(cu.Ascription.In(tides...)))
 
 	// 添加时间过滤条件
 	if begin_time != "" {
@@ -357,7 +359,7 @@ func (s *CourseService) CreateCourseWithUid(c context.Context, id int64, title s
 		ID:          *cid,
 		Title:       title,
 		Description: description,
-		Cover:       cover,
+		Cover:       config.Get().OssBuckets.DefaultCourseCover,
 		Ascription:  id,
 		BeginTime:   begin_time,
 		EndTime:     end_time,

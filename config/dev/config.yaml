@@ -22,3 +22,5 @@ oss_buckets:
   bucket_course_cover: "ks-course-cover"
   bucket_user_avatar: "ks-user-avatar"
   bucket_notification_annex: "ks-notification-annex"
+  user_avatar: "ks-user-avatar/beriholic.jpg"
+  course_cover: "ks-course-cover/default"

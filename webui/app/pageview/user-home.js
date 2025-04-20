@@ -26,29 +26,33 @@ import dayjs from "dayjs";
 import { CustomDatePicker } from "../components/custom-date-picker.jsx.tsx";
 
 export function UserHome() {
-  const { showNotification } = useNotification();
+    const {showNotification} = useNotification();
 
-  const [userInfo, setUserInfo] = useState({
-    uid: "114514",
-    avatar: "",
-    name: "未知用户",
-    authority: "未知",
-    phone: "无",
-    grade: "2077",
-    faculty: "未归属",
-    major: "未归属",
-    signature: "nil",
-  });
 
-  const GetUserInfo = async () => {
-    const resp = await api.userService.queryInfo({});
-    if (resp.base.code !== 200) {
-      showNotification({
-        title: "获取用户信息失败",
-        content: resp.base.msg,
-        type: "error",
-      });
-      return;
+    const [userInfo, setUserInfo] = useState({
+        uid: "114514",
+        avatar: "null",
+        name: "未知用户",
+        authority: "未知",
+        phone: "无",
+        grade: "2077",
+        faculty: "未归属",
+        major: "未归属",
+        signature: "nil",
+    })
+
+    const GetUserInfo = async () => {
+        const resp = await api.userService.queryInfo({});
+        if (resp.base.code !== 200) {
+            showNotification({
+                title: "获取用户信息失败",
+                content: resp.base.msg,
+                type: "error"
+            })
+            return
+        }
+        setUserInfo(resp.userinfo)
+
     }
     setUserInfo(resp.userinfo);
   };
@@ -161,9 +165,93 @@ function BaseInfo({ userInfo, flashUserInfo }) {
           <div className={`flex flex-col space-y-6  justify-center h-full`}>
             <div className={`flex text-3xl text-nowrap`}>{userInfo.name}</div>
             <div
-              className={`flex text-xl bg-secondary-container text-on-secondary-container py-1 px-4  rounded-2xl`}
-            >
-              {userInfo.authority}
+                className={`w-full flex items-center justify-between space-x-3 flex-row justify-items-start`}>
+                <div className={`h-48 w-48 bg-green-300 rounded-full space-x-6 flex flex-row`}>
+                    <OssImage
+                        url={userInfo.avatar}
+                        className={`rounded-full aspect-square`}>
+                    </OssImage>
+                    <div className={`flex flex-col space-y-6  justify-center h-full`}>
+                        <div className={`flex text-3xl`}>{userInfo.name}</div>
+                        <div className={`flex text-xl`}>{localStorage.getItem("authority")}</div>
+                    </div>
+                </div>
+                <div className="w-1/3 bg-inverse-primary rounded-lg shadow-lg overflow-hidden">
+                    <table className="w-full">
+                        <tbody className="divide-y divide-on-surface-variant">
+
+                        {/* 学号行 */}
+                        <tr className="hover:bg-surface-variant transition-colors">
+                            <td className="px-4 py-3">
+                                <div className="flex items-center space-x-3 text-body-medium">
+                                    <FontAwesomeIcon icon={faIdCard} className="text-primary w-4 h-4"/>
+                                    <span>ID:</span>
+                                    <span className="text-on-surface">{userInfo.uid}</span>
+                                </div>
+                            </td>
+                        </tr>
+
+                        {/* 手机号行 */}
+                        <tr className="hover:bg-surface-variant transition-colors">
+                            <td className="px-4 py-3">
+                                <div className="flex items-center space-x-3 text-body-medium">
+                                    <FontAwesomeIcon icon={faPhone} className="text-primary w-4 h-4"/>
+                                    <span>手机号:</span>
+                                    <span className="text-on-surface">{userInfo.phone || '未绑定'}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        {/*学院*/}
+                        <tr className={`hover:bg-surface-variant transition-all`}>
+                            <td className="px-4 py-3">
+                                <div className="flex items-center space-x-3 text-body-medium">
+                                    <FontAwesomeIcon icon={faSchool} className="text-primary w-4 h-4"/>
+                                    <span>学院:</span>
+                                    <span className="text-on-surface">{userInfo.faculty || '未绑定'}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        {/*专业*/}
+                        <tr className={`hover:bg-surface-variant transition-all`}>
+                            <td className="px-4 py-3">
+                                <div className="flex items-center space-x-3 text-body-medium">
+                                    <FontAwesomeIcon icon={faMagnet} className="text-primary w-4 h-4"/>
+                                    <span>学院:</span>
+                                    <span className="text-on-surface">{userInfo.major || '未绑定'}</span>
+                                </div>
+                            </td>
+                        </tr>
+
+
+                        {/* 年级行 */}
+                        <tr className="hover:bg-surface-variant transition-colors hover:cursor-pointer">
+                            <td className="px-4 py-3">
+                                <div className="flex items-center space-x-3 text-body-medium">
+                                    <FontAwesomeIcon icon={faUserGraduate} className="text-primary w-4 h-4"/>
+                                    <span>年级:</span>
+                                    <span className="text-on-surface">{userInfo.grade}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div className={`w-full flex flex-row items-end space-x-6 mt-6`}>
+                <div className="w-1/3 shadow-xl  bg-inverse-primary rounded-xl h-auto p-4">
+                    <div
+                        className="text-on-surface-tint break-words whitespace-pre-wrap"
+                        style={{wordBreak: 'break-word'}}
+                    >
+                        {userInfo.signature}
+                    </div>
+                </div>
+                <IconButton shadow={true} text={`修改`} onClick={() => {
+                    toggleShowModal(true)
+                }} className={`w-auto bg-inverse-primary space-x-3  rounded-2xl`}>
+                    <FontAwesomeIcon icon={faEdit}></FontAwesomeIcon>
+                </IconButton>
+
             </div>
           </div>
         </div>

@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons"
 import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons"
 import { useRouter } from "next/navigation"
+import { api } from "@/api/instance"
 
 export function NotificationList() {
     const [notifications, setNotifications] = useState<NotifyServiceResponse['COURSE_NOTIFY']['notifacitons']>([])
@@ -12,8 +13,7 @@ export function NotificationList() {
 
     useEffect(() => {
         const fetchNotifications = async () => {
-            // const res = await api.notifyService.all()
-            const res = await mockNotifacition("114514")
+            const res = await api.notifyService.all()
             if (res.base.code === 200) {
                 setNotifications(res.notifacitons)
             }

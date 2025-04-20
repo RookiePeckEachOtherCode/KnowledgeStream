@@ -2,16 +2,23 @@
 import { DatePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
+interface CustomDatePickerProps {
+    value: Date | null;
+    onChange: (newValue: Dayjs | null) => void;
+    minDate: Dayjs;
+    error?: boolean;
+    helperText?: string;
+}
+ 
 export const CustomDatePicker = ({
-    label,
     value,
     onChange,
     minDate,
     error,
     helperText,
-}) => (
+}:CustomDatePickerProps) => (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
             value={value ? dayjs(value) : null}
@@ -29,7 +36,7 @@ export const CustomDatePicker = ({
                             color: 'var(--color-on-primary-container) !important',
                         },
                         '& .MuiInputLabel-root': { color: 'var(--color-on-surface-variant)' },
-                        backgroundColor: 'var(--color-secondary-container)',
+                        backgroundColor: 'var(--color-surface-container)',
                         '& .MuiOutlinedInput-notchedOutline': {
                             borderColor: 'var(--color-outline)'
                         },

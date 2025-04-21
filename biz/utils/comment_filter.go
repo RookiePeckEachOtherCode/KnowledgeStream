@@ -151,6 +151,7 @@ func init() {
 		"有病",
 		"废物",
 		"操",
+		"妈",
 	}
 
 	for _, word := range badWords {

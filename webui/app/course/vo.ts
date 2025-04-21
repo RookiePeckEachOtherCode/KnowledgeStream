@@ -35,27 +35,11 @@ export interface CourseInfoRequestVO {
 export async function fetchCourseData(
   cid: string
 ): Promise<CourseInfoRequestVO> {
-  const courseCapt = await api.courseService.videos({ cid });
   const courseInfo = await api.courseService.info({ cid });
-
-  if (courseCapt.base.code !== 200 || courseInfo.base.code !== 200) {
-    const resp = {
-      base: {
-        code: 0,
-        msg: "",
-      },
-      data: emptyCourseData(),
-    };
-    if (courseCapt.base.code !== 200) {
-      resp.base.code = courseCapt.base.code;
-      resp.base.msg = courseCapt.base.msg;
-    } else if (courseInfo.base.code !== 200) {
-      resp.base.code = courseInfo.base.code;
-      resp.base.msg = courseInfo.base.msg;
-    }
-    return resp;
-  }
-
+  const techerInfo = await api.userService.uidInfo({
+    uid: courseInfo.courseinfo.ascription,
+  });
+  const courseCapt = await api.courseService.videos({ cid });
   const capts = courseCapt.videosinfo.map((item) => {
     return {
       id: item.vid,
@@ -65,22 +49,6 @@ export async function fetchCourseData(
       video_url: item.source,
     };
   });
-  // .sort((a, b) => {
-  //   return a.id < b.id ? -1 : 1;
-  // });
-
-  const techerInfo = await api.userService.uidInfo({
-    uid: courseInfo.courseinfo.ascription,
-  });
-  if (techerInfo.base.code !== 200) {
-    return {
-      base: {
-        code: techerInfo.base.code,
-        msg: techerInfo.base.msg,
-      },
-      data: emptyCourseData(),
-    };
-  }
 
   return {
     base: {
@@ -96,20 +64,7 @@ export async function fetchCourseData(
         avatar: techerInfo.userinfo.avatar,
         signatrue: techerInfo.userinfo.signature,
       },
-      list: capts,
+      list: capts ?? [],
     },
-  };
-}
-function emptyCourseData(): CourseDataVO {
-  return {
-    id: "",
-    name: "",
-    techer: {
-      id: "",
-      name: "",
-      avatar: "",
-      signatrue: "",
-    },
-    list: [],
   };
 }

@@ -6,14 +6,14 @@ import { faPlayCircle, faChevronDown, faChevronRight, faPaperPlane } from "@fort
 import { useRouter } from "next/navigation";
 import AnimatedContent from "@/app/components/animated-content";
 
-import {api} from "@/api/instance";
-import {NotifyType} from "@/api/internal/model/response/notify";
+import { api } from "@/api/instance";
+import { NotifyType } from "@/api/internal/model/response/notify";
 import MDButton from "@/app/components/md-button";
-import {UserAuthority} from "@/api/internal/service/user";
-import {OssImage} from "@/app/components/oss-midea";
-import {useModal} from "@/context/modal-provider";
-import {IconButton} from "@/app/components/icon-button";
-import {OssBuckets, useOss} from "@/context/oss-uploader-provider";
+import { UserAuthority } from "@/api/internal/service/user";
+import { OssImage } from "@/app/components/oss-midea";
+import { useModal } from "@/context/modal-provider";
+import { IconButton } from "@/app/components/icon-button";
+import { OssBuckets, useOss } from "@/context/oss-uploader-provider";
 
 import { CourseDataVO, fetchCourseData } from "../vo";
 
@@ -25,12 +25,12 @@ export default function CoursePage({
     const [cid, setCid] = useState("")
     const router = useRouter()
 
-    const {showNotification} = useNotification()
+    const { showNotification } = useNotification()
     const [courseData, setCourseData] = useState<CourseDataVO | null>(null)
     const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set())
     const [courseNotify, setCourseNotify] = useState<Array<NotifyType>>([])
     const [isNotifyLoading, setIsNotifyLoading] = useState(true)
-    const [isTeacher, setIsTeacher] = useState(true)
+    const [isTeacher, setIsTeacher] = useState(localStorage.getItem("authority") === UserAuthority.Teacher)
     const { toggleShowModal, setForm } = useModal()
     const gotoPlay = (id: string) => {
         router.push(`/play/${id}`)
@@ -74,6 +74,7 @@ export default function CoursePage({
         const fetchData = async () => {
             const cid = (await params).cid
             const res = await fetchCourseData(cid)
+
             if (res.base.code !== 200) {
                 showNotification({
                     title: "获取课程数据失败",
@@ -110,12 +111,6 @@ export default function CoursePage({
         fetchCourseNotify()
     }, [params, showNotification])
 
-    useEffect(() => {
-        if (localStorage.getItem("authority") === UserAuthority.Teacher) {
-            setIsTeacher(true)
-        }
-    }, [])
-
     const gotoTecher = () => {
         if (!courseData?.techer.id) return
         router.push(`/techer/${courseData.techer.id}`)
@@ -143,7 +138,7 @@ export default function CoursePage({
                                     )}
                                 </div>
                                 <div className="flex items-start space-x-4">
-                                    <OssImage className="size-12 rounded-full" url={courseData.techer.avatar}/>
+                                    <OssImage className="size-12 rounded-full" url={courseData.techer.avatar} />
                                     <div className="flex flex-col">
                                         <span className="text-on-surface-variant text-xl hover:underline cursor-pointer"
                                             onClick={() => {
@@ -290,7 +285,7 @@ function CreateNotificationForm({ cid }: CreateNotificationFormProps) {
     const [title, setTitle] = useState("")
     const MAX_FILE_SIZE_MB = 500; // 最大500MB
     const BYTES_PER_MB = 1024 * 1024;
-    const {ossHandleUploadFile} = useOss();
+    const { ossHandleUploadFile } = useOss();
 
     const { showNotification } = useNotification();
 

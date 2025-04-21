@@ -229,12 +229,6 @@ export default function CoursePage({
                                                         <div
                                                             className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full"></div>
                                                     )}
-                                                    <h3 className="font-medium text-on-surface flex items-center justify-between">
-                                                        <span>{notify.title}</span>
-                                                        <span className="text-xs text-on-surface-variant">
-                                                            {notify.read ? "已读" : "未读"}
-                                                        </span>
-                                                    </h3>
                                                     <p className="text-sm text-on-surface-variant mt-2">{notify.content}</p>
                                                 </div>
                                             ))

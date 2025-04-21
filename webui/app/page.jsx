@@ -86,16 +86,6 @@ export default function Home() {
                     >
                         <FontAwesomeIcon icon={faHouse}></FontAwesomeIcon>
                     </NavigationItem>
-                    {/*<NavigationItem*/}
-                    {/*    title={`课程`}*/}
-                    {/*    isActive={currentChildren === "course"}*/}
-                    {/*    onClick={() => {*/}
-                    {/*        setAnimationClass("hidden");*/}
-                    {/*        setCurrentChildren("course");*/}
-                    {/*    }}*/}
-                    {/*>*/}
-                    {/*    <FontAwesomeIcon icon={faChalkboard}></FontAwesomeIcon>*/}
-                    {/*</NavigationItem>*/}
                     <NavigationItem
                         title={`个人中心`}
                         isActive={currentChildren === "userHome"}

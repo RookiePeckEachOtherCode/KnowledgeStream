@@ -30,7 +30,7 @@ export function UserHome() {
 
     const [userInfo, setUserInfo] = useState({
         uid: "114514",
-        avatar: "",
+        avatar: "null",
         name: "未知用户",
         authority: "未知",
         phone: "无",
@@ -349,14 +349,14 @@ function UpdateBaseInfoForm({phone, signature, name, avatar, flashUserInfo}) {
             className="p-6 w-full max-w-2xl bg-surface-container border-1 border-surface-dim rounded-2xl shadow-xl"
             onClick={(e) => e.stopPropagation()}
         >
-            <div className="text-3xl text-on-surface-container mb-6 font-medium">
+            <div className="text-3xl text-on-surface mb-6 font-medium">
                 编辑基础信息
             </div>
 
             <div className="space-y-6">
                 {/* 用户名输入 */}
                 <div className="space-y-2">
-                    <label className="text-sm font-medium text-on-surface-container">
+                    <label className="text-sm font-medium text-on-surface">
                         用户名
                         <span className="text-error">*</span>
                     </label>
@@ -374,7 +374,7 @@ function UpdateBaseInfoForm({phone, signature, name, avatar, flashUserInfo}) {
 
                 {/* 手机号输入 */}
                 <div className="space-y-2">
-                    <label className="text-sm font-medium text-on-surface-container">
+                    <label className="text-sm font-medium text-on-surface">
                         手机号
                         <span className="text-error">*</span>
                     </label>
@@ -392,7 +392,7 @@ function UpdateBaseInfoForm({phone, signature, name, avatar, flashUserInfo}) {
 
                 {/* 个性签名输入 */}
                 <div className="space-y-2">
-                    <label className="text-sm font-medium text-on-surface-container">
+                    <label className="text-sm font-medium text-on-surface">
                         个性签名
                         <span className="text-xs text-on-primary-container/60 ml-2">
               （最多50字）
@@ -841,8 +841,8 @@ function CourseListItem({
                     url={cover}
                     className="ml-6 h-2/3 aspect-square  rounded-2xl"
                 />
-                <text className="w-1/4">{title}</text>
-                <text className="w-1/4">{class_name || "未知班级"}</text>
+                <div className="w-1/4">{title}</div>
+                <div className="w-1/4">{class_name || "未知班级"}</div>
                 <div
                     className={`transition-all duration-300 mr-6 p-3 rounded-full
                         ${

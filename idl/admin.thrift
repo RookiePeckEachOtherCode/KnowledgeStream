@@ -3,7 +3,12 @@ namespace go admin
 include "./base/common.thrift"
 
 struct ImportStudentsReq{
-    1:list<common.StudentInfo> students;
+        1:string name;
+        2:string phone;
+        3:string major;
+        4:string faculty;
+        5:string class;
+        6:string grade;
 }
 struct ImportStudentsResp{
     1:common.BaseResponse base;

@@ -1,24 +1,24 @@
 // components/CustomDatePicker.jsx
-import { DatePicker } from '@mui/x-date-pickers';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs, { Dayjs } from "dayjs";
+import {DatePicker} from '@mui/x-date-pickers';
+import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs, {Dayjs} from "dayjs";
 
 interface CustomDatePickerProps {
-    value: Date | null;
+    value: string | null;
     onChange: (newValue: Dayjs | null) => void;
-    minDate: Dayjs;
+    minDate?: Dayjs;
     error?: boolean;
     helperText?: string;
 }
- 
+
 export const CustomDatePicker = ({
-    value,
-    onChange,
-    minDate,
-    error,
-    helperText,
-}:CustomDatePickerProps) => (
+                                     value,
+                                     onChange,
+                                     minDate,
+                                     error,
+                                     helperText,
+                                 }: CustomDatePickerProps) => (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
             value={value ? dayjs(value) : null}
@@ -35,14 +35,14 @@ export const CustomDatePicker = ({
                         '& .MuiInputBase-input': {
                             color: 'var(--color-on-primary-container) !important',
                         },
-                        '& .MuiInputLabel-root': { color: 'var(--color-on-surface-variant)' },
+                        '& .MuiInputLabel-root': {color: 'var(--color-on-surface-variant)'},
                         backgroundColor: 'var(--color-surface-container)',
                         '& .MuiOutlinedInput-notchedOutline': {
                             borderColor: 'var(--color-outline)'
                         },
                         '& .MuiSvgIcon-root': {
                             color: 'var(--color-on-surface-variant)',
-                            '&:hover': { color: 'var(--color-primary)' }
+                            '&:hover': {color: 'var(--color-primary)'}
                         }
                     }
                 },
@@ -70,19 +70,19 @@ export const CustomDatePicker = ({
                             },
                             '& .MuiPickersDay-root': {
                                 color: 'var(--color-on-surface)',
-                                '&:hover': { backgroundColor: 'var(--color-tertiary-container)' },
+                                '&:hover': {backgroundColor: 'var(--color-tertiary-container)'},
                                 '&.Mui-selected': {
                                     backgroundColor: 'var(--color-primary)',
                                     color: 'var(--color-on-primary)',
-                                    '&:hover': { backgroundColor: 'var(--color-primary-container)' }
+                                    '&:hover': {backgroundColor: 'var(--color-primary-container)'}
                                 },
-                                '&.Mui-disabled': { color: 'var(--color-on-error)' }
+                                '&.Mui-disabled': {color: 'var(--color-on-error)'}
                             },
                             '& .MuiDialogActions-root': {
                                 borderColor: 'var(--color-outline)',
                                 '& .MuiButton-root': {
                                     color: 'var(--color-primary)',
-                                    '&:hover': { backgroundColor: 'var(--color-surface-container-high)' }
+                                    '&:hover': {backgroundColor: 'var(--color-surface-container-high)'}
                                 }
                             }
                         }

@@ -1,15 +1,15 @@
 "use client"
-import { useState, useRef, useEffect } from "react";
-import { useNotification } from "@/context/notification-provider";
+import {useState, useRef, useEffect} from "react";
+import {useNotification} from "@/context/notification-provider";
 import AnimatedContent from "@/app/components/animated-content";
 import MDInput from "@/app/components/md-input";
 import MDButton from "@/app/components/md-button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserPlus, faUserMinus, faFileExport, faFileImport, faTable, faList } from "@fortawesome/free-solid-svg-icons";
-import { OssImage } from "@/app/components/oss-midea";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faUserPlus, faUserMinus, faFileExport, faFileImport, faTable, faList} from "@fortawesome/free-solid-svg-icons";
+import {OssImage} from "@/app/components/oss-midea";
 import * as XLSX from 'xlsx';
-import { api } from "@/api/instance";
-import { BaseResponse } from "@/api/internal/model/static/base-resp";
+import {api} from "@/api/instance";
+import {BaseResponse} from "@/api/internal/model/static/base-resp";
 
 interface Student {
     uid: string;
@@ -25,12 +25,12 @@ interface Student {
 const pageSizeOptions = [10, 25, 50, 100];
 
 export default function CourseManagerPage({
-    params,
-}: {
+                                              params,
+                                          }: {
     params: Promise<{ cid: string }>;
 }) {
     const [cid, setCid] = useState("")
-    const { showNotification } = useNotification();
+    const {showNotification} = useNotification();
     const [students, setStudents] = useState<Array<Student>>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedStudents, setSelectedStudents] = useState<Set<string>>(new Set());
@@ -82,7 +82,7 @@ export default function CourseManagerPage({
 
         const _cid = (await params).cid
         setCid(_cid)
-        const res = await api.courseService.info({ cid: _cid });
+        const res = await api.courseService.info({cid: _cid});
         if (res.base.code !== 200) {
             showNotification({
                 title: "获取失败",
@@ -174,7 +174,7 @@ export default function CourseManagerPage({
     };
 
     const addStudent = async (uid: string) => {
-        const res = await api.teacherService.inviteStudent({ cid: cid, sid: uid })
+        const res = await api.teacherService.inviteStudent({cid: cid, sid: uid})
         if (res.base.code !== 200) {
             showNotification({
                 title: "添加失败",
@@ -205,7 +205,7 @@ export default function CourseManagerPage({
         reader.onload = (e) => {
             try {
                 const data = new Uint8Array(e.target?.result as ArrayBuffer);
-                const workbook = XLSX.read(data, { type: 'array' });
+                const workbook = XLSX.read(data, {type: 'array'});
                 const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const jsonData = XLSX.utils.sheet_to_json(worksheet) as any[];
@@ -222,12 +222,12 @@ export default function CourseManagerPage({
                     const phone = String(row.phone || row.电话 || '');
                     const avatar = row.avatar || '';
 
-                    return { uid, name, avatar, grade, faculty, major, class: classVal, phone };
+                    return {uid, name, avatar, grade, faculty, major, class: classVal, phone};
                 }).filter(student => student.uid && student.name);
 
                 const jobs: Array<Promise<{ base: BaseResponse }>> = [];
                 newStudents.forEach((stu) => {
-                    const job = api.teacherService.inviteStudent({ cid: cid, sid: stu.uid })
+                    const job = api.teacherService.inviteStudent({cid: cid, sid: stu.uid})
                     jobs.push(job);
                 });
 
@@ -344,7 +344,7 @@ export default function CourseManagerPage({
                     <AnimatedContent
                         distance={50}
                         reverse={true}
-                        config={{ tension: 80, friction: 20 }}
+                        config={{tension: 80, friction: 20}}
                     >
                         <div className="bg-surface-container rounded-2xl p-6 shadow-xl w-96 space-y-4">
                             <h3 className="text-xl font-semibold text-on-surface">添加学生</h3>
@@ -366,7 +366,7 @@ export default function CourseManagerPage({
                 <AnimatedContent
                     distance={100}
                     reverse={false}
-                    config={{ tension: 80, friction: 20 }}
+                    config={{tension: 80, friction: 20}}
                 >
                     <div className="bg-surface-container rounded-3xl p-6 shadow-md">
                         <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
@@ -376,28 +376,28 @@ export default function CourseManagerPage({
                                     onClick={toggleStudentDialog}
                                     className="bg-primary text-on-primary flex items-center gap-2"
                                 >
-                                    <FontAwesomeIcon icon={faUserPlus} />
+                                    <FontAwesomeIcon icon={faUserPlus}/>
                                     添加学生
                                 </MDButton>
                                 <MDButton
                                     onClick={handleImport}
                                     className="bg-primary text-on-primary flex items-center gap-2"
                                 >
-                                    <FontAwesomeIcon icon={faFileImport} />
+                                    <FontAwesomeIcon icon={faFileImport}/>
                                     批量导入
                                 </MDButton>
                                 <MDButton
                                     onClick={handleExport}
                                     className="bg-primary text-on-primary flex items-center gap-2"
                                 >
-                                    <FontAwesomeIcon icon={faFileExport} />
+                                    <FontAwesomeIcon icon={faFileExport}/>
                                     {selectedStudents.size > 0 ? `导出选中(${selectedStudents.size})` : '导出名单'}
                                 </MDButton>
                                 <MDButton
                                     onClick={() => setViewMode(viewMode === 'list' ? 'table' : 'list')}
                                     className="bg-primary text-on-primary flex items-center gap-2"
                                 >
-                                    <FontAwesomeIcon icon={viewMode === 'list' ? faTable : faList} />
+                                    <FontAwesomeIcon icon={viewMode === 'list' ? faTable : faList}/>
                                     {viewMode === 'list' ? '表格视图' : '列表视图'}
                                 </MDButton>
                                 {selectedStudents.size > 0 && (
@@ -405,7 +405,7 @@ export default function CourseManagerPage({
                                         onClick={removeSelectedStudents}
                                         className="bg-error-container text-on-error-container flex items-center gap-2"
                                     >
-                                        <FontAwesomeIcon icon={faUserMinus} />
+                                        <FontAwesomeIcon icon={faUserMinus}/>
                                         移除选中 ({selectedStudents.size})
                                     </MDButton>
                                 )}
@@ -422,25 +422,25 @@ export default function CourseManagerPage({
                                 />
                                 <MDInput
                                     value={filters.grade}
-                                    onValueChange={(value) => setFilters(prev => ({ ...prev, grade: value }))}
+                                    onValueChange={(value) => setFilters(prev => ({...prev, grade: value}))}
                                     placeholder="按年级筛选"
                                     className="w-full sm:w-32 md:w-40"
                                 />
                                 <MDInput
                                     value={filters.faculty}
-                                    onValueChange={(value) => setFilters(prev => ({ ...prev, faculty: value }))}
+                                    onValueChange={(value) => setFilters(prev => ({...prev, faculty: value}))}
                                     placeholder="按学院筛选"
                                     className="w-full sm:w-32 md:w-40"
                                 />
                                 <MDInput
                                     value={filters.major}
-                                    onValueChange={(value) => setFilters(prev => ({ ...prev, major: value }))}
+                                    onValueChange={(value) => setFilters(prev => ({...prev, major: value}))}
                                     placeholder="按专业筛选"
                                     className="w-full sm:w-32 md:w-40"
                                 />
                                 <MDInput
                                     value={filters.class}
-                                    onValueChange={(value) => setFilters(prev => ({ ...prev, class: value }))}
+                                    onValueChange={(value) => setFilters(prev => ({...prev, class: value}))}
                                     placeholder="按班级筛选"
                                     className="w-full sm:w-32 md:w-40"
                                 />
@@ -472,7 +472,8 @@ export default function CourseManagerPage({
                                             <div className="flex-1 overflow-hidden">
                                                 <h3 className="text-lg font-semibold text-on-surface truncate">{student.name}</h3>
                                                 <p className="text-sm text-on-surface-variant truncate">UID: {student.uid}</p>
-                                                <p className="text-sm text-on-surface-variant truncate" title={`${student.grade} ${student.faculty} ${student.major} ${student.class}`}>{student.grade} {student.faculty} {student.major} {student.class}</p>
+                                                <p className="text-sm text-on-surface-variant truncate"
+                                                   title={`${student.grade} ${student.faculty} ${student.major} ${student.class}`}>{student.grade} {student.faculty} {student.major} {student.class}</p>
                                                 <p className="text-sm text-on-surface-variant truncate">电话: {student.phone || 'N/A'}</p>
                                             </div>
                                         </div>
@@ -485,56 +486,58 @@ export default function CourseManagerPage({
                             <div className="overflow-x-auto rounded-lg border border-outline-variant">
                                 <table className="min-w-full bg-surface-container-low">
                                     <thead className="sticky top-0 z-10">
-                                        <tr className="bg-surface-container border-b border-outline-variant">
-                                            <th className="px-4 py-3 text-left w-12">
-                                            </th>
-                                            <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">头像</th>
-                                            <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">姓名</th>
-                                            <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">UID</th>
-                                            <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">年级</th>
-                                            <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">学院</th>
-                                            <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">专业</th>
-                                            <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">班级</th>
-                                            <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">电话</th>
-                                        </tr>
+                                    <tr className="bg-surface-container border-b border-outline-variant">
+                                        <th className="px-4 py-3 text-left w-12">
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">头像</th>
+                                        <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">姓名</th>
+                                        <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">UID</th>
+                                        <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">年级</th>
+                                        <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">学院</th>
+                                        <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">专业</th>
+                                        <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">班级</th>
+                                        <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">电话</th>
+                                    </tr>
                                     </thead>
                                     <tbody className="divide-y divide-outline-variant">
-                                        {paginatedStudents.length > 0 ? paginatedStudents.map(student => (
-                                            <tr
-                                                key={student.uid}
-                                                className={`group hover:bg-surface-container-high ${selectedStudents.has(student.uid) ? 'bg-primary-container' : ''} transition-colors duration-150 cursor-pointer`}
-                                                onClick={() => toggleStudentSelection(student.uid)}
-                                            >
-                                                <td className="px-4 py-2 whitespace-nowrap">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedStudents.has(student.uid)}
-                                                        readOnly
-                                                        className="form-checkbox h-5 w-5 text-primary focus:ring-primary border-outline rounded cursor-pointer"
-                                                        onClick={(e) => e.stopPropagation()}
-                                                        onChange={() => toggleStudentSelection(student.uid)}
-                                                    />
-                                                </td>
-                                                <td className="px-4 py-2 whitespace-nowrap">
-                                                    <OssImage
-                                                        url={student.avatar}
-                                                        alt={student.name}
-                                                        className="w-10 h-10 rounded-full object-cover bg-surface-container-lowest"
-                                                    />
-                                                </td>
-                                                <td className="px-4 py-2 whitespace-nowrap text-on-surface font-medium">{student.name}</td>
-                                                <td className="px-4 py-2 whitespace-nowrap text-on-surface-variant">{student.uid}</td>
-                                                <td className="px-4 py-2 whitespace-nowrap text-on-surface-variant">{student.grade}</td>
-                                                <td className="px-4 py-2 whitespace-nowrap text-on-surface-variant">{student.faculty}</td>
-                                                <td className="px-4 py-2 whitespace-nowrap text-on-surface-variant">{student.major}</td>
-                                                <td className="px-4 py-2 whitespace-nowrap text-on-surface-variant">{student.class}</td>
-                                                <td className="px-4 py-2 whitespace-nowrap text-on-surface-variant">{student.phone || 'N/A'}</td>
-                                            </tr>
-                                        )) : (
-                                            <tr>
-                                                <td colSpan={9} className="text-center text-on-surface-variant py-10">没有找到匹配的学生。</td>
-                                            </tr>
-                                        )}
+                                    {paginatedStudents.length > 0 ? paginatedStudents.map(student => (
+                                        <tr
+                                            key={student.uid}
+                                            className={`group hover:bg-surface-container-high ${selectedStudents.has(student.uid) ? 'bg-primary-container' : ''} transition-colors duration-150 cursor-pointer`}
+                                            onClick={() => toggleStudentSelection(student.uid)}
+                                        >
+                                            <td className="px-4 py-2 whitespace-nowrap">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedStudents.has(student.uid)}
+                                                    readOnly
+                                                    className="form-checkbox h-5 w-5 text-primary focus:ring-primary border-outline rounded cursor-pointer"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    onChange={() => toggleStudentSelection(student.uid)}
+                                                />
+                                            </td>
+                                            <td className="px-4 py-2 whitespace-nowrap">
+                                                <OssImage
+                                                    url={student.avatar}
+                                                    alt={student.name}
+                                                    className="w-10 h-10 rounded-full object-cover bg-surface-container-lowest"
+                                                />
+                                            </td>
+                                            <td className="px-4 py-2 whitespace-nowrap text-on-surface font-medium">{student.name}</td>
+                                            <td className="px-4 py-2 whitespace-nowrap text-on-surface-variant">{student.uid}</td>
+                                            <td className="px-4 py-2 whitespace-nowrap text-on-surface-variant">{student.grade}</td>
+                                            <td className="px-4 py-2 whitespace-nowrap text-on-surface-variant">{student.faculty}</td>
+                                            <td className="px-4 py-2 whitespace-nowrap text-on-surface-variant">{student.major}</td>
+                                            <td className="px-4 py-2 whitespace-nowrap text-on-surface-variant">{student.class}</td>
+                                            <td className="px-4 py-2 whitespace-nowrap text-on-surface-variant">{student.phone || 'N/A'}</td>
+                                        </tr>
+                                    )) : (
+                                        <tr>
+                                            <td colSpan={9}
+                                                className="text-center text-on-surface-variant py-10">没有找到匹配的学生。
+                                            </td>
+                                        </tr>
+                                    )}
                                     </tbody>
                                 </table>
                             </div>
@@ -542,7 +545,8 @@ export default function CourseManagerPage({
 
                         <div className="flex flex-wrap justify-between items-center gap-4 mt-6">
                             <div className="flex items-center gap-2">
-                                <label htmlFor="pageSizeSelect" className="text-sm text-on-surface-variant whitespace-nowrap">每页显示:</label>
+                                <label htmlFor="pageSizeSelect"
+                                       className="text-sm text-on-surface-variant whitespace-nowrap">每页显示:</label>
                                 <select
                                     id="pageSizeSelect"
                                     value={pageSize}

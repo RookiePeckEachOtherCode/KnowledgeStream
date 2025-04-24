@@ -84,4 +84,20 @@ export class AdminService {
             query: req
         }) as Promise<AdminServiceResponse["QUERY_VIDEO"]>;
     }
+
+    async importUser(
+        req: AdminServiceRequest["IMPORT_STUDENT"]
+    ): Promise<AdminServiceResponse["IMPORT_STUDENT"]> {
+        const processedReq = {
+            ...req,
+            class: req.class?.toString(), // Convert class to string
+            grade: req.grade?.toString()
+        };
+
+        return this.executor({
+            uri: "/admin/import",
+            method: "POST",
+            body: processedReq, // Use the processed request
+        }) as Promise<AdminServiceResponse['IMPORT_STUDENT']>;
+    }
 }

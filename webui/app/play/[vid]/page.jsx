@@ -257,7 +257,7 @@ export default function PlayPage() {
                         </IconWithText>
                     </div>
                     <OssVideo
-                        url={videoInfo.source}
+                        url={videoInfo.source ? videoInfo.source : "null"}
                         className={`w-full h-auto`}
                     ></OssVideo>
                     {/* 描述部分 */}
@@ -284,7 +284,7 @@ export default function PlayPage() {
                     <div className="w-full flex flex-col space-y-4">
                         <div className="w-full p-3 flex items-center gap-4">
                             <OssImage
-                                url={userInfo.avatar}
+                                url={userInfo.avatar ? userInfo.avatar : "null"}
                                 className="w-18 aspect-square shrink-0 rounded-full"
                             />
                             <div
@@ -357,7 +357,7 @@ export default function PlayPage() {
                 <div className={` w-1/3 flex flex-col space-y-6`}>
                     <div className={`w-full flex flex-row items-center space-x-6`}>
                         <OssImage
-                            url={teacherInfo.avatar}
+                            url={teacherInfo.avatar ? teacherInfo.avatar : "null"}
                             className={`w-1/5 aspect-square rounded-full`}
                         ></OssImage>
                         <div className={`w-full flex flex-col space-y-3`}>
@@ -385,7 +385,7 @@ export default function PlayPage() {
                                 onClick={() => {
                                     router.push(`/play/${videoList[nextVideoIndex].vid}`)
                                 }}
-                                url={videoList[nextVideoIndex].source}
+                                url={videoList[nextVideoIndex].source ? videoList[nextVideoIndex].source : "null"}
                                 className={`w-1/2 h-auto min-h-32 min-w-52 hover:cursor-pointer`}></OssVideoCover>}
                             {videoList[nextVideoIndex] &&
                                 <div className={`flex w-full flex-col space-y-2 justify-between`}>
@@ -489,6 +489,7 @@ function VideoList(props) {
                     (item, index) =>
                         item.chapter === title && (
                             <div
+                                key={index}
                                 onMouseLeave={() => setHover(-1)}
                                 onMouseOver={() => setHover(index)}
                                 onClick={() => {

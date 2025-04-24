@@ -1,13 +1,15 @@
 // next.config.js
-import { createRequire } from 'node:module';
+import {createRequire} from 'node:module';
+
 const require = createRequire(import.meta.url);
 
 /** @type {import('next').NextConfig} */
+
 const nextConfig = {
     compiler: {
         emotion: true,
     },
-    webpack: (config, { isServer }) => {
+    webpack: (config, {isServer}) => {
         config.resolve.alias = {
             ...config.resolve.alias,
             'node:util': 'util',
@@ -27,6 +29,7 @@ const nextConfig = {
 
         return config;
     },
+    devIndicators: false
 };
 
 export default nextConfig;

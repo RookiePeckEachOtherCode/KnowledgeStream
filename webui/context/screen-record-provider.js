@@ -1,13 +1,13 @@
 "use client"
 
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import {createContext, useContext, useEffect, useRef, useState} from "react";
 import {useNotification} from "@/context/notification-provider";
 
-const isBrowser = typeof window !== 'undefined' && typeof navigator !== 'undefined';
+// const isBrowser = typeof window !== 'undefined' && typeof navigator !== 'undefined';
 
 const ScreenRecordContext = createContext(undefined);
 
-export const ScreenRecordProvider = ({ children }) => {
+export const ScreenRecordProvider = ({children}) => {
     const [isRecording, setIsRecording] = useState(false);
     const [isPaused, setIsPaused] = useState(false)
     const [recordedBlob, setRecordedBlob] = useState(null);
@@ -23,12 +23,12 @@ export const ScreenRecordProvider = ({ children }) => {
     }, []);
 
     const createCombinedStream = async () => {
-        if (!isBrowser) return null;
+        // if (!isBrowser) return null;
 
         try {
             const [screenStream, micStream] = await Promise.all([
-                navigator.mediaDevices.getDisplayMedia({ video: true, audio: true }),
-                navigator.mediaDevices.getUserMedia({ audio: true })
+                navigator.mediaDevices.getDisplayMedia({video: true, audio: true}),
+                navigator.mediaDevices.getUserMedia({audio: true})
             ]);
 
             const audioContext = new AudioContext();
@@ -65,7 +65,7 @@ export const ScreenRecordProvider = ({ children }) => {
     };
 
     const startRecording = async () => {
-        if (!isBrowser) return;
+        // if (!isBrowser) return;
 
         try {
             const combinedStream = await createCombinedStream();
@@ -84,7 +84,7 @@ export const ScreenRecordProvider = ({ children }) => {
             };
 
             recorder.onstop = () => {
-                setRecordedBlob(new Blob(chunks, { type: 'video/webm' }));
+                setRecordedBlob(new Blob(chunks, {type: 'video/webm'}));
                 audioContextRef.current?.close();
             };
 
@@ -93,7 +93,7 @@ export const ScreenRecordProvider = ({ children }) => {
 
             recorder.start(1000);
             setIsRecording(true);
-            showNotification("success","屏幕录制已启动");
+            showNotification("success", "屏幕录制已启动");
 
         } catch (err) {
             console.error('录制失败:', err);
@@ -113,7 +113,7 @@ export const ScreenRecordProvider = ({ children }) => {
         if (isRecording) {
             cleanupResources();
             setIsRecording(false);
-            showNotification("info","视频录制已停止");
+            showNotification("info", "视频录制已停止");
         }
     };
 
@@ -144,7 +144,7 @@ export const ScreenRecordProvider = ({ children }) => {
         };
     }, [isRecording]);
 
-    if (!isBrowser) return null;
+    // if (!isBrowser) return null;
 
     return (
         <ScreenRecordContext.Provider

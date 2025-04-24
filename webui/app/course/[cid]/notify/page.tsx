@@ -3,7 +3,7 @@
 import {useSearchParams} from "next/navigation"
 import {useEffect, useState} from "react"
 import {useNotification} from "@/context/notification-provider"
-import AnimatedContent from "@/app/components/animated-content"
+import AnimatedContent from "@/app/components/animated-content.jsx"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faFile} from "@fortawesome/free-solid-svg-icons"
 import {faHeart as faHeartRegular} from "@fortawesome/free-regular-svg-icons"

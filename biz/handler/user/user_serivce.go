@@ -74,7 +74,7 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	err = service.UserServ().UserRegister(ctx, req.Name, req.Phone, req.Password)
+	err = service.UserServ().UserRegister(ctx, req.Name, req.Phone, req.Password, "", "", "", "")
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		c.JSON(consts.StatusOK, resp)

@@ -86,7 +86,7 @@ export function OssVideo(props: OssVideoProps) {
                 URL.revokeObjectURL(blobUrl);
             }
         };
-    }, [fileName, bucket]);
+    }, [fileName, bucket, url, showNotification, blobUrl]);
 
     return (
         <div className={className}>
@@ -167,9 +167,9 @@ export function OssImage({
         return () => {
             if (blobUrl) URL.revokeObjectURL(blobUrl);
         };
-    }, [fileName, bucket]);
+    }, [fileName, bucket, url, blobUrl]);
 
-    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const handleImageError = () => {
         showNotification({
             title: "图片渲染失败",
             content: "无法加载图片资源",
@@ -261,6 +261,7 @@ export function OssVideoCover(props: { className?: string; url: string; onClick?
                 URL.revokeObjectURL(videoUrl);
                 video.remove();
             } catch (err) {
+                console.log(err)
                 // showNotification({
                 //     title: "封面生成失败",
                 //     content: err instanceof Error ? err.message : "未知错误",

@@ -40,7 +40,7 @@ export default function CoursePage({
     }
 
     const createNotification = async () => {
-        await setForm(<CreateNotificationForm
+        setForm(<CreateNotificationForm
             key={Date.now()}
             cid={cid}/>)
         toggleShowModal(true);

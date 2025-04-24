@@ -322,13 +322,12 @@ func ImportStudents(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	for _, student := range req.Students {
-		err = service.UserServ().UserRegister(ctx, student.Name, student.Phone, "123456")
-		if err != nil {
-			resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
-			c.JSON(consts.StatusOK, resp)
-			return
-		}
+
+	err = service.UserServ().UserRegister(ctx, req.Name, req.Phone, "123456", req.Major, req.Faculty, req.Class, req.Grade)
+	if err != nil {
+		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
+		c.JSON(consts.StatusOK, resp)
+		return
 	}
 	resp.Base = srverror.WrapWithSuccess("学生数据导入成功")
 	c.JSON(consts.StatusOK, resp)

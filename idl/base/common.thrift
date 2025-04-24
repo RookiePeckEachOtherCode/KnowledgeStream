@@ -8,6 +8,10 @@ struct BaseResponse {
 struct StudentInfo{
     1:string name;
     2:string phone;
+    3:string major;
+    4:string faculty;
+    5:string class;
+    6:string grade;
 }
 struct UserInfo{
     1:string uid;

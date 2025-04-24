@@ -17,7 +17,7 @@ import {
     faUpRightFromSquare,
     faUserGraduate,
 } from "@fortawesome/free-solid-svg-icons";
-import {useModal} from "../../context/modal-provider.js";
+import {useModal} from "../../context/modal-provider.tsx";
 import {IconButton} from "../components/icon-button.tsx";
 import {OssBuckets, useOss} from "../../context/oss-uploader-provider.tsx";
 import {useNotification} from "../../context/notification-provider.tsx";

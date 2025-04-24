@@ -27,4 +27,7 @@ export type AdminServiceResponse = {
         base: BaseResponse
         videos: Array<VideoInfo>
     }
+    IMPORT_STUDENT: {
+        base: BaseResponse
+    }
 }

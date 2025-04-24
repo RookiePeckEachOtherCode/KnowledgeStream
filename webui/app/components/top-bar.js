@@ -3,10 +3,9 @@ import {api} from "../../api/instance.ts";
 import {OssImage} from "./oss-midea.tsx";
 import {useRouter} from "next/navigation";
 
-export function TopBar(props) {
+export function TopBar() {
     const router = useRouter();
 
-    const [searchKeyword, setSearchKeyword] = useState('')
 
     const [userInfo, setUserInfo] = useState({
         avatar: "null"

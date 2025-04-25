@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"os"
 	"sync"
 
 	"github.com/cloudwego/hertz/pkg/common/hlog"
@@ -69,13 +68,7 @@ func Get() *Config {
 }
 
 func loadConfig() *Config {
-	productEnv := os.Getenv("online")
-
-	if productEnv == "online" {
-		viper.SetConfigFile("config/online/config.yaml")
-	} else {
-		viper.SetConfigFile("config/dev/config.yaml")
-	}
+	viper.SetConfigFile("config/config.yaml")
 
 	err := viper.ReadInConfig()
 	if err != nil {

@@ -1,0 +1,5 @@
+webui/
+.git/
+.gitignore
+.hz/
+*.md

@@ -1,6 +1,6 @@
 module github.com/RookiePeckEachOtherCode/KnowledgeStream
 
-go 1.23.6
+go 1.23.0
 
 require (
 	github.com/apache/thrift v0.21.0

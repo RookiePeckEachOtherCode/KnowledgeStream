@@ -84,7 +84,12 @@ export function OssVideo(props: OssVideoProps) {
                 URL.revokeObjectURL(blobUrl);
             }
         };
+<<<<<<< Updated upstream
     }, [fileName, bucket]);
+=======
+    }, [url]);
+
+>>>>>>> Stashed changes
 
     return (
         <div className={className}>
@@ -165,7 +170,11 @@ export function OssImage({
         return () => {
             if (blobUrl) URL.revokeObjectURL(blobUrl);
         };
+<<<<<<< Updated upstream
     }, [fileName, bucket]);
+=======
+    }, [url]);
+>>>>>>> Stashed changes
 
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
         showNotification({
@@ -274,7 +283,7 @@ export function OssVideoCover(props: { className?: string; url: string; onClick?
             abortController.abort();
             if (previewUrl) URL.revokeObjectURL(previewUrl);
         };
-    }, [url, bucket, fileName]);
+    }, [url]);
 
     return (
         <div className={className} onClick={() => {

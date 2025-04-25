@@ -9,7 +9,10 @@ import AnimatedContent from "@/app/components/animated-content";
 import {api} from "@/api/instance";
 import {NotifyType} from "@/api/internal/model/response/notify";
 import MDButton from "@/app/components/md-button";
+<<<<<<< Updated upstream
 import {UserAuthority} from "@/api/internal/service/user";
+=======
+>>>>>>> Stashed changes
 import {OssImage} from "@/app/components/oss-midea";
 import {useModal} from "@/context/modal-provider";
 import {IconButton} from "@/app/components/icon-button";
@@ -30,8 +33,13 @@ export default function CoursePage({
     const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set())
     const [courseNotify, setCourseNotify] = useState<Array<NotifyType>>([])
     const [isNotifyLoading, setIsNotifyLoading] = useState(true)
+<<<<<<< Updated upstream
     const [isTeacher, setIsTeacher] = useState(true)
     const { toggleShowModal, setForm } = useModal()
+=======
+    const [isTeacher] = useState(true)
+    const {toggleShowModal, setForm} = useModal()
+>>>>>>> Stashed changes
     const gotoPlay = (id: string) => {
         router.push(`/play/${id}`)
     }
@@ -234,12 +242,16 @@ export default function CoursePage({
                                                         <div
                                                             className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full"></div>
                                                     )}
+<<<<<<< Updated upstream
                                                     <h3 className="font-medium text-on-surface flex items-center justify-between">
                                                         <span>{notify.title}</span>
                                                         <span className="text-xs text-on-surface-variant">
                                                             {notify.read ? "已读" : "未读"}
                                                         </span>
                                                     </h3>
+=======
+
+>>>>>>> Stashed changes
                                                     <p className="text-sm text-on-surface-variant mt-2">{notify.content}</p>
                                                 </div>
                                             ))

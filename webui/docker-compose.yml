@@ -1,0 +1,21 @@
+services:
+  frontend:
+    build: .
+    image: ks-app
+    container_name: ks-frontend
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - BACK_FONT_ADDRESS=http://localhost:8888
+      - ALIYUN_ACCESS_KEY_ID=
+      - ALIYUN_ACCESS_KEY_SECRET=
+    networks:
+      - ks-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+
+networks:
+  ks-network:
+    driver: bridge

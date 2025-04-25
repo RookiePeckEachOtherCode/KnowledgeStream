@@ -28,12 +28,13 @@ app.prepare().then(() => {
             res.status(200).json(result.Credentials);
         } catch (error) {
             res.status(500).json({ error: error.message });
+                console.error('STS Error Details:', error);
         }
     });
 
     // API代理
     server.use('/api', createProxyMiddleware({
-        target: 'http://localhost:8888',
+        target: process.env.BACK_FONT_ADDRESS||`http:localhost:8888`,
         changeOrigin: true,
     }));
 
@@ -46,5 +47,8 @@ app.prepare().then(() => {
     server.listen(port, (err) => {
         if (err) throw err;
         console.log(`> Ready on http://localhost:${port}`);
+        console.log(`> Send to ${process.env.BACK_FONT_ADDRESS||'http:localhost:8888'}`);
+        console.log(`Key Id :${process.env.ALIYUN_ACCESS_KEY_ID}`)
+        console.log(`Key Secret : ${process.env.ALIYUN_ACCESS_KEY_SECRET}`)
     });
 });

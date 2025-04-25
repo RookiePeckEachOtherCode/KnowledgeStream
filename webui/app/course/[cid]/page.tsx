@@ -9,6 +9,11 @@ import AnimatedContent from "@/app/components/animated-content";
 import { api } from "@/api/instance";
 import { NotifyType } from "@/api/internal/model/response/notify";
 import MDButton from "@/app/components/md-button";
+
+import {OssImage} from "@/app/components/oss-midea";
+import {useModal} from "@/context/modal-provider";
+import {IconButton} from "@/app/components/icon-button";
+import {OssBuckets, useOss} from "@/context/oss-uploader-provider";
 import { UserAuthority } from "@/api/internal/service/user";
 import { OssImage } from "@/app/components/oss-midea";
 import { useModal } from "@/context/modal-provider";
@@ -31,8 +36,9 @@ export default function CoursePage({
     const [courseNotify, setCourseNotify] = useState<Array<NotifyType>>([])
     const [isNotifyLoading, setIsNotifyLoading] = useState(true)
 
-    const [isTeacher, setIsTeacher] = useState(localStorage.getItem("authority") === UserAuthority.Teacher)
+    const [isTeacher] = useState(localStorage.getItem("authority") === UserAuthority.Teacher)
     const { toggleShowModal, setForm } = useModal()
+
     const gotoPlay = (id: string) => {
         router.push(`/play/${id}`)
     }
@@ -232,6 +238,14 @@ export default function CoursePage({
                                                         <div
                                                             className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full"></div>
                                                     )}
+
+                                                    <h3 className="font-medium text-on-surface flex items-center justify-between">
+                                                        <span>{notify.title}</span>
+                                                        <span className="text-xs text-on-surface-variant">
+                                                            {notify.read ? "已读" : "未读"}
+                                                        </span>
+                                                    </h3>
+
                                                     <p className="text-sm text-on-surface-variant mt-2">{notify.content}</p>
                                                 </div>
                                             ))

@@ -86,7 +86,10 @@ export function OssVideo(props: OssVideoProps) {
                 URL.revokeObjectURL(blobUrl);
             }
         };
-    }, [fileName, bucket, url, showNotification, blobUrl]);
+
+    }, [url]);
+
+
 
     return (
         <div className={className}>
@@ -167,7 +170,7 @@ export function OssImage({
         return () => {
             if (blobUrl) URL.revokeObjectURL(blobUrl);
         };
-    }, [fileName, bucket, url, blobUrl]);
+
 
     const handleImageError = () => {
         showNotification({
@@ -277,7 +280,7 @@ export function OssVideoCover(props: { className?: string; url: string; onClick?
             abortController.abort();
             if (previewUrl) URL.revokeObjectURL(previewUrl);
         };
-    }, [url, bucket, fileName]);
+    }, [url]);
 
     return (
         <div className={className} onClick={() => {

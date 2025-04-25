@@ -45,11 +45,13 @@ export function OssVideo(props: OssVideoProps) {
             }
 
             if (!bucket || !fileName) {
-                showNotification({
-                    title: "地址格式错误",
-                    content: `无效的OSS地址格式: ${url}`,
-                    type: "error"
-                });
+                if (url !== "null") {
+                    showNotification({
+                        title: "地址格式错误",
+                        content: `无效的OSS地址格式: ${url}`,
+                        type: "error"
+                    });
+                }
                 return;
             }
             try {
@@ -84,12 +86,10 @@ export function OssVideo(props: OssVideoProps) {
                 URL.revokeObjectURL(blobUrl);
             }
         };
-<<<<<<< Updated upstream
-    }, [fileName, bucket]);
-=======
+
     }, [url]);
 
->>>>>>> Stashed changes
+
 
     return (
         <div className={className}>
@@ -170,13 +170,9 @@ export function OssImage({
         return () => {
             if (blobUrl) URL.revokeObjectURL(blobUrl);
         };
-<<<<<<< Updated upstream
-    }, [fileName, bucket]);
-=======
-    }, [url]);
->>>>>>> Stashed changes
 
-    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+
+    const handleImageError = () => {
         showNotification({
             title: "图片渲染失败",
             content: "无法加载图片资源",
@@ -210,7 +206,7 @@ export function OssVideoCover(props: { className?: string; url: string; onClick?
     const {bucket, fileName} = parseOssUrl(url);
 
     useEffect(() => {
-        if (!url || !bucket || !fileName) return;
+        if (!url || !bucket || !fileName || url === "null") return;
 
         // 1. 创建 AbortController 用于取消请求
         const abortController = new AbortController();
@@ -268,11 +264,12 @@ export function OssVideoCover(props: { className?: string; url: string; onClick?
                 URL.revokeObjectURL(videoUrl);
                 video.remove();
             } catch (err) {
-                showNotification({
-                    title: "封面生成失败",
-                    content: err instanceof Error ? err.message : "未知错误",
-                    type: "error",
-                });
+                console.log(err)
+                // showNotification({
+                //     title: "封面生成失败",
+                //     content: err instanceof Error ? err.message : "未知错误",
+                //     type: "error",
+                // });
             }
         };
 

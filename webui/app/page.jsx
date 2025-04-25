@@ -30,9 +30,9 @@ export default function Home() {
     const {theme, toggleTheme} = useTheme();
     const [currentChildren, setCurrentChildren] = useState("mainPage");
 
-    const [leftNavigationHidden, setLeftNavigationHidden] = useState(false);
+    const [leftNavigationHidden,] = useState(false);
     const [animationClass, setAnimationClass] = useState(""); //用于子组件视图切换
-
+    const [charter, setCharter] = useState("")
     const ChildrenView = useCallback(() => {
         switch (currentChildren) {
             case "mainPage":
@@ -53,7 +53,7 @@ export default function Home() {
     //设置切换动画
     useEffect(() => {
         setAnimationClass(`hidden`);
-
+        setCharter(localStorage.getItem("authority"))
         const timer = setTimeout(() => {
             setAnimationClass(`opacity-0 translate-x-1/3`);
 
@@ -86,16 +86,6 @@ export default function Home() {
                     >
                         <FontAwesomeIcon icon={faHouse}></FontAwesomeIcon>
                     </NavigationItem>
-                    {/*<NavigationItem*/}
-                    {/*    title={`课程`}*/}
-                    {/*    isActive={currentChildren === "course"}*/}
-                    {/*    onClick={() => {*/}
-                    {/*        setAnimationClass("hidden");*/}
-                    {/*        setCurrentChildren("course");*/}
-                    {/*    }}*/}
-                    {/*>*/}
-                    {/*    <FontAwesomeIcon icon={faChalkboard}></FontAwesomeIcon>*/}
-                    {/*</NavigationItem>*/}
                     <NavigationItem
                         title={`个人中心`}
                         isActive={currentChildren === "userHome"}
@@ -116,7 +106,7 @@ export default function Home() {
                     >
                         <FontAwesomeIcon icon={faBell}/>
                     </NavigationItem>
-                    {(localStorage.getItem("authority") === "Admin" || localStorage.getItem("authority") === "Teacher") &&
+                    {(charter === "Admin" || charter === "Teacher") &&
                         <NavigationItem
                             title={`录制`}
                             isActive={currentChildren === "screenRecord"}
@@ -127,7 +117,7 @@ export default function Home() {
                         >
                             <FontAwesomeIcon icon={faVideo}></FontAwesomeIcon>
                         </NavigationItem>}
-                    {localStorage.getItem("authority") === "Admin" && <NavigationItem
+                    {charter === "Admin" && <NavigationItem
                         title={`管理员页面`}
                         isActive={currentChildren === "admin"}
                         onClick={() => {

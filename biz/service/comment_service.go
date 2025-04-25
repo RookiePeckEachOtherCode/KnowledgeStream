@@ -38,6 +38,7 @@ func (s *CommentService) CrateComment(c context.Context, name string, avatar str
 		hlog.Error("时间生成失败: ", err)
 		return nil, err
 	}
+	content = utils.CommentByFilter(content)
 	err = query.Comment.WithContext(c).Save(
 		&entity.Comment{
 			ID:         *flakeId,

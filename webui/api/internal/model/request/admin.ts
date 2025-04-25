@@ -59,5 +59,13 @@ export  type AdminServiceRequest = {
         offset?: number;
         size?: number;
     }
+    IMPORT_STUDENT: {
+        name: string,
+        phone: string,
+        major?: string,
+        faculty?: string,
+        class?: string,
+        grade?: string
+    }
 
 } 

@@ -2,7 +2,7 @@
 
 import {createContext, useContext, useRef, useState, ReactNode} from "react";
 import OSS from 'ali-oss';
-import {useNotification} from "./notification-provider.tsx";
+import {useNotification} from "@/context/notification-provider";
 import React from "react";
 import {preconnect} from "react-dom";
 
@@ -113,23 +113,13 @@ export function OssUploaderProvider({children}: ProviderProps) {
             return true;
         } catch (err) {
             // 增强错误处理
-            const errorMessage = err.message || '未知错误';
-            const isTokenError = errorMessage.includes('security-token')
-                || errorMessage.includes('STS Token');
 
+            console.log(err)
             showNotification({
                 title: "上传失败",
-                content: isTokenError
-                    ? '安全令牌失效，正在尝试重新上传...'
-                    : `错误代码：${err.code || 'N/A'}，信息：${errorMessage}`,
+                content: `请重试`,
                 type: "error"
             });
-
-            // 如果是凭证问题，清除缓存重试
-            if (isTokenError) {
-                clientCache.current.delete(bucket);
-                return await ossHandleUploadFile(file, fileName, bucket);
-            }
 
             success = false;
         } finally {

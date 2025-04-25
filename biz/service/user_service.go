@@ -44,6 +44,10 @@ func (s *UserService) UserRegister(
 	name string,
 	phone string,
 	password string,
+	major string,
+	faculty string,
+	class string,
+	grade string,
 ) error {
 	u := query.User
 	dbUser, err := u.WithContext(c).Select(u.ID).Where(u.Phone.Eq(phone)).First()
@@ -71,6 +75,10 @@ func (s *UserService) UserRegister(
 		Name:      name,
 		Phone:     phone,
 		Authority: entity.AuthorityUser,
+		Major:     major,
+		Faculty:   faculty,
+		Class:     class,
+		Grade:     grade,
 	}
 
 	if err = u.WithContext(c).Save(&user); err != nil {

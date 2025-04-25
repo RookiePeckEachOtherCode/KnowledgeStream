@@ -1,4 +1,4 @@
-import {ReactNode, useEffect, useState} from "react";
+import {ReactNode, useEffect, useRef, useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
     faArrowDown,
@@ -6,7 +6,7 @@ import {
     faChalkboardUser, faChevronDown, faChevronUp, faCommentDots,
     faEye,
     faFile, faGraduationCap,
-    faKeyboard, faPenSquare, faPenToSquare, faSave, faSchoolFlag, faTrash, faUpload, faUsers,
+    faKeyboard, faPenToSquare, faSave, faSchoolFlag, faTrash, faUpload, faUsers,
     faUserSecret,
     faUsersViewfinder
 } from "@fortawesome/free-solid-svg-icons";
@@ -20,17 +20,16 @@ import {
     Cell,
     Legend,
     Pie,
-    PieChart, PolarGrid, RadialBar, RadialBarChart,
+    PieChart,
     ResponsiveContainer,
     Tooltip,
     XAxis,
     YAxis
 } from "recharts";
-import {CourseInfo, UserInfo, VideoInfo} from "@/api/internal/model/static/base-resp";
+import * as XLSX from 'xlsx';
+import {BaseResponse, CourseInfo} from "@/api/internal/model/static/base-resp";
 import MDInput from "@/app/components/md-input";
-import {faKeybase} from "@fortawesome/free-brands-svg-icons";
 import {Divider} from "@/app/components/divider";
-import MDButton from "@/app/components/md-button";
 import {IconButton} from "@/app/components/icon-button";
 import {OssImage} from "@/app/components/oss-midea";
 import {api} from "@/api/instance";
@@ -38,6 +37,7 @@ import {useNotification} from "@/context/notification-provider";
 import {useModal} from "@/context/modal-provider";
 import {CustomDatePicker} from "@/app/components/custom-date-picker.jsx";
 import dayjs from "dayjs";
+import {PartIndex} from "@/app/components/part-index";
 
 export function AdminPage() {
     const [pager, setPager] = useState(0)
@@ -70,6 +70,7 @@ export function AdminPage() {
                     {
                         Block.map((item, index) => {
                             return <NavItem
+                                key={index}
                                 inUse={pager === index}
                                 title={item}
                                 onClick={() => setPager(index)}>
@@ -237,9 +238,8 @@ export function GlanceData() {
         },
 
     ])
-    const [offset, setOffset] = useState(0)
-    const [size, setSize] = useState(10)
-    const [currentTarget, setCurrentTarget] = useState()
+    const [offset] = useState(0)
+    const [size] = useState(10)
     const {showNotification} = useNotification();
 
     const GetStudentFacultyData = async () => {
@@ -556,19 +556,20 @@ export function GlanceData() {
 export function ManageCourse() {
 
     const [keyword, setKeyword] = useState("")
-    const [size, setSize] = useState(10)
+    const [size] = useState(10)
     const [courses, setCourses] = useState<Array<CourseInfo>>([])
     const [major, setMajor] = useState("")
     const [faculty, setFaculty] = useState("")
     const [endTime, setEndTime] = useState("")
     const [beginTime, setBeginTime] = useState("")
-    const {isShow, toggleShowModal, setForm} = useModal()
+    const {toggleShowModal, setForm} = useModal()
     const {showNotification} = useNotification();
+    const [currentIndex, setCurrentIndex] = useState(1)
     const SearchCourse = async () => {
         const queryRes = await api.adminService.queryCourse({
             keyword: keyword,
             major: major,
-            offset: 0,
+            offset: (currentIndex - 1) * size,
             size: size,
             begin_time: beginTime,
             end_time: endTime,
@@ -603,6 +604,9 @@ export function ManageCourse() {
 
 
     }
+    useEffect(() => {
+        SearchCourse()
+    }, [currentIndex]);
 
     const openEditForm = async (index: number) => {
         await setForm(<EditCourseInfo
@@ -674,10 +678,12 @@ export function ManageCourse() {
                 </div>
             </div>
             <Divider vertical={false}></Divider>
+
             <div className={`w-full flex flex-col p-6`}>
                 {
                     courses?.map((item, index) => {
                         return <CourseListItem
+                            key={index}
                             title={item.title}
                             id={item.cid}
                             major={item.major}
@@ -696,12 +702,41 @@ export function ManageCourse() {
                         </CourseListItem>
                     })
                 }
-
             </div>
-
+            <PartIndex currentPage={currentIndex}
+                       handleIndex={(index) => {
+                           setCurrentIndex(index)
+                       }}
+                       isNoNextPage={courses && courses.length < size}
+            >
+            </PartIndex>
 
         </div>
     )
+}
+
+interface ExcelUser {
+    name: string,
+    faculty: string,
+    major: string,
+    class: string,
+    grade: string,
+    phone: string
+}
+
+interface ExcelRow {
+    name?: string;
+    姓名?: string;    // 中文列名兼容
+    grade?: string;
+    年级?: string;    // 中文列名兼容
+    faculty?: string;
+    学院?: string;    // 中文列名兼容
+    major?: string;
+    专业?: string;    // 中文列名兼容
+    class?: string;
+    班级?: string;    // 中文列名兼容
+    phone?: string;
+    电话?: string;    // 中文列名兼容
 }
 
 export function ManageUser() {
@@ -711,16 +746,18 @@ export function ManageUser() {
     const [keyword, setKeyword] = useState("")
     const [authority, setAuthority] = useState(Authorities[0])
     const [users, setUsers] = useState<Array<CompleteUserInfo>>([])
-    const [offset, setOffset] = useState(0)
     const [authorityDrawer, setAuthorityDrawer] = useState(false)
+    const [size] = useState(10)
     const {showNotification} = useNotification();
-    const {isShow, toggleShowModal, setForm} = useModal()
+    const {toggleShowModal, setForm} = useModal()
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [currentIndex, setCurrentIndex] = useState(1)
 
     const SearchUser = async () => {
         const usersRes = await api.adminService.queryUser({
             keyword: keyword,
-            offset: offset,
-            size: 10,
+            offset: (currentIndex - 1) * size,
+            size: size,
             major: major,
             faculty: faculty,
             authority: authority
@@ -753,6 +790,9 @@ export function ManageUser() {
 
 
     }
+    useEffect(() => {
+        SearchUser()
+    }, [currentIndex]);
 
     const OpenEditInfoForm = async (index: number) => {
         await setForm(<EditUserInfo
@@ -771,6 +811,85 @@ export function ManageUser() {
 
         toggleShowModal(true)
     }
+
+    const handleExcelUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) {
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.readAsArrayBuffer(file);
+        reader.onload = (e) => {
+            try {
+                const data = new Uint8Array(e.target?.result as ArrayBuffer);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet) as ExcelRow[]
+
+                const newStudents: ExcelUser[] = jsonData.map((row) => {
+
+                    const name = row.name || row.姓名 || '';
+                    const grade = row.grade || row.年级 || '';
+                    const faculty = row.faculty || row.学院 || '';
+                    const major = row.major || row.专业 || '';
+                    const classVal = row.class || row.班级 || '';
+                    const phone = String(row.phone || row.电话 || '');
+
+                    return {name: name, grade: grade, faculty: faculty, major: major, class: classVal, phone: phone};
+                }).filter(student => student.phone && student.name);
+
+                const jobs: Array<Promise<{ base: BaseResponse }>> = [];
+                newStudents.forEach((stu) => {
+                    const job = api.adminService.importUser({
+                        name: stu.name,
+                        phone: stu.phone,
+                        grade: stu.grade,
+                        major: stu.major,
+                        faculty: stu.faculty,
+                        class: stu.class
+                    })
+                    jobs.push(job);
+                });
+
+                Promise.all(jobs).then(() => {
+                    showNotification({
+                        title: "添加成功",
+                        content: "已添加新用户",
+                        type: "success"
+                    });
+                })
+
+                if (newStudents.length > 0) {
+                    showNotification({
+                        title: "导入成功",
+                        content: `已导入 ${newStudents.length} 名学生`,
+                        type: "success"
+                    });
+
+
+                } else {
+                    showNotification({
+                        title: "导入提示",
+                        content: "未找到有效学生数据或格式不匹配 (需要 phone 和 name/姓名 列)",
+                        type: "info"
+                    });
+                }
+            } catch (error) {
+                console.error('导入失败:', error);
+                showNotification({
+                    title: "导入失败",
+                    content: "文件处理出错，请检查文件格式或内容。",
+                    type: "error"
+                });
+            }
+        }
+
+
+    }
+    const handleUploadClick = () => {
+        fileInputRef.current?.click()
+    };
 
     return (
         <div className={`w-full h-full flex flex-col p-3 space-y-6`}>
@@ -833,7 +952,18 @@ export function ManageUser() {
                         </div>
                     </div>
                 </div>
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={(e) => {
+                        handleExcelUpload(e)
+                    }}
+
+                    accept=".xlsx, .xls, .csv"
+                    className="hidden"
+                />
                 <IconButton text={`批量导入用户`} onClick={() => {
+                    handleUploadClick()
                 }} className={`w-auto h-12 space-x-3 bg-inverse-primary`}>
                     <FontAwesomeIcon icon={faUpload}></FontAwesomeIcon>
 
@@ -845,6 +975,7 @@ export function ManageUser() {
                 {
                     users?.map((item, index) => {
                         return <UserListItem
+                            key={index}
                             uid={item.uid}
                             avatar={item.avatar ? item.avatar : ``}
                             name={item.name}
@@ -864,6 +995,13 @@ export function ManageUser() {
                     })
                 }
             </div>
+            <PartIndex currentPage={currentIndex}
+                       handleIndex={(index) => {
+                           setCurrentIndex(index)
+                       }}
+                       isNoNextPage={users && users.length < size}
+            >
+            </PartIndex>
         </div>
     )
 
@@ -1023,7 +1161,6 @@ interface UserListItemProps {
 }
 
 export function UserListItem({
-                                 uid,
                                  avatar,
                                  name,
                                  authority,
@@ -1218,7 +1355,7 @@ export function EditUserInfo({
         }
     }
 
-    const {isShow, toggleShowModal, setForm} = useModal()
+    const {toggleShowModal} = useModal()
     const {showNotification} = useNotification();
 
     const SaveEdit = async () => {
@@ -1486,9 +1623,8 @@ export function EditCourseInfo({
     const [f_class, setClass] = useState(courseClass)
     const [f_cover, setCover] = useState(cover)
     const [f_faculty, setF_faculty] = useState(faculty)
-    const [videoFile, setVideoFile] = useState<File | null>(null)
     const {showNotification} = useNotification();
-    const {isShow, toggleShowModal, setForm} = useModal()
+    const {toggleShowModal} = useModal()
     // 处理封面上传
     const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -1503,10 +1639,6 @@ export function EditCourseInfo({
         }
     }
 
-    // 处理视频上传
-    const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setVideoFile(e.target.files?.[0] || null)
-    }
 
     const SaveEditInfo = async () => {
         const saveRes = await api.adminService.updateCourse({
@@ -1595,7 +1727,7 @@ export function EditCourseInfo({
                             <CustomDatePicker
                                 value={f_beginTime}
                                 onChange={value => setBeginTime(dayjs(value).format('YYYY-MM-DD'))}
-                            />
+                                minDate={dayjs(`1145-12-12`)}/>
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-on-primary-container">

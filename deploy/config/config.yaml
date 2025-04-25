@@ -1,0 +1,25 @@
+jwt:
+  key: "锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷"
+  expiration: 30 # 30 day
+
+snowflake_node: 1
+
+database:
+  host: "database"
+  port: 5432
+  username: "root"
+  password: "password"
+  db_name: "KS"
+
+redis:
+  host: "redis"
+  port:  6379
+  database: 0
+
+oss_buckets:  
+  bucket_video: "ks-video"
+  bucket_course_cover: "ks-course-cover"
+  bucket_user_avatar: "ks-user-avatar"
+  bucket_notification_annex: "ks-notification-annex"
+  user_avatar: "ks-user-avatar/beriholic.jpg"
+  course_cover: "ks-course-cover/default"

@@ -170,6 +170,7 @@ export function OssImage({
         return () => {
             if (blobUrl) URL.revokeObjectURL(blobUrl);
         };
+    },[url])
 
 
     const handleImageError = () => {

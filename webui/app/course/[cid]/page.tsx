@@ -14,13 +14,10 @@ import {OssImage} from "@/app/components/oss-midea";
 import {useModal} from "@/context/modal-provider";
 import {IconButton} from "@/app/components/icon-button";
 import {OssBuckets, useOss} from "@/context/oss-uploader-provider";
-import { UserAuthority } from "@/api/internal/service/user";
-import { OssImage } from "@/app/components/oss-midea";
-import { useModal } from "@/context/modal-provider";
-import { IconButton } from "@/app/components/icon-button";
-import { OssBuckets, useOss } from "@/context/oss-uploader-provider";
 
-import {CourseDataVO, fetchCourseData} from "../vo";
+
+import {CourseDataVO, fetchCourseData} from "../vo"; 
+import {UserAuthority} from "@/api/internal/service/user";
 
 export default function CoursePage({
                                        params,
@@ -433,4 +430,3 @@ function CreateNotificationForm({cid}: CreateNotificationFormProps) {
 
 
 }
-

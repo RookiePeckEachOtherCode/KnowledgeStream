@@ -9,7 +9,7 @@ import {faUserPlus, faUserMinus, faFileExport, faFileImport, faTable, faList} fr
 import {OssImage} from "@/app/components/oss-midea";
 import * as XLSX from 'xlsx';
 import {api} from "@/api/instance";
-import {BaseResponse} from "@/api/internal/model/static/base-resp";
+import {BaseResponse, UserInfo} from "@/api/internal/model/static/base-resp";
 
 interface Student {
     uid: string;
@@ -46,20 +46,47 @@ export default function CourseManagerPage({
     const [showAddStudentDialog, setShowAddStudentDialog] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [newStudentUid, setNewStudentUid] = useState("");
+    const [newFilters, setNewFilters] = useState({
+        keyword: '',
+        grade: '',
+        faculty: '',
+        major: '',
+        class: ''
+    });
+    const [newStudentList, setNewStudentList] = useState<Array<UserInfo>>([])
 
     const toggleStudentDialog = () => {
         setShowAddStudentDialog(prev => !prev);
     };
 
     const filteredStudents = students.filter(student =>
-        (student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            student.uid.toLowerCase().includes(searchQuery.toLowerCase())) &&
+        (student.name.toLowerCase().includes(searchQuery.toLowerCase()) || student.uid.toLowerCase().includes(searchQuery.toLowerCase())) &&
         (!filters.grade || student.grade === filters.grade) &&
         (!filters.faculty || student.faculty === filters.faculty) &&
         (!filters.major || student.major === filters.major) &&
         (!filters.class || student.class === filters.class)
     );
 
+    const SearchGlobalStudent = async () => {
+        const SearchRes = await api.teacherService.searchStudent({
+            offset: 0,
+            size: 20,
+            keyword: newFilters.keyword,
+            grade: newFilters.grade,
+            major: newFilters.major,
+            faculty: newFilters.faculty
+        });
+        if (SearchRes.base.code !== 200) {
+            showNotification({
+                title: "搜索学生失败",
+                content: SearchRes.base.msg,
+                type: "error"
+            })
+        } else {
+            setNewStudentList(SearchRes.usersinfo)
+        }
+
+    }
 
     const totalPages = Math.ceil(filteredStudents.length / pageSize);
 
@@ -74,7 +101,7 @@ export default function CourseManagerPage({
         //     name: `学生${i + 1}`,
         //     avatar: "",
         //     grade: `${2021 + Math.floor(i / 20)}级`,
-        //     faculty: ['信息学院', '理学院', '工学院', '文学院'][i % 4],
+        //     faculty: ['信息学院', '理学院', '工学院'   , '文学院'][i % 4],
         //     major: ['计算机科学', '软件工程', '人工智能', '数据科学'][i % 4],
         //     class: `班级${(i % 10) + 1}`,
         //     phone: `138${String(Math.random()).substring(2, 10)}`,
@@ -346,16 +373,107 @@ export default function CourseManagerPage({
                         reverse={true}
                         config={{tension: 80, friction: 20}}
                     >
-                        <div className="bg-surface-container rounded-2xl p-6 shadow-xl w-96 space-y-4">
-                            <h3 className="text-xl font-semibold text-on-surface">添加学生</h3>
-                            <MDInput
-                                placeholder="学生UID"
-                                value={newStudentUid}
-                                onValueChange={(value) => setNewStudentUid(value)}
-                            />
+                        <div className="bg-surface-container rounded-2xl p-6 shadow-xl  space-y-4">
+                            <h3 className="text-xl font-semibold text-on-surface">搜索并添加学生</h3>
+                            <div className={`flex w-full flex-row space-x-3`}>
+                                <MDInput
+                                    value={newFilters.grade}
+                                    onValueChange={(value) => setNewFilters(prev => ({...prev, grade: value}))}
+                                    placeholder="按年级筛选"
+                                    className="w-full sm:w-32 md:w-40"
+                                />
+                                <MDInput
+                                    value={newFilters.faculty}
+                                    onValueChange={(value) => setNewFilters(prev => ({...prev, faculty: value}))}
+                                    placeholder="按学院筛选"
+                                    className="w-full sm:w-32 md:w-40"
+                                />
+                                <MDInput
+                                    value={newFilters.major}
+                                    onValueChange={(value) => setNewFilters(prev => ({...prev, major: value}))}
+                                    placeholder="按专业筛选"
+                                    className="w-full sm:w-32 md:w-40"
+                                />
+                                <MDInput
+                                    value={newFilters.class}
+                                    onValueChange={(value) => setNewFilters(prev => ({...prev, class: value}))}
+                                    placeholder="按班级筛选"
+                                    className="w-full sm:w-32 md:w-40"
+                                />
+                            </div>
+                            <div className={`w-2/5`}>
+                                <MDInput
+                                    placeholder="学生姓名或完整uid"
+                                    value={newFilters.keyword}
+                                    onValueChange={(value) => setNewFilters(prev => ({...prev, keyword: value}))}
+                                    onEnter={SearchGlobalStudent}
+                                />
+                            </div>
+                            <div className={`w-full flex flex-col space-y-3 max-h-96 text-on-background overflow-auto`}>
+                                <table className="w-full">
+                                    <thead className="sticky top-0 z-10">
+                                    <tr className="bg-surface-container border-b border-outline-variant">
+                                        <th className="px-4 py-3 text-left w-12"></th>
+                                        <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">头像</th>
+                                        <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">姓名</th>
+                                        <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">UID</th>
+                                        <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">年级</th>
+                                        <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">学院</th>
+                                        <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">专业</th>
+                                        <th className="px-4 py-3 text-left text-sm font-medium text-on-surface-variant tracking-wider whitespace-nowrap">班级</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+                                    {newStudentList?.map((item, index) => (
+                                        <tr key={index} className="hover:bg-surface-container-hover transition-colors">
+                                            <td className="px-4 py-3">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={students.some(student => student.uid === item.uid)}
+                                                    className="form-checkbox h-5 w-5 text-primary focus:ring-primary border-outline rounded cursor-pointer"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    onChange={async (e) => {
+                                                        if (students.some(student => student.uid === item.uid)) {
+                                                            const res = await api.teacherService.handleCourseMember({
+                                                                cid: cid,
+                                                                uid: item.uid,
+                                                                delete: true
+                                                            });
+                                                            if (res.base.code !== 200) {
+                                                                showNotification({
+                                                                    title: "移除学生失败",
+                                                                    content: res.base.msg,
+                                                                    type: "error"
+                                                                })
+                                                            } else {
+                                                                await fetchStudents()
+                                                            }
+                                                        } else {
+                                                            await addStudent(item.uid)
+                                                        }
+                                                    }}
+                                                />
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <OssImage
+                                                    className="w-16 aspect-square rounded-full"
+                                                    url={item.avatar}
+                                                />
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap">{item.name}</td>
+                                            <td className="px-4 py-3 whitespace-nowrap">{item.uid}</td>
+                                            <td className="px-4 py-3 whitespace-nowrap">{item.grade}</td>
+                                            <td className="px-4 py-3 whitespace-nowrap">{item.faculty}</td>
+                                            <td className="px-4 py-3 whitespace-nowrap">{item.major}</td>
+                                            <td className="px-4 py-3 whitespace-nowrap">{item.class}</td>
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </table>
+                            </div>
                             <div className="flex justify-end gap-2 pt-4">
-                                <MDButton onClick={toggleStudentDialog}>取消</MDButton>
-                                <MDButton onClick={handleAddStudentConfirm}>确认添加</MDButton>
+                                <MDButton className={`w-24`} onClick={toggleStudentDialog}>返回</MDButton>
                             </div>
                         </div>
                     </AnimatedContent>

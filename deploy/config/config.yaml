@@ -5,14 +5,14 @@ jwt:
 snowflake_node: 1
 
 database:
-  host: "database"
+  host: "localhost"
   port: 5432
   username: "root"
   password: "password"
   db_name: "KS"
 
 redis:
-  host: "redis"
+  host: "localhost"
   port:  6379
   database: 0
 

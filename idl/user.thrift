@@ -144,6 +144,7 @@ struct EnquiryStudentReq{
     4:string grade;
     5:string faculty;
     6:string major;
+    7:string class;
 }
 struct EnquiryStudentResp{
     1:common.BaseResponse base;

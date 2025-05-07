@@ -5975,6 +5975,7 @@ type EnquiryStudentReq struct {
 	Grade   string `thrift:"grade,4" form:"grade" json:"grade" query:"grade"`
 	Faculty string `thrift:"faculty,5" form:"faculty" json:"faculty" query:"faculty"`
 	Major   string `thrift:"major,6" form:"major" json:"major" query:"major"`
+	Class   string `thrift:"class,7" form:"class" json:"class" query:"class"`
 }
 
 func NewEnquiryStudentReq() *EnquiryStudentReq {
@@ -6008,6 +6009,10 @@ func (p *EnquiryStudentReq) GetMajor() (v string) {
 	return p.Major
 }
 
+func (p *EnquiryStudentReq) GetClass() (v string) {
+	return p.Class
+}
+
 var fieldIDToName_EnquiryStudentReq = map[int16]string{
 	1: "keyword",
 	2: "offset",
@@ -6015,6 +6020,7 @@ var fieldIDToName_EnquiryStudentReq = map[int16]string{
 	4: "grade",
 	5: "faculty",
 	6: "major",
+	7: "class",
 }
 
 func (p *EnquiryStudentReq) Read(iprot thrift.TProtocol) (err error) {
@@ -6078,6 +6084,14 @@ func (p *EnquiryStudentReq) Read(iprot thrift.TProtocol) (err error) {
 		case 6:
 			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField6(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 7:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField7(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
@@ -6178,6 +6192,17 @@ func (p *EnquiryStudentReq) ReadField6(iprot thrift.TProtocol) error {
 	p.Major = _field
 	return nil
 }
+func (p *EnquiryStudentReq) ReadField7(iprot thrift.TProtocol) error {
+
+	var _field string
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.Class = _field
+	return nil
+}
 
 func (p *EnquiryStudentReq) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
@@ -6207,6 +6232,10 @@ func (p *EnquiryStudentReq) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField6(oprot); err != nil {
 			fieldId = 6
+			goto WriteFieldError
+		}
+		if err = p.writeField7(oprot); err != nil {
+			fieldId = 7
 			goto WriteFieldError
 		}
 	}
@@ -6322,6 +6351,22 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 6 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 6 end error: ", p), err)
+}
+func (p *EnquiryStudentReq) writeField7(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("class", thrift.STRING, 7); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Class); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 7 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 7 end error: ", p), err)
 }
 
 func (p *EnquiryStudentReq) String() string {

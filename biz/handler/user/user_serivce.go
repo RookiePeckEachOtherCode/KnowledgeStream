@@ -564,7 +564,7 @@ func EnquiryStudent(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	result, err := service.UserServ().TeacherQueryStudent(ctx, req.Keyword, req.Size, req.Offset)
+	result, err := service.UserServ().TeacherQueryStudent(ctx, req.Keyword, req.Faculty, req.Class, req.Grade, req.Size, req.Offset)
 	if err != nil {
 		resp.Base = srverror.WrapWithError(http.StatusBadRequest, err)
 		c.JSON(consts.StatusOK, resp)

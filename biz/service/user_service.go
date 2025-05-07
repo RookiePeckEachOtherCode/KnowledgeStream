@@ -282,15 +282,26 @@ func (s *UserService) AdminQueryUser(
 func (s *UserService) TeacherQueryStudent(
 	c context.Context,
 	keyword string,
+	faculty string,
+	class string,
+	grade string,
 	size int32,
 	offset int32,
 ) ([]*base.UserInfo, error) {
 	u := query.User
-	users, err := u.WithContext(c).
-		Where(u.Name.Like("%" + keyword + "%")).
-		Where(u.Authority.Eq("USER")).
-		Offset(int(offset)).
-		Limit(int(size)).Find()
+
+	queryBuilder := u.WithContext(c).Where(u.Name.Like("%" + keyword + "%")).Where(u.Authority.Eq("USER"))
+	if faculty != "" {
+		queryBuilder = queryBuilder.Where(u.Faculty.Like("%" + faculty + "%"))
+	}
+	if class != "" {
+		queryBuilder = queryBuilder.Where(u.Class.Like("%" + class + "%"))
+	}
+	if grade != "" {
+		queryBuilder = queryBuilder.Where(u.Grade.Like("%" + grade + "%"))
+	}
+	users, err := queryBuilder.Offset(int(offset)).Limit(int(size)).Find()
+
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil

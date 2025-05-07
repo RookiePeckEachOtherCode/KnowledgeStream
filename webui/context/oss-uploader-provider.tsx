@@ -133,6 +133,7 @@ export function OssUploaderProvider({children}: ProviderProps) {
         expires: number = 36000
     ): Promise<string> => {
         try {
+            // console.log(bucket, fileName)
             const ossClientBack = await initOSSClient(bucket);
             return ossClientBack.client.signatureUrl(fileName, {
                 expires,

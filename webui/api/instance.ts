@@ -1,7 +1,7 @@
 import {Api} from "./internal/api";
 
 export const BASE_URL =
-    process.env.NEXT_PUBLIC_BASE_API ?? "http://localhost:8888";
+    process.env.NEXT_PUBLIC_BASE_API ?? "http://localhost:3001/api";
 
 export const api = new Api(async ({uri, method, headers, body, query}) => {
     const isGetRequest = method === 'GET'

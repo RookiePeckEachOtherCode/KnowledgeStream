@@ -1390,10 +1390,10 @@ export function EditUserInfo({
     }
 
     return (
-        <div className="w-full h-full relative flex items-center">
+        <div className="w-full h-full relative flex items-center ">
             <div
                 onClick={e => e.stopPropagation()}
-                className="p-6 absolute transition-all duration-300 w-1/2 space-y-6 right-0 h-full bg-primary-container rounded-l-2xl flex flex-col"
+                className="p-6 absolute transition-all overflow-auto duration-300 w-1/2 space-y-6 right-0 h-full bg-primary-container rounded-l-2xl flex flex-col"
             >
                 {/* 标题部分 */}
                 <div className="w-full flex flex-row space-x-6 items-center justify-between">

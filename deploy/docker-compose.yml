@@ -1,6 +1,6 @@
 services:
   app:
-    image: beriholic/kns:0.1.0
+    image: beriholic/kns:0.1.1
     ports:
       - "8888:8888"
     volumes:
